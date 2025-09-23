@@ -1,0 +1,149 @@
+/* Import Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Arabic Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap');
+
+/* Islamic Pattern Background */
+.islamic-pattern-bg {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 2px, transparent 2px),
+    radial-gradient(circle at 75% 25%, rgba(255,255,255,0.1) 2px, transparent 2px),
+    radial-gradient(circle at 25% 75%, rgba(255,255,255,0.1) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(255,255,255,0.1) 2px, transparent 2px);
+  background-size: 40px 40px;
+  background-position: 0 0;
+}
+
+/* Arabic RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+}
+
+/* Custom scrollbar for Arabic content */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #047857;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #065f46;
+}
+
+/* Custom utilities for Arabic text */
+@layer utilities {
+  .font-arabic {
+    font-family: 'Cairo', 'Tajawal', 'Amiri', serif;
+  }
+  
+  .text-right-rtl {
+    text-align: right;
+    direction: rtl;
+  }
+}
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Cairo', 'Inter', system-ui, sans-serif;
+  }
+  
+  input[type="tel"], 
+  input[type="text"], 
+  input[type="email"], 
+  input[type="password"] {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  input[type="tel"]::placeholder,
+  input[type="text"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="password"]::placeholder {
+    direction: rtl;
+    text-align: right;
+    opacity: 0.6;
+  }
+}
+.rightBow, .leftBow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  background: linear-gradient(180deg, #D3A67A 0%, #B48960 100%);
+
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    black 70%,
+    transparent 100%
+  );
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: cover;
+
+  mask-image: radial-gradient(
+    ellipse at center,
+    black 70%,
+    transparent 100%
+  );
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: cover;
+
+  background-clip: border-box;
+}
+.leftBow { 
+  left: 0;
+   transform: scaleX(-1);
+}
+
+.rightGrayWave,
+.leftGrayWave {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 220px;
+  width: 50px;
+  background: linear-gradient(180deg, #E7E7E7 0%, #DBDBDB 100%);
+  z-index: 2;
+  opacity: 0.9;
+}
+
+.rightGrayWave {
+  right: 0;
+  clip-path: path(
+    "M0,0 L50,0 L50,220 C10,150 10,70 50,0 Z"
+  );
+}
+
+.leftGrayWave {
+  left: 0;
+  clip-path: path(
+    "M40,0 L0,0 L0,220 C40,140 40,70 0,0 Z"
+  );
+}
+
+.pattern {
+  width: 100%;
+  background-image: url("/public/background\ pattern.png");
+  background-repeat: repeat;
+  background-size: auto;
+}

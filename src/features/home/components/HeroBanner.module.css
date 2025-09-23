@@ -1,0 +1,6 @@
+.heroBg {
+  background-image: url("/src/assets/Home/Desktop/Frame 2085662922.png");
+  background-size: cover; /* Changed from 'cover' to 'contain' */
+  background-position: left center; /* Changed from 'center' to 'left center' */
+  background-repeat: no-repeat;
+}
