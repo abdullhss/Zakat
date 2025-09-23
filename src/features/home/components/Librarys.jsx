@@ -16,38 +16,41 @@ const Librarys = () => {
     
                 <span className="text-xl text-[#16343A]">المزيد</span>
             </div>
-            <div className="flex flex-col md:flex-row items-center gap-6 md:pr-8">
-                <LibraryCard
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    title="حملة دعم المستشفى"
-                    className="flex-shrink-0 min-w-[320px]"
-                />
-                <LibraryCard
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    title="حملة دعم المستشفى"
-                    className="flex-shrink-0 min-w-[320px]"
-                />
-                <LibraryCard
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    title="حملة دعم المستشفى"
-                    className="flex-shrink-0 min-w-[320px]"
-                />
-                <LibraryCard
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    title="حملة دعم المستشفى"
-                    className="flex-shrink-0 min-w-[320px]"
-                />
-                <LibraryCard
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    title="حملة دعم المستشفى"
-                    className="flex-shrink-0 min-w-[320px]"
-                />
-                <LibraryCard
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    title="حملة دعم المستشفى"
-                    className="flex-shrink-0 min-w-[320px]"
-                />
-                
+            <div className="relative md:px-8">
+                <div className="flex flex-col md:flex-row items-center gap-6 md:pr-8 overflow-hidden">
+                    <LibraryCard
+                        image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                        title="حملة دعم المستشفى"
+                        className="flex-shrink-0 w-[320px]"
+                    />
+                    <LibraryCard
+                        image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                        title="حملة دعم المستشفى"
+                        className="flex-shrink-0 w-[320px]"
+                    />
+                    <LibraryCard
+                        image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                        title="حملة دعم المستشفى"
+                        className="flex-shrink-0 w-[320px]"
+                    />
+                    <LibraryCard
+                        image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                        title="حملة دعم المستشفى"
+                        className="flex-shrink-0 w-[320px]"
+                    />
+                    <LibraryCard
+                        image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                        title="حملة دعم المستشفى"
+                        className="flex-shrink-0 w-[320px]"
+                    />
+                    <LibraryCard
+                        image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                        title="حملة دعم المستشفى"
+                        className="flex-shrink-0 w-[320px]"
+                    />
+                    <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-[1000]  pointer-events-none md:left-8"></div>
+
+                </div>
             </div>
         </div>
     )

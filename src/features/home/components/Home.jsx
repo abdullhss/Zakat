@@ -3,6 +3,11 @@ import ZakatCategories from "./ZakatCategories";
 import HelpRequestComponent from "./HelpRequestComponent";
 import Donations from "./Donations";
 import Librarys from "./Librarys";
+import LastNews from "./LastNews";
+import Services from "./Services";
+import Charity from "./Charity";
+import DownloadApp from "./DownloadApp";
+import Footer from "../../../components/Footer";
 
 function Home() {
   return (
@@ -14,6 +19,11 @@ function Home() {
           <HelpRequestComponent />
           <Donations />
           <Librarys/>
+          <LastNews/>
+          <Services/>
+          <Charity/>
+          <DownloadApp/>
+          <Footer/>
         </div>
       <div className="rightBow"></div>
       <div className="leftBow"></div>
