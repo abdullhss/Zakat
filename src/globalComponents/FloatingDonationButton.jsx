@@ -16,7 +16,7 @@ const FloatingDonationButton = () => {
   return (
     <button
       onClick={handleDonationClick}
-      className="fixed top-24 lg:top-28 right-0   z-40 bg-white/90 backdrop-blur-sm rounded-l-xl lg:px-4 lg:py-2 flex items-center space-x-2 space-x-reverse shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white"
+      className="fixed top-24 lg:top-28 right-0   z-[1000] bg-white/90 backdrop-blur-sm rounded-l-xl lg:px-4 lg:py-2 flex items-center space-x-2 space-x-reverse shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white"
       dir="rtl"
     >
       <div className="w-6 h-6 lg:w-8 lg:h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">

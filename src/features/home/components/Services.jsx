@@ -18,7 +18,7 @@ const Services = () => {
                 <span className="text-xl text-[#16343A]">المزيد</span>
             </div>
             <div className="relative md:px-8">
-                <div className="flex flex-col md:flex-row items-center justify-around gap-6 md:pr-8 overflow-hidden">
+                <div className="flex flex-col md:flex-row items-center justify-around gap-6 md:pr-8 overflow-scroll scrollbar-hide">
                     <ServiceCard
                         icon={<HandCoinsIcon color='#17343B' size={40}/>}
                         title={"الزكاة"}
