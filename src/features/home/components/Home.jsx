@@ -47,7 +47,14 @@ function Home() {
     <section>
       <HeroBanner data={mainScreenData?.heroBanner} />
       <div className="relative overflow-hidden">
-        <div className="z-10 mx-auto px-4 flex flex-col gap-4 pattern">
+        <div
+          className="z-10 mx-auto px-4 flex flex-col gap-4"
+          style={{
+            backgroundImage: "url('/background pattern.png')",
+            backgroundRepeat: "repeat",
+            backgroundSize: "auto",
+          }}
+        >
           <ZakatCategories />
           <HelpRequestComponent />
           {mainScreenData?.decrypted?.SubventionsData && (
@@ -66,6 +73,7 @@ function Home() {
           <DownloadApp />
           <Footer />
         </div>
+
         <div className="rightBow"></div>
         <div className="leftBow"></div>
       </div>
