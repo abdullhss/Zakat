@@ -20,16 +20,16 @@ const Services = () => {
             <div className="relative md:px-8">
                 <div className="flex flex-col md:flex-row items-center justify-around gap-6 md:pr-8 overflow-scroll scrollbar-hide">
                     <ServiceCard
-                        icon={<HandCoinsIcon color='#17343B' size={40}/>}
-                        title={"الزكاة"}
-                        descirption={"خدمة لتوكيل ذبح الأضاحي والهدي والعقيقة والفدية والصدقة ، وتوزيعها على مستحقيها."}
-                        className={"flex-shrink-0 w-72"}
-                    />
-                    <ServiceCard
                         icon={<MegaphoneIcon color='#17343B' size={40}/>}
                         title={"الحملات"}
                         className={"flex-shrink-0 w-72"}
                         descirption={"خدمة تتيح لك إنشاء حملة لجمع التبرعات في مختلف المجالات الخيرية و نشرها ليصل أثرها إلي مستحقيها"}
+                    />
+                    <ServiceCard
+                        icon={<HandCoinsIcon color='#17343B' size={40}/>}
+                        title={"الزكاة"}
+                        descirption={"خدمة تتيح لك إمكانية حساب الزكاة بأنواعها المختلفة ودفعها عبر طرق سهلة وسريعة لتصل إلى مستحقيها."}
+                        className={"flex-shrink-0 w-72"}
                     />
                     <ServiceCard
                         icon={<img className='w-14' src={Sheep}></img>}
