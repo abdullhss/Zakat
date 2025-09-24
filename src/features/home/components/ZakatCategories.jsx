@@ -47,23 +47,22 @@ const ZakatCategories = () => {
         </div>
 
         {/* Categories Cards */}
-        <div className="flex flex-wrap justify-around gap-20 xl:gap-12 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 w-full mx-auto">
           {categories.map((category) => (
             <div
               key={category.id}
-              className="w-88 relative bg-gradient-to-r from-[#ffffff] to-[#CBCBCB] rounded-2xl shadow-lg p-6 text-center "
+              className="relative bg-gradient-to-r from-[#ffffff] to-[#CBCBCB] rounded-2xl shadow-lg p-6 text-center"
             >
               {/* Icon Container */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <Diamond
-                  width={80}
-                  height={80}
-                  imgUrl={coins}
-                />
+                <Diamond width={80} height={80} imgUrl={coins} />
               </div>
 
               {/* Category Title */}
-              <h3 className="text-xl font-bold text-gray-800 mb-4 pt-10" dir="rtl">
+              <h3
+                className="text-xl font-bold text-gray-800 mb-4 pt-10"
+                dir="rtl"
+              >
                 {category.title}
               </h3>
 
@@ -78,6 +77,7 @@ const ZakatCategories = () => {
             </div>
           ))}
         </div>
+
       </div>
     </section>
   );
