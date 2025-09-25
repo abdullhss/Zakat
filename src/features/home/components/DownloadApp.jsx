@@ -34,7 +34,7 @@ const DownloadApp = () => {
           </div>
         </div>
         <div>
-          <img src={Mobile} className="absolute w-1/3 top-0 left-4  md:w-full md:-top-1/2 md:left-28" />
+          <img src={Mobile} className="absolute w-40 top-0 left-4 md:w-80 md:-top-1/2 md:left-28" />
         </div>
       </div>
     </div>

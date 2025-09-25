@@ -10,6 +10,7 @@ import Home from "./features/home/components/Home";
 // Auth Pages (no navbar)
 import Login from "./features/auth/components/Login/Login";
 import ApiTestComponent from "./features/ApiTestComponent";
+import Zakat from "./pages/Zakat";
 
 // Main Pages (with navbar via Layout)
 
@@ -31,7 +32,9 @@ function App() {
             {/* Main Routes - With Layout (Navbar + Content) */}
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
+              <Route path="/opportunities/zakat" element={<Zakat/>} />
             </Route>
+            
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />
 
             {/* Catch all route - 404 page */}
