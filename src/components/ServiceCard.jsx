@@ -3,7 +3,7 @@ import Union from "../../public/Union.png"
 const ServiceCard = ({ icon, title, descirption, className }) => {
   return (
     <div
-      className={`relative w-96 h-auto flex flex-col gap-6 p-6 rounded-2xl shadow-md 
+      className={`relative md:w-[25%] h-auto flex flex-col gap-6 p-6 rounded-2xl shadow-md
       bg-gradient-to-r from-[#24645ECC] to-[#18383D33] opacity-100 ${className}`}
     >
       <div className="flex flex-col gap-3">

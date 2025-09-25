@@ -20,7 +20,7 @@ const Librarys = ({ data }) => {
 
       {/* libraries cards */}
       <div className="relative md:px-8">
-        <div className="flex items-center gap-6 overflow-x-auto whitespace-nowrap scrollbar-hide pr-8">
+        <div className="flex items-center gap-6 overflow-x-auto whitespace-nowrap scrollbar-hide md:pr-8">
           {libs.map((office) => (
             <LibraryCard
               key={office.Id}

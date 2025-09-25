@@ -37,7 +37,7 @@ const Services = () => {
                         className={"flex-shrink-0 w-72"}
                         descirption={"خدمة لتوكيل ذبح الأضاحي والهدي والعقيقة والفدية والصدقة ، وتوزيعها على مستحقيها."}
                     />
-                    <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-[1000]  pointer-events-none md:left-8"></div>
+                    <div className="absolute top-0 left-0 h-full w-12 md:w-32 bg-gradient-to-r from-white to-transparent z-[1000]  pointer-events-none md:left-8"></div>
                 </div>
             </div>
         </div>

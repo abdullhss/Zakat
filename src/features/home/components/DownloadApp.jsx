@@ -15,16 +15,16 @@ const DownloadApp = () => {
         }}
       >
         <div className="flex flex-col items-start justify-center gap-6">
-          <p className="text-3xl font-bold">حمل تطبيق وصل</p>
-          <div className="flex w-full justify-between gap-8">
-            <button className="bg-black text-white flex items-center rounded-lg gap-2 px-4 py-2">
+          <p className="text-xl md:text-3xl font-bold">حمل تطبيق وصل</p>
+          <div className="flex w-full justify-between gap-8 mt-12 md:mt-0">
+            <button className="bg-black text-white flex flex-col md:flex-row items-center rounded-lg gap-2 px-4 py-2">
               <div className="flex flex-col gap-1">
                 <span>تنزيل من</span>
                 <span>Apple Store</span>
               </div>
               <img src={AppleStore} alt="" />
             </button>
-            <button className="bg-black text-white flex items-center rounded-lg gap-2 px-4 py-2">
+            <button className="bg-black text-white flex flex-col md:flex-row items-center rounded-lg gap-2 px-4 py-2">
               <div className="flex flex-col gap-1">
                 <span>احصل عليه من</span>
                 <span>Google Play</span>
@@ -34,7 +34,7 @@ const DownloadApp = () => {
           </div>
         </div>
         <div>
-          <img src={Mobile} className="absolute -top-1/2 left-28" />
+          <img src={Mobile} className="absolute w-1/3 top-0 left-4  md:w-full md:-top-1/2 md:left-28" />
         </div>
       </div>
     </div>

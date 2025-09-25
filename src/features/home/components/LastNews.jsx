@@ -20,7 +20,7 @@ const LastNews = ({ data }) => {
 
       {/* news cards */}
       <div className="relative md:px-8">
-        <div className="flex items-center gap-6 overflow-x-auto whitespace-nowrap scrollbar-hide pr-8">
+        <div className="flex items-center gap-6 overflow-x-auto whitespace-nowrap scrollbar-hide md:pr-8">
           {news.map((item) => (
             <NewsCard
               key={item.Id}
