@@ -191,6 +191,7 @@ const Librarys = ({ data }) => {
         </div>
 
         {/* shadow overlay */}
+        <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-white to-transparent z-[1000] pointer-events-none md:right-8"></div>
         <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-[1000] pointer-events-none md:left-8"></div>
       </motion.div>
     </motion.div>
