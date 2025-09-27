@@ -171,9 +171,7 @@ const Librarys = ({ data }) => {
           style={{ 
             scrollbarWidth: "none", 
             msOverflowStyle: "none",
-            direction: "rtl"
           }}
-          dir="rtl"
         >
           {libs.map((office, index) => (
             <motion.div
@@ -181,7 +179,6 @@ const Librarys = ({ data }) => {
               variants={cardVariants}
               custom={index}
               className="flex-shrink-0"
-              style={{ direction: "ltr" }}
             >
               <LibraryCard
                 image={`https://framework.md-license.com:8093/ZakatImages/${office.OfficePhotoName}.jpg`}
@@ -194,7 +191,6 @@ const Librarys = ({ data }) => {
         </div>
 
         {/* shadow overlay */}
-        <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-white to-transparent z-[1000] pointer-events-none md:right-8"></div>
         <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-[1000] pointer-events-none md:left-8"></div>
       </motion.div>
     </motion.div>

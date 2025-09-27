@@ -172,9 +172,7 @@ const LastNews = ({ data }) => {
           style={{ 
             scrollbarWidth: "none", 
             msOverflowStyle: "none",
-            direction: "rtl" // Explicitly set RTL direction
           }}
-          dir="rtl" // HTML attribute for RTL
         >
           {news.map((item, index) => (
             <motion.div
@@ -182,7 +180,6 @@ const LastNews = ({ data }) => {
               variants={cardVariants}
               custom={index}
               className="flex-shrink-0"
-              style={{ direction: "ltr" }} // Reset direction for card content if needed
             >
               <NewsCard
                 image={`https://framework.md-license.com:8093/ZakatImages/${item.NewsMainPhotoName}.jpg`}

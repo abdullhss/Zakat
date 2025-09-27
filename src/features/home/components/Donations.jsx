@@ -171,9 +171,7 @@ const Donations = ({ data }) => {
           style={{ 
             scrollbarWidth: "none", 
             msOverflowStyle: "none",
-            direction: "rtl"
           }}
-          dir="rtl"
         >
           {donations.map((item, index) => (
             <motion.div
@@ -181,7 +179,6 @@ const Donations = ({ data }) => {
               variants={cardVariants}
               custom={index}
               className="flex-shrink-0"
-              style={{ direction: "ltr" }}
             >
               <DonationCard
                 image={`https://framework.md-license.com:8093/ZakatImages/${item.ProjectPhotoName}.jpg`}
