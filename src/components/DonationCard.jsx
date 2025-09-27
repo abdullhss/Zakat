@@ -53,12 +53,13 @@ const DonationCard = ({ image, title, description, collected, goal , className  
 
       {/* Buttons */}
       <div className="flex items-center gap-4 relative z-10">
-        <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E]">
-          <img src={money} width={30}/>
-          تبرع الان
-        </button>
+        
         <button className="p-3 rounded-lg border border-[#16343A] text-[#16343A]">
           <img src={shoppingCart} width={30}/>
+        </button>
+        <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E]">
+          تبرع الان
+          <img src={money} width={30}/>
         </button>
       </div>
     </div>
