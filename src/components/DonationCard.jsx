@@ -10,9 +10,9 @@ const DonationCard = ({ image, title, description, collected, goal , className  
   const percentage = Math.min(Math.round((collected / goal) * 100), 100);
 
   return (
-    <div className={`relative flex flex-col gap-5 p-6 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden ${className}`}>
+    <div className={`relative flex flex-col gap-5 pl-8 pr-5 py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden ${className}`}>
       {/* waves */}
-      <img src={cardWave} className="absolute left-0 " />
+      <img src={cardWave} className="absolute left-0" />
 
       {/* Header */}
       <div className="flex items-center justify-between gap-6 relative z-10">
