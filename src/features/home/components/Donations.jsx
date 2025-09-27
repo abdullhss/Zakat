@@ -10,6 +10,7 @@ const Donations = ({ data }) => {
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [isInView, setIsInView] = useState(false);
 
   // Check scroll position to show/hide arrows - Fixed for RTL
   const checkScrollPosition = () => {
@@ -70,7 +71,7 @@ const Donations = ({ data }) => {
     setTimeout(checkScrollPosition, 100);
   }, [donations]);
 
-  // Animations (same as LastNews)
+  // Animations with exit states
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
@@ -78,6 +79,11 @@ const Donations = ({ data }) => {
       y: 0,
       transition: { duration: 0.6, staggerChildren: 0.1 },
     },
+    exit: {
+      opacity: 0,
+      y: 50,
+      transition: { duration: 0.5, staggerChildren: 0.05, staggerDirection: -1 }
+    }
   };
 
   const headerVariants = {
@@ -87,6 +93,11 @@ const Donations = ({ data }) => {
       x: 0,
       transition: { duration: 0.5 },
     },
+    exit: {
+      opacity: 0,
+      x: -50,
+      transition: { duration: 0.4 }
+    }
   };
 
   const cardsContainerVariants = {
@@ -95,6 +106,10 @@ const Donations = ({ data }) => {
       opacity: 1,
       transition: { duration: 0.3, staggerChildren: 0.1 },
     },
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.2, staggerChildren: 0.05, staggerDirection: -1 }
+    }
   };
 
   const cardVariants = {
@@ -104,6 +119,11 @@ const Donations = ({ data }) => {
       scale: 1,
       transition: { duration: 0.4 },
     },
+    exit: {
+      opacity: 0,
+      scale: 0.9,
+      transition: { duration: 0.3 }
+    }
   };
 
   return (
@@ -111,8 +131,10 @@ const Donations = ({ data }) => {
       className="flex flex-col gap-6"
       variants={containerVariants}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      animate={isInView ? "visible" : "exit"}
+      onViewportEnter={() => setIsInView(true)}
+      onViewportLeave={() => setIsInView(false)}
+      viewport={{ amount: 0.2 }}
     >
       {/* donation header */}
       <motion.div
@@ -120,7 +142,9 @@ const Donations = ({ data }) => {
         variants={headerVariants}
       >
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
-          <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
+          <div>
+            <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
+          </div>
           فرص التبرع
         </div>
 

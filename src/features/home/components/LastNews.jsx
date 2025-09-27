@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Diamond from "../../../components/Diamond";
 import NewsCard from "../../../components/NewsCard";
@@ -8,56 +8,47 @@ import PropTypes from "prop-types";
 const LastNews = ({ data }) => {
   const news = JSON.parse(data);
   const scrollContainerRef = useRef(null);
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { amount: 0.2, once: false }); // replay animation
+
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Check scroll position to show/hide arrows - Fixed for RTL
+  // Check scroll position
   const checkScrollPosition = () => {
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      
-      // For RTL layout, scrollLeft is negative or positive depending on browser
-      // The maximum scroll position is 0, minimum is -(scrollWidth - clientWidth)
       const maxScrollLeft = 0;
       const minScrollLeft = -(scrollWidth - clientWidth);
-      
+
       setCanScrollLeft(scrollLeft > minScrollLeft);
       setCanScrollRight(scrollLeft < maxScrollLeft);
     }
   };
 
-  // Scroll functions fixed for RTL
+  // Scroll functions RTL
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      // In RTL, scrolling left means moving towards the end (more negative)
-      scrollContainerRef.current.scrollBy({
-        left: -340,
-        behavior: "smooth",
-      });
+      scrollContainerRef.current.scrollBy({ left: -340, behavior: "smooth" });
       setTimeout(checkScrollPosition, 300);
     }
   };
 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
-      // In RTL, scrolling right means moving towards the start (less negative)
-      scrollContainerRef.current.scrollBy({
-        left: 340,
-        behavior: "smooth",
-      });
+      scrollContainerRef.current.scrollBy({ left: 340, behavior: "smooth" });
       setTimeout(checkScrollPosition, 300);
     }
   };
 
-  // Check scroll position on mount, scroll, and resize
   useEffect(() => {
     checkScrollPosition();
     const scrollContainer = scrollContainerRef.current;
-    
+
     if (scrollContainer) {
       scrollContainer.addEventListener("scroll", checkScrollPosition);
       window.addEventListener("resize", checkScrollPosition);
-      
+
       return () => {
         scrollContainer.removeEventListener("scroll", checkScrollPosition);
         window.removeEventListener("resize", checkScrollPosition);
@@ -65,55 +56,42 @@ const LastNews = ({ data }) => {
     }
   }, []);
 
-  // Also check when news data changes
   useEffect(() => {
-    // Use setTimeout to ensure DOM is updated
     setTimeout(checkScrollPosition, 100);
   }, [news]);
 
   // Animations
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, staggerChildren: 0.1 },
-    },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, staggerChildren: 0.1 } },
+    exit: { opacity: 0, y: -50, transition: { duration: 0.4 } }
   };
 
   const headerVariants = {
     hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.5 },
-    },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+    exit: { opacity: 0, x: -50, transition: { duration: 0.3 } }
   };
 
   const cardsContainerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.3, staggerChildren: 0.1 },
-    },
+    visible: { opacity: 1, transition: { duration: 0.3, staggerChildren: 0.1 } },
+    exit: { opacity: 0, transition: { duration: 0.3 } }
   };
 
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.9 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.4 },
-    },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } },
+    exit: { opacity: 0, scale: 0.9, transition: { duration: 0.3 } }
   };
 
   return (
     <motion.div
+      ref={sectionRef}
       className="flex flex-col gap-6 mt-8"
       variants={containerVariants}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      animate={isInView ? "visible" : "exit"} // replay on scroll
     >
       {/* header */}
       <motion.div
@@ -132,7 +110,7 @@ const LastNews = ({ data }) => {
 
       {/* news cards with navigation */}
       <motion.div className="relative md:px-8" variants={cardsContainerVariants}>
-        {/* Left Arrow - Fixed positioning for RTL */}
+        {/* Left Arrow */}
         <AnimatePresence>
           {canScrollLeft && (
             <motion.button
@@ -149,7 +127,7 @@ const LastNews = ({ data }) => {
           )}
         </AnimatePresence>
 
-        {/* Right Arrow - Fixed positioning for RTL */}
+        {/* Right Arrow */}
         <AnimatePresence>
           {canScrollRight && (
             <motion.button
@@ -169,16 +147,12 @@ const LastNews = ({ data }) => {
         <div
           ref={scrollContainerRef}
           className="flex items-center gap-6 overflow-x-auto scrollbar-hide md:pr-8"
-          style={{ 
-            scrollbarWidth: "none", 
-            msOverflowStyle: "none",
-          }}
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {news.map((item, index) => (
             <motion.div
               key={item.Id}
               variants={cardVariants}
-              custom={index}
               className="flex-shrink-0"
             >
               <NewsCard
@@ -191,7 +165,7 @@ const LastNews = ({ data }) => {
           ))}
         </div>
 
-        {/* shadow overlay - Fixed for RTL */}
+        {/* overlays */}
         <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-white to-transparent z-[1000] pointer-events-none md:right-8"></div>
         <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-[1000] pointer-events-none md:left-8"></div>
       </motion.div>

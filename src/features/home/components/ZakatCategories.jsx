@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Diamond from "../../../components/Diamond";
 import coins from "../../../../public/coins.webp";
 
 const ZakatCategories = () => {
+  const [isInView, setIsInView] = useState(false);
+  
   const handleDonateClick = (category) => {
     console.log(`تبرع الآن clicked for ${category}`);
   };
@@ -31,7 +33,7 @@ const ZakatCategories = () => {
     },
   ];
 
-  // Container animation
+  // Container animation with exit
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -40,10 +42,18 @@ const ZakatCategories = () => {
         duration: 0.6,
         staggerChildren: 0.2
       }
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1,
+        staggerDirection: -1
+      }
     }
   };
 
-  // Verse animation
+  // Verse animation with exit
   const verseVariants = {
     hidden: { 
       opacity: 0, 
@@ -58,10 +68,19 @@ const ZakatCategories = () => {
         duration: 0.8,
         ease: "easeOut"
       }
+    },
+    exit: { 
+      opacity: 0, 
+      y: 50,
+      scale: 0.95,
+      transition: { 
+        duration: 0.6,
+        ease: "easeIn"
+      }
     }
   };
 
-  // Card animation
+  // Card animation with exit
   const cardVariants = {
     hidden: { 
       opacity: 0, 
@@ -75,6 +94,15 @@ const ZakatCategories = () => {
       transition: { 
         duration: 0.6,
         ease: "easeOut"
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      y: 60,
+      rotateY: -10,
+      transition: { 
+        duration: 0.5,
+        ease: "easeIn"
       }
     },
     hover: {
@@ -107,12 +135,43 @@ const ZakatCategories = () => {
     }
   };
 
+  // Diamond animation variants
+  const diamondVariants = {
+    hidden: { 
+      scale: 0, 
+      rotate: -180,
+      opacity: 0 
+    },
+    visible: { 
+      scale: 1, 
+      rotate: 0,
+      opacity: 1,
+      transition: { 
+        duration: 0.6, 
+        delay: 0.5,
+        type: "spring",
+        stiffness: 200 
+      }
+    },
+    exit: { 
+      scale: 0, 
+      rotate: 180,
+      opacity: 0,
+      transition: { 
+        duration: 0.4,
+        ease: "easeIn"
+      }
+    }
+  };
+
   return (
     <motion.section 
       className="py-16 px-4"
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
+      animate={isInView ? "visible" : "exit"}
+      onViewportEnter={() => setIsInView(true)}
+      onViewportLeave={() => setIsInView(false)}
+      viewport={{ amount: 0.3 }}
       variants={containerVariants}
     >
       <div className="flex flex-col gap-12 items-center">
@@ -150,7 +209,10 @@ const ZakatCategories = () => {
               <div 
                 className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2"
               >
-                <Diamond width={80} height={80} imgUrl={coins} />
+                <div
+                >
+                  <Diamond width={80} height={80} imgUrl={coins} />
+                </div>
               </div>
 
               {/* Category Title */}

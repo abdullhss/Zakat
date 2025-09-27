@@ -10,26 +10,25 @@ const Librarys = ({ data }) => {
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [isInView, setIsInView] = useState(false);
 
-  // Check scroll position to show/hide arrows - Fixed for RTL
+  // Check scroll position to show/hide arrows
   const checkScrollPosition = () => {
     if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      
-      // For RTL layout, scrollLeft is negative or positive depending on browser
-      // The maximum scroll position is 0, minimum is -(scrollWidth - clientWidth)
+      const { scrollLeft, scrollWidth, clientWidth } =
+        scrollContainerRef.current;
+
       const maxScrollLeft = 0;
       const minScrollLeft = -(scrollWidth - clientWidth);
-      
+
       setCanScrollLeft(scrollLeft > minScrollLeft);
       setCanScrollRight(scrollLeft < maxScrollLeft);
     }
   };
 
-  // Scroll functions fixed for RTL
+  // Scroll functions
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      // In RTL, scrolling left means moving towards the end (more negative)
       scrollContainerRef.current.scrollBy({
         left: -340,
         behavior: "smooth",
@@ -40,7 +39,6 @@ const Librarys = ({ data }) => {
 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
-      // In RTL, scrolling right means moving towards the start (less negative)
       scrollContainerRef.current.scrollBy({
         left: 340,
         behavior: "smooth",
@@ -49,15 +47,14 @@ const Librarys = ({ data }) => {
     }
   };
 
-  // Check scroll position on mount, scroll, and resize
   useEffect(() => {
     checkScrollPosition();
     const scrollContainer = scrollContainerRef.current;
-    
+
     if (scrollContainer) {
       scrollContainer.addEventListener("scroll", checkScrollPosition);
       window.addEventListener("resize", checkScrollPosition);
-      
+
       return () => {
         scrollContainer.removeEventListener("scroll", checkScrollPosition);
         window.removeEventListener("resize", checkScrollPosition);
@@ -65,12 +62,11 @@ const Librarys = ({ data }) => {
     }
   }, []);
 
-  // Also check when library data changes
   useEffect(() => {
     setTimeout(checkScrollPosition, 100);
   }, [libs]);
 
-  // Animations (same as LastNews)
+  // Animations
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
@@ -78,6 +74,11 @@ const Librarys = ({ data }) => {
       y: 0,
       transition: { duration: 0.6, staggerChildren: 0.1 },
     },
+    exit: {
+      opacity: 0,
+      y: 50,
+      transition: { duration: 0.5, staggerChildren: 0.05, staggerDirection: -1 }
+    }
   };
 
   const headerVariants = {
@@ -87,6 +88,11 @@ const Librarys = ({ data }) => {
       x: 0,
       transition: { duration: 0.5 },
     },
+    exit: {
+      opacity: 0,
+      x: -50,
+      transition: { duration: 0.4 }
+    }
   };
 
   const cardsContainerVariants = {
@@ -95,6 +101,10 @@ const Librarys = ({ data }) => {
       opacity: 1,
       transition: { duration: 0.3, staggerChildren: 0.1 },
     },
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.2, staggerChildren: 0.05, staggerDirection: -1 }
+    }
   };
 
   const cardVariants = {
@@ -104,6 +114,11 @@ const Librarys = ({ data }) => {
       scale: 1,
       transition: { duration: 0.4 },
     },
+    exit: {
+      opacity: 0,
+      scale: 0.9,
+      transition: { duration: 0.3 }
+    }
   };
 
   return (
@@ -111,8 +126,10 @@ const Librarys = ({ data }) => {
       className="flex flex-col gap-6 mt-8"
       variants={containerVariants}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      animate={isInView ? "visible" : "exit"}
+      onViewportEnter={() => setIsInView(true)}
+      onViewportLeave={() => setIsInView(false)}
+      viewport={{ amount: 0.2 }}
     >
       {/* header */}
       <motion.div
@@ -120,7 +137,10 @@ const Librarys = ({ data }) => {
         variants={headerVariants}
       >
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
-          <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
+          <div
+          >
+            <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
+          </div>
           المكاتب
         </div>
 
@@ -168,8 +188,8 @@ const Librarys = ({ data }) => {
         <div
           ref={scrollContainerRef}
           className="flex items-center gap-6 overflow-x-auto scrollbar-hide md:pr-8"
-          style={{ 
-            scrollbarWidth: "none", 
+          style={{
+            scrollbarWidth: "none",
             msOverflowStyle: "none",
           }}
         >
