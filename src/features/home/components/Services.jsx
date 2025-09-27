@@ -3,6 +3,9 @@ import Diamond from '../../../components/Diamond'
 import ServiceCard from '../../../components/ServiceCard'
 import { HandCoinsIcon, MegaphoneIcon } from 'lucide-react'
 import Sheep from "../../../../public/Sheep.svg"
+import zakat from "../../../public/SVGs/zakat.svg"
+import speaker from "../../../public/SVGs/speaker.svg"
+
 const Services = () => {
   return (
         <div className="flex flex-col gap-6 mt-8">
@@ -18,26 +21,32 @@ const Services = () => {
                 <span className="text-xl text-[#16343A]">المزيد</span>
             </div>
             <div className="relative md:px-8">
-                <div className="flex flex-col md:flex-row items-center justify-around gap-6 md:pr-8 overflow-scroll scrollbar-hide">
+                {/* Changed: Use grid instead of flex for equal heights */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:pr-8">
                     <ServiceCard
-                        icon={<MegaphoneIcon color='#17343B' size={40}/>}
+                        icon={<img src={speaker} />}
                         title={"الحملات"}
-                        className={"flex-shrink-0 w-72"}
-                        descirption={"خدمة تتيح لك إنشاء حملة لجمع التبرعات في مختلف المجالات الخيرية و نشرها ليصل أثرها إلي مستحقيها"}
+                        className={""}
+                        descirption={
+                        "خدمة تتيح لك إنشاء حملة لجمع التبرعات في مختلف المجالات الخيرية و نشرها ليصل أثرها إلي مستحقيها"
+                        }
                     />
                     <ServiceCard
-                        icon={<HandCoinsIcon color='#17343B' size={40}/>}
+                        icon={<img src={zakat} />}
                         title={"الزكاة"}
-                        descirption={"خدمة تتيح لك إمكانية حساب الزكاة بأنواعها المختلفة ودفعها عبر طرق سهلة وسريعة لتصل إلى مستحقيها."}
-                        className={"flex-shrink-0 w-72"}
+                        descirption={
+                        "خدمة تتيح لك إمكانية حساب الزكاة بأنواعها المختلفة ودفعها عبر طرق سهلة وسريعة لتصل إلى مستحقيها."
+                        }
+                        className={""}
                     />
                     <ServiceCard
-                        icon={<img className='w-14' src={Sheep}></img>}
+                        icon={<img src={Sheep} />}
                         title={"الأضاحي"}
-                        className={"flex-shrink-0 w-72"}
-                        descirption={"خدمة لتوكيل ذبح الأضاحي والهدي والعقيقة والفدية والصدقة ، وتوزيعها على مستحقيها."}
+                        className={""}
+                        descirption={
+                        "خدمة لتوكيل ذبح الأضاحي والهدي والعقيقة والفدية والصدقة ، وتوزيعها على مستحقيها."
+                        }
                     />
-                    <div className="absolute top-0 left-0 h-full w-12 md:w-32 bg-gradient-to-r from-white to-transparent z-[1000]  pointer-events-none md:left-8"></div>
                 </div>
             </div>
         </div>

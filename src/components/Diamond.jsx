@@ -5,13 +5,13 @@ const Diamond = ({ className = "", width = 50, height = 50, imgUrl }) => {
     <div className={`flex items-center justify-center ${className}`}>
       <div
         style={{ width: `${width}px`, height: `${height}px` }}
-        className="bg-gradient-to-r from-[#E8B98C] to-[#AA8058] rounded-xl transform rotate-45 shadow-lg overflow-hidden p-2"
+        className="relative bg-gradient-to-r from-[#E8B98C] to-[#AA8058] rounded-xl transform rotate-45 shadow-lg overflow-hidden"
       >
         {imgUrl && (
           <img
             src={imgUrl}
             alt="diamond-content"
-            className="w-full h-full object-cover transform -rotate-45 rounded-2xl"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         )}
       </div>

@@ -58,8 +58,8 @@ function Home() {
         >
           <ZakatCategories />
           <HelpRequestComponent />
-          {mainScreenData?.decrypted?.SubventionsData && (
-            <Donations data={mainScreenData.decrypted.SubventionsData} />
+          {mainScreenData?.decrypted?.ProjectsData && (
+            <Donations data={mainScreenData?.decrypted?.ProjectsData} />
           )}
           {mainScreenData?.decrypted?.OfficesData && (
             <Librarys data={mainScreenData.decrypted.OfficesData} />
@@ -67,9 +67,7 @@ function Home() {
           {mainScreenData?.decrypted?.NewsData && (
             <LastNews data={mainScreenData.decrypted.NewsData} />
           )}
-          {mainScreenData?.decrypted?.ProjectsData && (
-            <Services data={mainScreenData.decrypted.ProjectsData} />
-          )}
+          <Services/>
           <Charity />
           <DownloadApp />
           <Footer />

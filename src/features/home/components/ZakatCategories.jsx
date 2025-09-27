@@ -1,6 +1,8 @@
 import React from "react";
+import { motion } from "framer-motion";
 import Diamond from "../../../components/Diamond";
-import coins from "../../../../public/coins.webp"
+import coins from "../../../../public/coins.webp";
+
 const ZakatCategories = () => {
   const handleDonateClick = (category) => {
     console.log(`تبرع الآن clicked for ${category}`);
@@ -29,13 +31,98 @@ const ZakatCategories = () => {
     },
   ];
 
+  // Container animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  // Verse animation
+  const verseVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 50,
+      scale: 0.95 
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: { 
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  // Card animation
+  const cardVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 60,
+      rotateY: -10 
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      rotateY: 0,
+      transition: { 
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    },
+    hover: {
+      y: -8,
+      scale: 1.02,
+      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  // Button animation
+  const buttonVariants = {
+    hover: {
+      scale: 1.05,
+      background: "linear-gradient(to right, #1a4a46, #142c2f, #112228)",
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut"
+      }
+    },
+    tap: {
+      scale: 0.98,
+      borderBottomWidth: "2px",
+      transition: {
+        duration: 0.1
+      }
+    }
+  };
+
   return (
-    <section className="py-16 px-4">
+    <motion.section 
+      className="py-16 px-4"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.3 }}
+      variants={containerVariants}
+    >
       <div className="flex flex-col gap-12 items-center">
         {/* Quranic Verse */}
-        <div className="text-center mb-12">
+        <motion.div 
+          className="text-center mb-12"
+          variants={verseVariants}
+        >
           <h2
-            className="text-4xl md:text-5xl font-semibold text-[#16343A text-center leading-relaxed font-arabic"
+            className="text-4xl md:text-5xl font-semibold text-[#16343A] text-center leading-relaxed font-arabic"
             dir="rtl"
             style={{
               fontFamily:
@@ -44,17 +131,25 @@ const ZakatCategories = () => {
           >
             ﴿ لَنْ تَنَالُوا الْبِرَّ حَتَّى تُنْفِقُوا مِمَّا تُحِبُّونَ ﴾
           </h2>
-        </div>
+        </motion.div>
 
         {/* Categories Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 w-full mx-auto">
-          {categories.map((category) => (
-            <div
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 w-full mx-auto"
+          variants={containerVariants}
+        >
+          {categories.map((category, index) => (
+            <motion.div
               key={category.id}
               className="relative bg-gradient-to-r from-[#ffffff] to-[#CBCBCB] rounded-2xl shadow-lg p-6 text-center"
+              variants={cardVariants}
+              whileHover="hover"
+              custom={index}
             >
               {/* Icon Container */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div 
+                className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2"
+              >
                 <Diamond width={80} height={80} imgUrl={coins} />
               </div>
 
@@ -67,19 +162,21 @@ const ZakatCategories = () => {
               </h3>
 
               {/* Donate Button */}
-              <button
+              <motion.button
                 onClick={() => handleDonateClick(category.title)}
-                className="w-full bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] border-b-4 border-[#8E6D4C] text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300 shadow-md hover:shadow-lg"
+                className="w-full bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] border-b-4 border-[#8E6D4C] text-white py-3 px-6 rounded-lg font-semibold shadow-md"
                 dir="rtl"
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
               >
                 تبرع الآن
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           ))}
-        </div>
-
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   );
 };
 

@@ -51,7 +51,7 @@ const Footer = () => {
           
           <div className='col-span-2'>
             <h3 className="text-lg font-semibold mb-4">الموقع</h3>
-                <p>طرابلس و ليبيا</p>
+                <p>طرابلس , ليبيا</p>
           </div>
 
           
@@ -59,27 +59,27 @@ const Footer = () => {
 
         {/* Social Media Icons */}
         <div className="flex justify-center space-x-4 mt-8 mb-6">
-          <div className="w-10 h-10 ml-4 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-            <Twitter size={20} />
+          <div className="w-10 h-10 ml-4 bg-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+            <Twitter size={20} color='#383638'/>
           </div>
-          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-            <Mail size={20} />
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+            <Mail size={20} color='#383638'/>
           </div>
-          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-            <Linkedin size={20} />
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+            <Linkedin size={20} color='#383638'/>
           </div>
-          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-            <Instagram size={20} />
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+            <Instagram size={20} color='#383638'/>
           </div>
-          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-            <Facebook size={20} />
+          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
+            <Facebook size={20} color='#383638'/>
           </div>
         </div>
 
         {/* Copyright */}
         <div className="border-t border-white/20 pt-4">
           <p className="text-center text-sm opacity-80">
-            جميع الحقوق محفوظة لشركة وصـــل © 2025
+            جميع الحقوق محفوظة لمنصة وصـــل © 2025
           </p>
         </div>
       </div>
