@@ -4,7 +4,7 @@ import ServiceCard from '../../../components/ServiceCard'
 import { HandCoinsIcon, MegaphoneIcon } from 'lucide-react'
 import Sheep from "../../../../public/Sheep.svg"
 import zakat from "../../../public/SVGs/zakat.svg"
-import speaker from "../../../public/SVGs/speaker.svg"
+import speaker from "../../../public/SVGs/Speaker.svg"
 
 const Services = () => {
   return (
