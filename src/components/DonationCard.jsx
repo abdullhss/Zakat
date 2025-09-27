@@ -1,9 +1,8 @@
-import { ArrowUpRightFromSquare, Banknote, ShoppingCart } from "lucide-react";
 import React from "react";
 import PropTypes from "prop-types";
 import Navigate from "../public/SVGs/Navigate.svg"
 import money from "../public/SVGs/money.svg"
-import shoppingCart from "../public/SVGs/shoppingCart.svg"
+import shoppingCart from "../public/SVGs/ShoppingCart.svg"
 import cardWave from "../public/SVGs/cardWave.svg"
 
 const DonationCard = ({ image, title, description, collected, goal , className  }) => {
