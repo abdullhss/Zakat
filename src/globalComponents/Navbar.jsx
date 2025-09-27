@@ -12,7 +12,7 @@ import { ChevronDown } from "lucide-react";
 import Diamond from "../components/Diamond";
 import coins from "../../public/coins.webp";
 import shoppingCart from "../public/SVGs/ShoppingCart.svg";
-import speaker from "../public/SVGs/speaker.svg";
+import speaker from "../public/SVGs/Speaker.svg";
 import zakat from "../public/SVGs/zakat.svg";
 import sheep from "../../public/Sheep.svg";
 import DonateRequest from "../public/SVGs/DonateRequest.svg";
