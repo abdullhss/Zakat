@@ -72,6 +72,7 @@ const Opportunities = ({
         collected={project.OpeningBalance}
         goal={project.WantedAmount}
         className="bg-white"
+        showBtn={true}
       />
     ));
   };
