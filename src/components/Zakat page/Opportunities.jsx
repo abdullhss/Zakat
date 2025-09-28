@@ -1,0 +1,178 @@
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import Diamond from "../Diamond";
+import checklist from "../../public/SVGs/checklist.svg"
+import filter from "../../public/SVGs/fillter.svg"
+import Arrow from "../../public/SVGs/Arrow.svg"
+import { Search } from "lucide-react";
+import DonationCard from "../DonationCard"
+
+const Opportunities = ({ 
+  donations = [], 
+  loading = false, 
+  error = null,
+  currentPage = 1,
+  onPageChange
+}) => {
+  // Pagination logic
+  const cardsPerPage = 6;
+  const totalPages = Math.ceil(donations.length / cardsPerPage);
+  
+  // Get current donations for the page
+  const indexOfLastCard = currentPage * cardsPerPage;
+  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+  const currentDonations = donations.slice(indexOfFirstCard, indexOfLastCard);
+
+  // Handle next page
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      onPageChange(currentPage + 1);
+    }
+  };
+
+  // Handle previous page
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      onPageChange(currentPage - 1);
+    }
+  };
+
+  // Render donation cards or loading/error state
+  const renderDonationCards = () => {
+    if (loading) {
+      return (
+        <div className="col-span-3 text-center py-8">
+          <div className="text-gray-500">جاري تحميل فرص التبرع...</div>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="col-span-3 text-center py-8">
+          <div className="text-red-500">خطأ في تحميل البيانات: {error}</div>
+        </div>
+      );
+    }
+
+    if (!Array.isArray(donations) || donations.length === 0) {
+      return (
+        <div className="col-span-3 text-center py-8">
+          <div className="text-gray-500">لا توجد فرص تبرع متاحة حالياً</div>
+        </div>
+      );
+    }
+
+    return currentDonations.map((donation, index) => (
+      <DonationCard
+        key={donation.Id || index}
+        image={donation.image || `/images/donation${(index % 10) + 1}.jpg`}
+        title={donation.ProjectName || donation.title || `فرصة تبرع ${index + 1}`}
+        description={donation.ProjectDesc || donation.description || "وصف التبرع"}
+        collected={donation.ProjectOpeningBalance || donation.collected || 0}
+        goal={donation.ProjectWantedAmount || donation.goal || 10000}
+        className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+        showBtn={true}
+      />
+    ));
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Zakat header */}
+        <div className="flex items-center justify-between pl-12">
+            <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
+            <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
+            فرص التبرع
+            </div>
+        </div>
+        <div className="flex flex-col gap-6 px-8 lg:px-24">
+                <div className="flex items-center gap-6">
+                    {/* Search Bar */}
+                    <div className="flex flex-1 items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 w-72">
+                        <Search className="w-5 h-5" />
+                        <input
+                        type="text"
+                        placeholder="ابحث هنا ..."
+                        className="flex-1 placeholder:text-black placeholder:font-bold bg-transparent outline-none text-gray-700 placeholder-gray-400"
+                        />
+                        <img src={filter} alt="بحث" className="w-5 h-5" />
+                    </div>
+
+                    <button
+                        className="flex items-center gap-2 text-white font-semibold py-2 px-5 rounded-lg shadow-md"
+                        style={{
+                        background:
+                            "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)",
+                        }}
+                    >
+                        <span>الفرص المكتملة</span>
+                        <img src={checklist} alt="قائمة" className="w-5 h-5" />
+                    </button>
+                </div>
+                <div>
+                    {/* DonationCard grid - max 6 cards (3 per row) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {renderDonationCards()}
+                    </div>
+                </div>
+                {/* pagination - Only show if there are donations */}
+                {donations.length > 0 && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <button onClick={handleNextPage} disabled={currentPage >= totalPages}>
+                          <img 
+                            src={Arrow} 
+                            className={`rotate-180 ${currentPage >= totalPages ? 'opacity-50' : ''}`}
+                            alt="الصفحة التالية"
+                          />
+                        </button>
+
+                        {[...Array(totalPages)].map((_, index) => (
+                          <button
+                            key={index + 1}
+                            onClick={() => onPageChange(index + 1)}
+                            className={`text-white text-sm p-0.5 px-3 rounded-md shadow-md flex items-center justify-center ${
+                              currentPage === index + 1 ? 'opacity-100' : 'opacity-80'
+                            }`}
+                            style={{
+                              background:
+                                "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)",
+                            }}
+                          >
+                            {index + 1}
+                          </button>
+                        ))}
+                        
+                        <button onClick={handlePrevPage} disabled={currentPage <= 1}>
+                          <img 
+                            src={Arrow} 
+                            className={currentPage <= 1 ? 'opacity-50' : ''}
+                            alt="الصفحة السابقة"
+                          />
+                        </button>
+                    </div>
+                  </div>
+                )}
+        </div>
+    </div>
+  );
+};
+
+Opportunities.propTypes = {
+  donations: PropTypes.array,
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  currentPage: PropTypes.number,
+  onPageChange: PropTypes.func,
+};
+
+Opportunities.defaultProps = {
+  donations: [],
+  loading: false,
+  error: null,
+  currentPage: 1,
+  onPageChange: () => {},
+};
+
+export default Opportunities;

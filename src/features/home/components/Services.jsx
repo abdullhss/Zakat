@@ -10,114 +10,13 @@ import speaker from "../../../public/SVGs/Speaker.svg"
 const Services = () => {
   const [isInView, setIsInView] = useState(false);
 
-  // Container animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.1
-      }
-    },
-    exit: {
-      opacity: 0,
-      y: 50,
-      transition: {
-        duration: 0.5,
-        staggerChildren: 0.05,
-        staggerDirection: -1
-      }
-    }
-  }
-
-  // Header animation variants
-  const headerVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.5 }
-    },
-    exit: {
-      opacity: 0,
-      x: -50,
-      transition: { duration: 0.4 }
-    }
-  }
-
-  // Cards container animation variants
-  const cardsContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.3,
-        staggerChildren: 0.1
-      }
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        duration: 0.2,
-        staggerChildren: 0.05,
-        staggerDirection: -1
-      }
-    }
-  }
-
-  // Individual card animation variants
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.9, y: 30 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: { duration: 0.4 }
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.9,
-      y: 30,
-      transition: { duration: 0.3 }
-    },
-    hover: {
-      y: -5,
-      scale: 1.02,
-      transition: {
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    }
-  }
-
-  // Diamond animation variants
-  const diamondVariants = {
-    hidden: { 
-      scale: 0, 
-      rotate: -180,
-      opacity: 0 
-    },
+  // Simple fade up animation
+  const fadeUpVariants = {
+    hidden: { opacity: 0, y: 30 },
     visible: { 
-      scale: 1, 
-      rotate: 0,
-      opacity: 1,
-      transition: { 
-        duration: 0.6, 
-        delay: 0.5,
-        type: "spring",
-        stiffness: 200 
-      }
-    },
-    exit: { 
-      scale: 0, 
-      rotate: 180,
-      opacity: 0,
-      transition: { 
-        duration: 0.4,
-        ease: "easeIn"
-      }
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.5, ease: "easeOut" }
     }
   }
 
@@ -143,18 +42,15 @@ const Services = () => {
   return (
     <motion.div 
       className="flex flex-col gap-6 mt-8"
-      variants={containerVariants}
+      variants={fadeUpVariants}
       initial="hidden"
-      animate={isInView ? "visible" : "exit"}
+      animate={isInView ? "visible" : "hidden"}
       onViewportEnter={() => setIsInView(true)}
       onViewportLeave={() => setIsInView(false)}
-      viewport={{ amount: 0.2 }}
+      viewport={{ amount: 0.2, once: false }}
     >
       {/* donation header */}
-      <motion.div 
-        className="flex items-center justify-between pl-12"
-        variants={headerVariants}
-      >
+      <div className="flex items-center justify-between pl-12">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
           <div>
             <Diamond
@@ -167,19 +63,14 @@ const Services = () => {
         <span className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
           المزيد
         </span>
-      </motion.div>
+      </div>
 
       {/* Services Cards Grid */}
-      <motion.div 
-        className="relative md:px-8"
-        variants={cardsContainerVariants}
-      >
+      <div className="relative md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:pr-8">
           {services.map((service, index) => (
-            <motion.div
+            <div
               key={index}
-              variants={cardVariants}
-              whileHover="hover"
             >
               <ServiceCard
                 icon={service.icon}
@@ -187,10 +78,10 @@ const Services = () => {
                 descirption={service.description}
                 className="h-full"
               />
-            </motion.div>
+            </div>
           ))}
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   )
 }

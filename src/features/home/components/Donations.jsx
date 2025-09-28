@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Diamond from "../../../components/Diamond";
 import DonationCard from "../../../components/DonationCard";
@@ -71,76 +71,28 @@ const Donations = ({ data }) => {
     setTimeout(checkScrollPosition, 100);
   }, [donations]);
 
-  // Animations with exit states
-  const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
+  // Simple fade up animation
+  const fadeUpVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
       y: 0,
-      transition: { duration: 0.6, staggerChildren: 0.1 },
-    },
-    exit: {
-      opacity: 0,
-      y: 50,
-      transition: { duration: 0.5, staggerChildren: 0.05, staggerDirection: -1 }
-    }
-  };
-
-  const headerVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { duration: 0.5 },
-    },
-    exit: {
-      opacity: 0,
-      x: -50,
-      transition: { duration: 0.4 }
-    }
-  };
-
-  const cardsContainerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { duration: 0.3, staggerChildren: 0.1 },
-    },
-    exit: {
-      opacity: 0,
-      transition: { duration: 0.2, staggerChildren: 0.05, staggerDirection: -1 }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.4 },
-    },
-    exit: {
-      opacity: 0,
-      scale: 0.9,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.5, ease: "easeOut" }
     }
   };
 
   return (
     <motion.div
-      className="flex flex-col gap-6"
-      variants={containerVariants}
+      className="flex flex-col gap-6 mt-6"
+      variants={fadeUpVariants}
       initial="hidden"
-      animate={isInView ? "visible" : "exit"}
+      animate={isInView ? "visible" : "hidden"}
       onViewportEnter={() => setIsInView(true)}
       onViewportLeave={() => setIsInView(false)}
-      viewport={{ amount: 0.2 }}
+      viewport={{ amount: 0.2, once: false }} // once: false allows re-triggering
     >
       {/* donation header */}
-      <motion.div
-        className="flex items-center justify-between pl-12"
-        variants={headerVariants}
-      >
+      <div className="flex items-center justify-between pl-12">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
           <div>
             <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
@@ -151,43 +103,31 @@ const Donations = ({ data }) => {
         <span className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
           المزيد
         </span>
-      </motion.div>
+      </div>
 
       {/* donation cards with navigation */}
-      <motion.div className="relative md:px-8" variants={cardsContainerVariants}>
+      <div className="relative md:px-8">
         {/* Left Arrow */}
-        <AnimatePresence>
-          {canScrollLeft && (
-            <motion.button
-              key="left-arrow"
-              className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-[1001] bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
-              onClick={scrollLeft}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="w-6 h-6 text-[#17343B]" />
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {canScrollLeft && (
+          <button
+            className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 z-[1001] bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
+            onClick={scrollLeft}
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-6 h-6 text-[#17343B]" />
+          </button>
+        )}
 
         {/* Right Arrow */}
-        <AnimatePresence>
-          {canScrollRight && (
-            <motion.button
-              key="right-arrow"
-              className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-[1001] bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
-              onClick={scrollRight}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="w-6 h-6 text-[#17343B]" />
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {canScrollRight && (
+          <button
+            className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 z-[1001] bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
+            onClick={scrollRight}
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-6 h-6 text-[#17343B]" />
+          </button>
+        )}
 
         <div
           ref={scrollContainerRef}
@@ -198,10 +138,8 @@ const Donations = ({ data }) => {
           }}
         >
           {donations.map((item, index) => (
-            <motion.div
+            <div
               key={item.Id}
-              variants={cardVariants}
-              custom={index}
               className="flex-shrink-0"
             >
               <DonationCard
@@ -212,14 +150,14 @@ const Donations = ({ data }) => {
                 goal={item.ProjectWantedAmount}
                 className="min-w-[320px]"
               />
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* shadow overlay */}
         <div className="absolute top-0 right-0 h-full w-32 bg-gradient-to-l from-white to-transparent z-[1000] pointer-events-none md:right-8"></div>
         <div className="absolute top-0 left-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-[1000] pointer-events-none md:left-8"></div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

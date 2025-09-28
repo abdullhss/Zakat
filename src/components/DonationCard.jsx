@@ -4,8 +4,8 @@ import Navigate from "../public/SVGs/Navigate.svg"
 import money from "../public/SVGs/money.svg"
 import shoppingCart from "../public/SVGs/ShoppingCart.svg"
 import cardWave from "../public/SVGs/cardWave.svg"
-
-const DonationCard = ({ image, title, description, collected, goal , className  }) => {
+import handWithMoney from "../public/SVGs/handWithMoney.svg"
+const DonationCard = ({ image, title, description, collected, goal  ,showBtn = false , className  }) => {
   const remaining = goal - collected;
   const percentage = Math.min(Math.round((collected / goal) * 100), 100);
 
@@ -25,6 +25,20 @@ const DonationCard = ({ image, title, description, collected, goal , className  
             />
           )}
           <div className="flex flex-col justify-center gap-2">
+            {
+              showBtn&&(
+                <button
+                  className="w-fit flex items-center gap-2 text-white font-semibold py-2 px-5 rounded-lg shadow-md"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)",
+                  }}
+                >
+                  <img src={handWithMoney} alt="زكاة" className="w-6 h-6" />
+                  <span>تقبل الزكاة</span>
+                </button>
+              )
+            }
             <h2 className="text-lg font-bold">{title}</h2>
             <span className="text text-gray-500">{description}</span>
           </div>
@@ -53,7 +67,7 @@ const DonationCard = ({ image, title, description, collected, goal , className  
 
       {/* Buttons */}
       <div className="flex items-center gap-4 relative z-10">
-        <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E]">
+        <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E]">
           <img src={money} width={30}/>
           تبرع الان
         </button>
@@ -71,6 +85,7 @@ DonationCard.propTypes = {
   description: PropTypes.string.isRequired,
   collected: PropTypes.number.isRequired,
   goal: PropTypes.number.isRequired,
+  showBtn:PropTypes.bool,
   className :PropTypes.string
 };
 

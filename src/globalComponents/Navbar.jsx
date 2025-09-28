@@ -40,6 +40,12 @@ const Navbar = () => {
     console.log("Search clicked");
   };
 
+  // Function to handle sublink click
+  const handleSublinkClick = () => {
+    setIsMobileMenuOpen(false);
+    setOpenDropdown(null);
+  };
+
   const navItems = [
     { type: "main", name: "الرئيسية", path: "/" },
     {
@@ -172,6 +178,7 @@ const Navbar = () => {
                     key={link.path}
                     to={link.path}
                     className=" block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
+                    onClick={() => setOpenDropdown(null)}
                   >
                     <div className="flex items-center gap-3">
                       {link.isDiamond ? (
@@ -201,7 +208,7 @@ const Navbar = () => {
                         ? "bg-gradient-to-t from-[#17343B] via-[#18383D] to-[#24645E] text-white"
                         : "text-gray-700 hover:text-emerald-600"
                     }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={handleSublinkClick}
                   >
                     {item.name}
                   </Link>
@@ -226,7 +233,7 @@ const Navbar = () => {
                             key={link.path}
                             to={link.path}
                             className="flex items-center gap-2 text-gray-600 hover:text-emerald-600"
-                            onClick={() => setIsMobileMenuOpen(false)}
+                            onClick={handleSublinkClick}
                           >
                             {link.isDiamond ? (
                               <Diamond imgUrl={link.icon} />
