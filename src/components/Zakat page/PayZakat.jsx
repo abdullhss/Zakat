@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Diamond from "../Diamond";
 import money from "../../public/SVGs/money.svg"
@@ -27,11 +27,7 @@ const PayZakat = ({
         id: type.Id,
         name: type.SubventionTypeName
       }))
-    : [
-        { id: 1, name: "إعانة 1" },
-        { id: 2, name: "إعانة 2" },
-        { id: 3, name: "إعانة 3" },
-      ];
+    : [];
 
   // Use zakatTypes from API or fallback to static categories
   const categories = zakatTypes.length > 0 
@@ -61,7 +57,11 @@ const PayZakat = ({
       onAidChange("");
     }
   };
-
+   useEffect(() => {
+    if (selectedOffice && categories.length > 0 && !selectedCategory) {
+      onCategoryChange(categories[0].id.toString());
+    }
+  }, [selectedOffice, categories, selectedCategory, onCategoryChange]);
   // Handle donation amount change
   const handleAmountChange = (e) => {
     const value = e.target.value;
