@@ -12,16 +12,15 @@ const Opportunities = ({
   loading = false, 
   error = null,
   currentPage = 1,
+  totalProjectsCount = 0,
   onPageChange
 }) => {
-  // Pagination logic
+  // Pagination logic - use totalProjectsCount from API
   const cardsPerPage = 6;
-  const totalPages = Math.ceil(donations.length / cardsPerPage);
+  const totalPages = Math.ceil(totalProjectsCount / cardsPerPage);
   
-  // Get current donations for the page
-  const indexOfLastCard = currentPage * cardsPerPage;
-  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  const currentDonations = donations.slice(indexOfFirstCard, indexOfLastCard);
+  // Get current donations for the page (already sliced by API)
+  const currentDonations = donations;
 
   // Handle next page
   const handleNextPage = () => {
@@ -72,7 +71,6 @@ const Opportunities = ({
         collected={project.OpeningBalance}
         goal={project.WantedAmount}
         className="bg-white"
-        showBtn={true}
       />
     ));
   };
@@ -117,13 +115,13 @@ const Opportunities = ({
                     </div>
                 </div>
                 {/* pagination - Only show if there are donations */}
-                {donations.length > 0 && (
+                {totalProjectsCount > 0 && (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <button onClick={handleNextPage} disabled={currentPage >= totalPages}>
+                        <button onClick={handlePrevPage} disabled={currentPage <= 1}>
                           <img 
                             src={Arrow} 
-                            className={`rotate-180 ${currentPage >= totalPages ? 'opacity-50' : ''}`}
+                            className={`rotate-180 ${currentPage <= 1 ? 'opacity-50' : ''}` }
                             alt="الصفحة التالية"
                           />
                         </button>
@@ -144,10 +142,11 @@ const Opportunities = ({
                           </button>
                         ))}
                         
-                        <button onClick={handlePrevPage} disabled={currentPage <= 1}>
+                        <button  onClick={handleNextPage}  disabled={currentPage >= totalPages} >
                           <img 
                             src={Arrow} 
-                            className={currentPage <= 1 ? 'opacity-50' : ''}
+                            className={`${currentPage >= totalPages ? 'opacity-50' : ''}`}
+
                             alt="الصفحة السابقة"
                           />
                         </button>
@@ -164,6 +163,7 @@ Opportunities.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.string,
   currentPage: PropTypes.number,
+  totalProjectsCount: PropTypes.number,
   onPageChange: PropTypes.func,
 };
 
@@ -172,6 +172,7 @@ Opportunities.defaultProps = {
   loading: false,
   error: null,
   currentPage: 1,
+  totalProjectsCount: 0,
   onPageChange: () => {},
 };
 

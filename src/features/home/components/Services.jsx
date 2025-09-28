@@ -25,16 +25,19 @@ const Services = () => {
     {
       icon: <img src={speaker} alt="Speaker" />,
       title: "الحملات",
+      link:"/opportunities/zakat",
       description: "خدمة تتيح لك إنشاء حملة لجمع التبرعات في مختلف المجالات الخيرية و نشرها ليصل أثرها إلي مستحقيها"
     },
     {
       icon: <img src={zakat} alt="Zakat" />,
       title: "الزكاة",
+      link:"/opportunities/zakat",
       description: "خدمة تتيح لك إمكانية حساب الزكاة بأنواعها المختلفة ودفعها عبر طرق سهلة وسريعة لتصل إلى مستحقيها."
     },
     {
       icon: <img src={Sheep} alt="Sheep" />,
       title: "الأضاحي",
+      link:"/opportunities/zakat",
       description: "خدمة لتوكيل ذبح الأضاحي والهدي والعقيقة والفدية والصدقة ، وتوزيعها على مستحقيها."
     }
   ]
@@ -75,6 +78,7 @@ const Services = () => {
               <ServiceCard
                 icon={service.icon}
                 title={service.title}
+                link={service.link}
                 descirption={service.description}
                 className="h-full"
               />

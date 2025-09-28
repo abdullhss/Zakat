@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Diamond from "../../../components/Diamond";
 import coins from "../../../../public/coins.webp";
+import { Link } from "react-router-dom";
 
 const ZakatCategories = () => {
   const [isInView, setIsInView] = useState(false);
@@ -14,21 +15,25 @@ const ZakatCategories = () => {
     {
       id: 1,
       title: "أخرج زكاتك",
+      link:"/opportunities/zakat",
       bgColor: "bg-gray-200",
     },
     {
       id: 2,
       title: "الكفارات والنذور",
+      link:"/opportunities/zakat",
       bgColor: "bg-gray-200",
     },
     {
       id: 3,
       title: "الصدقات",
+      link:"/opportunities/zakat",
       bgColor: "bg-gray-200",
     },
     {
       id: 4,
       title: "المشاريع",
+      link:"/opportunities/zakat",
       bgColor: "bg-gray-200",
     },
   ];
@@ -224,16 +229,17 @@ const ZakatCategories = () => {
               </h3>
 
               {/* Donate Button */}
-              <motion.button
-                onClick={() => handleDonateClick(category.title)}
-                className="w-full bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] border-b-4 border-[#8E6D4C] text-white py-3 px-6 rounded-lg font-semibold shadow-md"
-                dir="rtl"
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-              >
-                تبرع الآن
-              </motion.button>
+              <Link to={category.link}>
+                <motion.button
+                  className="w-full bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] border-b-4 border-[#8E6D4C] text-white py-3 px-6 rounded-lg font-semibold shadow-md"
+                  dir="rtl"
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
+                >
+                  تبرع الآن
+                </motion.button>
+              </Link>
             </motion.div>
           ))}
         </motion.div>

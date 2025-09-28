@@ -8,6 +8,7 @@ const Zakat = () => {
   const [zakatTypes, setZakatTypes] = useState([]);
   const [donations, setDonations] = useState([]);
   const [subventionTypes, setSubventionTypes] = useState([]);
+  const [totalProjectsCount, setTotalProjectsCount] = useState(0);
   const [loading, setLoading] = useState({
     offices: true,
     donations: false
@@ -92,6 +93,7 @@ const Zakat = () => {
       if (!selectedOffice || selectedCategory !== "1") {
         setDonations([]);
         setSubventionTypes([]);
+        setTotalProjectsCount(0);
         return;
       }
 
@@ -112,9 +114,21 @@ const Zakat = () => {
         
         let donationsData = [];
         let subventionTypesData = [];
+        let projectsCount = 0;
         
         if (response && response.decrypted) {
           const data = response.decrypted;
+          
+          // Parse ProjectsCount
+          if (data.ProjectsCount) {
+            try {
+              projectsCount = parseInt(data.ProjectsCount) || 0;
+              console.log("Projects count:", projectsCount);
+            } catch (parseError) {
+              console.error("Error parsing ProjectsCount:", parseError);
+              projectsCount = 0;
+            }
+          }
           
           // Parse ProjectsData
           if (data.ProjectsData) {
@@ -131,7 +145,7 @@ const Zakat = () => {
             }
           }
           
-          // Parse ZakatTypesData (which contains SubventionTypes)
+          // Parse SubventionTypes (this is the correct field name)
           if (data.SubventionTypes) {
             try {
               const parsedSubventionTypes = typeof data.SubventionTypes === 'string'
@@ -141,22 +155,22 @@ const Zakat = () => {
               subventionTypesData = Array.isArray(parsedSubventionTypes) ? parsedSubventionTypes : [];
               console.log("Parsed subvention types:", subventionTypesData);
             } catch (parseError) {
-              console.error("Error parsing ZakatTypesData:", parseError);
+              console.error("Error parsing SubventionTypes:", parseError);
               subventionTypesData = [];
             }
           }
         }
         
         setDonations(donationsData);
-        console.log("datas",subventionTypesData);
-        
         setSubventionTypes(subventionTypesData);
+        setTotalProjectsCount(projectsCount);
         setErrors(prev => ({ ...prev, donations: null }));
       } catch (error) {
         console.error("Error fetching donations data:", error);
         setErrors(prev => ({ ...prev, donations: error.message }));
         setDonations([]);
         setSubventionTypes([]);
+        setTotalProjectsCount(0);
       } finally {
         setLoading(prev => ({ ...prev, donations: false }));
       }
@@ -223,6 +237,7 @@ const Zakat = () => {
               loading={loading.donations}
               error={errors.donations}
               currentPage={currentPage}
+              totalProjectsCount={totalProjectsCount}
               onPageChange={handlePageChange}
             />
           )}
