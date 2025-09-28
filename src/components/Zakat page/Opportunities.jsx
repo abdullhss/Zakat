@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import Diamond from "../Diamond";
 import checklist from "../../public/SVGs/checklist.svg"
@@ -63,16 +63,15 @@ const Opportunities = ({
       );
     }
 
-    return currentDonations.map((donation, index) => (
+    return currentDonations.map((project) => (
       <DonationCard
-        key={donation.Id || index}
-        image={donation.image || `/images/donation${(index % 10) + 1}.jpg`}
-        title={donation.ProjectName || donation.title || `فرصة تبرع ${index + 1}`}
-        description={donation.ProjectDesc || donation.description || "وصف التبرع"}
-        collected={donation.ProjectOpeningBalance || donation.collected || 0}
-        goal={donation.ProjectWantedAmount || donation.goal || 10000}
-        className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-        showBtn={true}
+        key={project.Id}
+        image={`https://framework.md-license.com:8093/ZakatImages/${project.PhotoName}.jpg`}
+        title={project.Name}
+        description={project.Description}
+        collected={project.OpeningBalance}
+        goal={project.WantedAmount}
+        className="bg-white"
       />
     ));
   };

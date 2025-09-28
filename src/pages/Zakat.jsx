@@ -7,6 +7,7 @@ const Zakat = () => {
   const [offices, setOffices] = useState([]);
   const [zakatTypes, setZakatTypes] = useState([]);
   const [donations, setDonations] = useState([]);
+  const [subventionTypes, setSubventionTypes] = useState([]);
   const [loading, setLoading] = useState({
     offices: true,
     donations: false
@@ -87,9 +88,10 @@ const Zakat = () => {
   // Fetch donations data when selections change
   useEffect(() => {
     const fetchDonations = async () => {
-      // Don't fetch if no office is selected
-      if (!selectedOffice) {
+      // Only fetch if office is selected AND category is "الفقراء والمساكين" (ID: 1)
+      if (!selectedOffice || selectedCategory !== "1") {
         setDonations([]);
+        setSubventionTypes([]);
         return;
       }
 
@@ -106,34 +108,55 @@ const Zakat = () => {
           "phjR2bFDp5o0FyA7euBbsp/Ict4BDd2zHhHDfPlrwnk=",
           params
         );
-        console.log(response);
+        console.log("Donations response:", response);
         
         let donationsData = [];
+        let subventionTypesData = [];
         
         if (response && response.decrypted) {
-          // Handle different response structures
-          if (Array.isArray(response.decrypted)) {
-            donationsData = response.decrypted;
-          } else if (response.decrypted.data && Array.isArray(response.decrypted.data)) {
-            donationsData = response.decrypted.data;
-          } else if (response.decrypted.donations && Array.isArray(response.decrypted.donations)) {
-            donationsData = response.decrypted.donations;
-          } else if (response.decrypted && typeof response.decrypted === 'object') {
-            donationsData = [response.decrypted];
+          const data = response.decrypted;
+          
+          // Parse ProjectsData
+          if (data.ProjectsData) {
+            try {
+              const projectsData = typeof data.ProjectsData === 'string' 
+                ? JSON.parse(data.ProjectsData) 
+                : data.ProjectsData;
+              
+              donationsData = Array.isArray(projectsData) ? projectsData : [];
+              console.log("Parsed projects:", donationsData);
+            } catch (parseError) {
+              console.error("Error parsing ProjectsData:", parseError);
+              donationsData = [];
+            }
           }
-        } else if (Array.isArray(response)) {
-          donationsData = response;
-        } else if (response && response.data && Array.isArray(response.data)) {
-          donationsData = response.data;
+          
+          // Parse ZakatTypesData (which contains SubventionTypes)
+          if (data.SubventionTypes) {
+            try {
+              const parsedSubventionTypes = typeof data.SubventionTypes === 'string'
+                ? JSON.parse(data.SubventionTypes)
+                : data.SubventionTypes;
+              
+              subventionTypesData = Array.isArray(parsedSubventionTypes) ? parsedSubventionTypes : [];
+              console.log("Parsed subvention types:", subventionTypesData);
+            } catch (parseError) {
+              console.error("Error parsing ZakatTypesData:", parseError);
+              subventionTypesData = [];
+            }
+          }
         }
         
-        console.log("Donations data:", donationsData);
         setDonations(donationsData);
+        console.log("datas",subventionTypesData);
+        
+        setSubventionTypes(subventionTypesData);
         setErrors(prev => ({ ...prev, donations: null }));
       } catch (error) {
         console.error("Error fetching donations data:", error);
         setErrors(prev => ({ ...prev, donations: error.message }));
         setDonations([]);
+        setSubventionTypes([]);
       } finally {
         setLoading(prev => ({ ...prev, donations: false }));
       }
@@ -157,12 +180,16 @@ const Zakat = () => {
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
+    setSelectedAid(""); // Reset aid when category changes
     setCurrentPage(1); // Reset to first page when category changes
   };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  // Check if we should show donations section (only for category ID 1)
+  const showDonationsSection = selectedCategory === "1";
 
   return (
     <section>
@@ -178,6 +205,7 @@ const Zakat = () => {
           <PayZakat 
             offices={offices}
             zakatTypes={zakatTypes}
+            subventionTypes={subventionTypes}
             loading={loading.offices}
             error={errors.offices}
             selectedOffice={selectedOffice}
@@ -187,13 +215,17 @@ const Zakat = () => {
             onAidChange={handleAidChange}
             onCategoryChange={handleCategoryChange}
           />
-          <Opportunities 
-            donations={donations}
-            loading={loading.donations}
-            error={errors.donations}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-          />
+          
+          {/* Only show Opportunities if category is "الفقراء والمساكين" (ID: 1) */}
+          {showDonationsSection && (
+            <Opportunities 
+              donations={donations}
+              loading={loading.donations}
+              error={errors.donations}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
 
         <div className="rightBow"></div>

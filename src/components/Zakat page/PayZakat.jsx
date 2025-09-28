@@ -9,6 +9,7 @@ import { CalculatorIcon } from "lucide-react";
 const PayZakat = ({ 
   offices = [], 
   zakatTypes = [], 
+  subventionTypes = [],
   loading = false, 
   error = null,
   selectedOffice,
@@ -20,11 +21,17 @@ const PayZakat = ({
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
 
-  const aids = [
-    { id: 1, name: "إعانة 1" },
-    { id: 2, name: "إعانة 2" },
-    { id: 3, name: "إعانة 3" },
-  ];
+  // Use subventionTypes from API or fallback to static aids
+  const aids = subventionTypes.length > 0 
+    ? subventionTypes.map(type => ({
+        id: type.Id,
+        name: type.SubventionTypeName
+      }))
+    : [
+        { id: 1, name: "إعانة 1" },
+        { id: 2, name: "إعانة 2" },
+        { id: 3, name: "إعانة 3" },
+      ];
 
   // Use zakatTypes from API or fallback to static categories
   const categories = zakatTypes.length > 0 
@@ -32,16 +39,7 @@ const PayZakat = ({
         id: type.Id,
         name: type.ZakatTypeName?.replace(/\\r/g, '').trim()
       }))
-    : [
-        { id: 1, name: "الفقراء والمساكين" },
-        { id: 2, name: "المساكين" },
-        { id: 3, name: "العاملون عليها" },
-        { id: 4, name: "المؤلفة قلوبهم" },
-        { id: 5, name: "في الرقاب (لشراء الحرية)" },
-        { id: 6, name: "الغارمين (أصحاب الديون)" },
-        { id: 7, name: "في سبيل الله" },
-        { id: 8, name: "ابن السبيل (المسافرون المحتاجون)" },
-      ];
+    : [];
 
   // Check if the selected category is "الفقراء والمساكين" (ID: 1)
   const isAidEnabled = selectedCategory === "1";
@@ -176,7 +174,9 @@ const PayZakat = ({
                   ? "يرجى اختيار مكتب أولاً" 
                   : !isAidEnabled 
                     ? "غير متاح لهذا النوع من الزكاة" 
-                    : "اختر إعانة"}
+                    : aids.length === 0 
+                      ? "جاري تحميل أنواع الإعانات..."
+                      : "اختر إعانة"}
               </option>
               {aids.map((aid) => (
                 <option
@@ -305,6 +305,7 @@ const PayZakat = ({
 PayZakat.propTypes = {
   offices: PropTypes.array,
   zakatTypes: PropTypes.array,
+  subventionTypes: PropTypes.array,
   loading: PropTypes.bool,
   error: PropTypes.string,
   selectedOffice: PropTypes.string,
@@ -318,6 +319,7 @@ PayZakat.propTypes = {
 PayZakat.defaultProps = {
   offices: [],
   zakatTypes: [],
+  subventionTypes: [],
   loading: false,
   error: null,
   selectedOffice: "",
