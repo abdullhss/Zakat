@@ -52,56 +52,52 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount }) {
       const calculations = [];
       const details = [];
       
-      // Cash Zakat (مال) - only if toggle is open and has value
-      if (openToggles.cash && values.cash && parseFloat(values.cash) > 0) {
-        const cashParams = `1#0#${values.cash}`;
+      // Cash Zakat (مال) - always send if toggle is open, use 0 if no value
+      if (openToggles.cash) {
+        const cashAmount = values.cash && parseFloat(values.cash) > 0 ? values.cash : '0';
+        const cashParams = `1#0#${cashAmount}`;
         calculations.push({
           promise: executeProcedure("j2SYWVFNaSQEOaJaPQgHKg==", cashParams),
           type: 'cash',
-          amount: values.cash,
-          label: 'زكاة المال'
+          amount: cashAmount,
+          label: 'زكاة المال',
+          wasEmpty: !values.cash || parseFloat(values.cash) <= 0
         });
       }
 
-      // Gold Zakat (ذهب) - only if toggle is open and has value
-      if (openToggles.gold && values.gold && parseFloat(values.gold) > 0 && goldKarat) {
-        // Find the selected gold option to get its ID
-        const selectedGold = goldOptions.find(option => option.value === goldKarat);
+      // Gold Zakat (ذهب) - always send if toggle is open, use 0 if no value
+      if (openToggles.gold) {
+        const goldAmount = values.gold && parseFloat(values.gold) > 0 ? values.gold : '0';
+        // Find the selected gold option to get its ID (use first if none selected)
+        const selectedGold = goldOptions.find(option => option.value === goldKarat) || goldOptions[0];
         if (selectedGold) {
-          const goldParams = `2#${selectedGold.id}#${values.gold}`;
+          const goldParams = `2#${selectedGold.id}#${goldAmount}`;
           calculations.push({
             promise: executeProcedure("j2SYWVFNaSQEOaJaPQgHKg==", goldParams),
             type: 'gold',
-            amount: values.gold,
+            amount: goldAmount,
             label: `زكاة الذهب - ${selectedGold.label}`,
-            karat: selectedGold.label
+            karat: selectedGold.label,
+            wasEmpty: !values.gold || parseFloat(values.gold) <= 0
           });
         }
       }
 
-      // Silver Zakat (فضة) - only if toggle is open and has value
-      if (openToggles.silver && values.silver && parseFloat(values.silver) > 0) {
-        const silverParams = `3#0#${values.silver}`;
+      // Silver Zakat (فضة) - always send if toggle is open, use 0 if no value
+      if (openToggles.silver) {
+        const silverAmount = values.silver && parseFloat(values.silver) > 0 ? values.silver : '0';
+        const silverParams = `3#0#${silverAmount}`;
         calculations.push({
           promise: executeProcedure("j2SYWVFNaSQEOaJaPQgHKg==", silverParams),
           type: 'silver',
-          amount: values.silver,
-          label: 'زكاة الفضة'
+          amount: silverAmount,
+          label: 'زكاة الفضة',
+          wasEmpty: !values.silver || parseFloat(values.silver) <= 0
         });
       }
 
-      // Check if any toggles are open but have no value
-      const openButEmpty = Object.keys(openToggles).filter(id => 
-        openToggles[id] && (!values[id] || parseFloat(values[id]) <= 0)
-      );
-
-      if (openButEmpty.length > 0) {
-        alert('يرجى إدخال قيمة للأنواع المفتوحة لحساب الزكاة');
-        return;
-      }
-
+      // If no toggles are open, don't proceed with calculation
       if (calculations.length === 0) {
-        alert('يرجى فتح وإدخال قيمة واحدة على الأقل لحساب الزكاة');
         return;
       }
 
@@ -116,7 +112,15 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount }) {
         if (result && result.decrypted) {
           const zakaValue = parseFloat(result.decrypted.ZakaValue) || 0;
           
-          if (zakaValue > 0) {
+          // If the input was empty or 0, show "المبلغ اقل من النصاب"
+          if (calc.wasEmpty) {
+            details.push({
+              label: calc.label,
+              amount: calc.amount,
+              result: 0,
+              status: 'below_threshold'
+            });
+          } else if (zakaValue > 0) {
             totalZakat += zakaValue;
             details.push({
               label: calc.label,
@@ -145,7 +149,6 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount }) {
 
     } catch (error) {
       console.error('Error calculating zakat:', error);
-      alert('حدث خطأ في حساب الزكاة. يرجى المحاولة مرة أخرى.');
     } finally {
       setCalculating(false);
     }
