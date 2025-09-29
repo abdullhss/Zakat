@@ -49,7 +49,6 @@ const PayZakat = ({
   // Handle office selection
   const handleOfficeChange = (e) => {
     onOfficeChange(e.target.value);
-    setDonationAmount("");
   };
 
   // Handle category selection
@@ -311,6 +310,7 @@ const PayZakat = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
+            onClick={() => setZakatPopUp(false)}
           >
             <motion.div
               className="bg-white w-full md:w-1/2 h-full shadow-lg"
@@ -318,12 +318,17 @@ const PayZakat = ({
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "100%", opacity: 0 }}
               transition={{ duration: 0.4, ease: "easeInOut" }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <ZakatCalculator closeZakatCalc={setZakatPopUp} />
+              <ZakatCalculator
+                closeZakatCalc={setZakatPopUp}
+                setDonationAmount={setDonationAmount}
+              />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
 
     </div>
   );
