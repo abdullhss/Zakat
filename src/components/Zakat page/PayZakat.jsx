@@ -5,7 +5,9 @@ import money from "../../public/SVGs/money.svg"
 import moneyGreen from "../../public/SVGs/moneyGreen.svg"
 import ShoppingCart from "../../public/SVGs/ShoppingCart.svg"
 import { CalculatorIcon } from "lucide-react";
-
+import ZakatCalculator from "./ZakatCalc";
+import { AnimatePresence } from "framer-motion";
+import {motion} from "framer-motion"
 const PayZakat = ({ 
   offices = [], 
   zakatTypes = [], 
@@ -20,6 +22,7 @@ const PayZakat = ({
   onCategoryChange
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
+  const [ zakatPopUp , setZakatPopUp] = useState(false);
 
   // Use subventionTypes from API or fallback to static aids
   const aids = subventionTypes.length > 0 
@@ -99,7 +102,9 @@ const PayZakat = ({
     });
     // Add your cart logic here
   };
-
+  const handleZakatCalcAppeare = ()=>{
+    setZakatPopUp((prev)=>!prev)
+  }
   // Safe office mapping function
   const renderOfficeOptions = () => {
     if (error) {
@@ -130,7 +135,7 @@ const PayZakat = ({
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="relative flex flex-col gap-6">
       {/* Zakat header */}
       <div className="flex items-center justify-between pl-12 mt-28">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
@@ -234,7 +239,7 @@ const PayZakat = ({
                 </span>
               </div>
             </div>
-            <button className="w-full md:w-auto px-4 py-2 bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white rounded-lg">
+            <button onClick={handleZakatCalcAppeare} className="w-full md:w-auto px-4 py-2 bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white rounded-lg">
               احسب الآن
             </button>
           </div>
@@ -298,6 +303,28 @@ const PayZakat = ({
           </button>
         </div>
       </div>
+      <AnimatePresence>
+        {zakatPopUp && (
+          <motion.div
+            className="fixed top-0 right-0 h-screen w-screen z-[10000] bg-black/50 overflow-y-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="bg-white w-full md:w-1/2 h-full shadow-lg"
+              initial={{ x: "100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "100%", opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+            >
+              <ZakatCalculator closeZakatCalc={setZakatPopUp} />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
