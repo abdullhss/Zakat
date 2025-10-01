@@ -20,7 +20,7 @@ export function ArrayResizer(arr, newSize, defaultValue) {
   return newArr;
 }
 export class AES256Encryption {
-  static encrypt(data, key = import.meta.env.VITE_AES256_ENCRYPTED_KEY) {
+  static encrypt(data, key = "SL@C$@rd2023$$AlMedad$Soft$2022$") {
     try {
       if (!key) {
         throw new Error("Key is required");
@@ -55,7 +55,7 @@ export class AES256Encryption {
   }
   static decrypt(
     encryptedData,
-    key = import.meta.env.VITE_AES256_ENCRYPTED_KEY
+    key = "SL@C$@rd2023$$AlMedad$Soft$2022$"
   ) {
     try {
       if (!key) {

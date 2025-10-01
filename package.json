@@ -33,6 +33,7 @@
     "react-pro-sidebar": "^1.1.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.6.0",
+    "react-toastify": "^11.0.5",
     "sass": "^1.88.0",
     "zod": "^3.25.67"
   },

@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import "./App.css";
 import { store } from "./application/store/store";
 import Layout from "./Layout";
@@ -11,6 +11,13 @@ import Home from "./features/home/components/Home";
 import Login from "./features/auth/components/Login/Login";
 import ApiTestComponent from "./features/ApiTestComponent";
 import Zakat from "./pages/Zakat";
+import { AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { setShowPopup} from "./features/PaySlice/PaySlice";
+import Popup from "./components/Popup";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
 
 // Main Pages (with navbar via Layout)
 
@@ -21,6 +28,8 @@ import Zakat from "./pages/Zakat";
  * Main App component with routing configuration
  */
 function App() {
+  const dispatch = useDispatch();
+  const {showPayPopup,  popupComponent , popupTitle} = useSelector((state) => state.pay);
   return (
     <Provider store={store}>
       <Router>
@@ -60,6 +69,32 @@ function App() {
           </Routes>
         </div>
       </Router>
+
+      <AnimatePresence>
+        {showPayPopup && (
+          <motion.div
+            dir="rtl"
+            className="fixed top-0 right-0 h-screen w-screen z-[10000] bg-black/50 overflow-y-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => dispatch(setShowPopup(false))}
+          >
+            <motion.div
+              className="bg-white w-full md:w-1/2 h-full shadow-lg"
+              initial={{ x: "100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "100%", opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Popup title={popupTitle} bodyComponent={popupComponent} onClose={() => dispatch(setShowPopup(true))}/>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <ToastContainer className={"mt-20"} />
     </Provider>
   );
 }

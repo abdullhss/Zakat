@@ -8,6 +8,10 @@ import { CalculatorIcon } from "lucide-react";
 import ZakatCalculator from "./ZakatCalc";
 import { AnimatePresence } from "framer-motion";
 import {motion} from "framer-motion"
+import { useDispatch, useSelector } from "react-redux";
+import { setShowPopup, setPopupComponent , setPopupTitle} from "../../features/PaySlice/PaySlice";
+import PayComponent from "../PayComponent";
+
 const PayZakat = ({ 
   offices = [], 
   zakatTypes = [], 
@@ -23,6 +27,8 @@ const PayZakat = ({
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
   const [ zakatPopUp , setZakatPopUp] = useState(false);
+  const {showPayPopup,  popupComponent} = useSelector((state) => state.pay);
+  const dispatch = useDispatch();
 
   // Use subventionTypes from API or fallback to static aids
   const aids = subventionTypes.length > 0 
@@ -45,6 +51,21 @@ const PayZakat = ({
 
   // Check if all required fields are filled
   const isFormValid = selectedOffice && selectedAid && selectedCategory && donationAmount;
+  const isPayNowValid = selectedCategory==1? selectedOffice && selectedAid && selectedCategory && donationAmount:selectedOffice && selectedCategory && donationAmount;
+  // Get selected office name
+  const getSelectedOfficeName = () => {
+    if (!selectedOffice) return "";
+    const office = offices.find(office => {
+      return (
+        office.Id === selectedOffice ||
+        office.Id?.toString() === selectedOffice ||
+        office.id === selectedOffice ||
+        office.id?.toString() === selectedOffice ||
+        office.value === selectedOffice
+      );
+    });
+    return office ? (office.OfficeName || office.officeName || office.name || office.Name || "") : "";
+  };
 
   // Handle office selection
   const handleOfficeChange = (e) => {
@@ -59,11 +80,13 @@ const PayZakat = ({
       onAidChange("");
     }
   };
-   useEffect(() => {
+  
+  useEffect(() => {
     if (selectedOffice && categories.length > 0 && !selectedCategory) {
       onCategoryChange(categories[0].id.toString());
     }
   }, [selectedOffice, categories, selectedCategory, onCategoryChange]);
+  
   // Handle donation amount change
   const handleAmountChange = (e) => {
     const value = e.target.value;
@@ -74,23 +97,31 @@ const PayZakat = ({
 
   // Handle donate now
   const handleDonateNow = () => {
-    if (!isFormValid) {
-      alert("يرجى ملء جميع الحقول المطلوبة");
-      return;
-    }
+    const officeName = getSelectedOfficeName();
+    dispatch(setShowPopup(true))
+    dispatch(setPopupTitle("الدفع"))
+    dispatch(setPopupComponent(
+      <PayComponent
+        officeName={officeName}
+        officeId={selectedOffice}
+        accountTypeId={selectedCategory} // Using category as account type
+        serviceTypeId="1" // Default service type ID, adjust as needed
+        totalAmount={parseFloat(donationAmount) || 0}
+        currency="ريال" // Or whatever currency you're using
+      />
+    ));
+    
     console.log("Donation data:", {
       office: selectedOffice,
       aid: selectedAid,
       category: selectedCategory,
       amount: donationAmount
     });
-    // Add your donation logic here
   };
 
   // Handle add to cart
   const handleAddToCart = () => {
     if (!isFormValid) {
-      alert("يرجى ملء جميع الحقول المطلوبة");
       return;
     }
     console.log("Add to cart:", {
@@ -101,9 +132,11 @@ const PayZakat = ({
     });
     // Add your cart logic here
   };
+  
   const handleZakatCalcAppeare = ()=>{
     setZakatPopUp((prev)=>!prev)
   }
+  
   // Safe office mapping function
   const renderOfficeOptions = () => {
     if (error) {
@@ -277,13 +310,13 @@ const PayZakat = ({
           <button
             onClick={handleDonateNow}
             className={`flex-1 flex items-center justify-center gap-3 text-white font-semibold py-2 px-6 rounded-lg shadow-lg text-sm md:text-base ${
-              !isFormValid ? "opacity-50 cursor-not-allowed" : ""
+              !isPayNowValid ? "opacity-50 cursor-not-allowed" : ""
             }`}
             style={{
               background:
                 "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)",
             }}
-            disabled={!isFormValid}
+            disabled={!isPayNowValid}
           >
             <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
             <span>تبرع الآن</span>
@@ -328,8 +361,6 @@ const PayZakat = ({
           </motion.div>
         )}
       </AnimatePresence>
-
-
     </div>
   );
 };
