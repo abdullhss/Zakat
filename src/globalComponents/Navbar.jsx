@@ -168,7 +168,7 @@ const Navbar = () => {
           .map((dropdown) => (
             <div
               key={dropdown.key}
-              className="hidden md:block absolute top-full left-0 right-0 w-full bg-white border-t border-gray-200 shadow-lg z-50
+              className="hidden lg:block absolute top-full left-0 right-0 w-full bg-white border-t border-gray-200 shadow-lg z-50
                            transform transition-transform duration-300 ease-in-out
                            origin-top animate-slide-down"
             >
