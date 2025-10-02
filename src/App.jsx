@@ -18,6 +18,7 @@ import { setShowPopup} from "./features/PaySlice/PaySlice";
 import Popup from "./components/Popup";
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from "react-toastify";
+import Sadaka from "./pages/Sadaka";
 
 // Main Pages (with navbar via Layout)
 
@@ -42,6 +43,7 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="/opportunities/zakat" element={<Zakat/>} />
+              <Route path="/opportunities/sadaka" element={<Sadaka/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />

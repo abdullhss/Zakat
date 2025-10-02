@@ -13,7 +13,8 @@ const PayComponent = ({
   accountTypeId = "",
   serviceTypeId = "",
   totalAmount = 0,
-  currency = "$"
+  currency = "$",
+  actionID="1"
 }) => {
   const [donationType, setDonationType] = useState(null);
   const [localMethod, setLocalMethod] = useState(null);
@@ -133,7 +134,7 @@ const PayComponent = ({
         formattedDate, // PaymentDate
         "", // PaymentDesc (فاضي)
         totalAmount.toString(), // PaymentValue
-        "1", // Action_Id (زكاة)
+        actionID, // Action_Id (زكاة)
         paymentWayId, // PaymentWay_Id
         paymentMethodIdValue, // PaymentMethod_Id
         "0", // SubventionType_Id
@@ -578,7 +579,8 @@ PayComponent.propTypes = {
   accountTypeId: PropTypes.string,
   serviceTypeId: PropTypes.string,
   totalAmount: PropTypes.number,
-  currency: PropTypes.string
+  currency: PropTypes.string,
+  actionID:PropTypes.number
 };
 
 export default PayComponent;

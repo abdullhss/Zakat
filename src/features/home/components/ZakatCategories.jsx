@@ -27,7 +27,7 @@ const ZakatCategories = () => {
     {
       id: 3,
       title: "الصدقات",
-      link:"/opportunities/zakat",
+      link:"/opportunities/sadaka",
       bgColor: "bg-gray-200",
     },
     {

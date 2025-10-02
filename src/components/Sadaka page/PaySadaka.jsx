@@ -5,14 +5,13 @@ import money from "../../public/SVGs/money.svg"
 import moneyGreen from "../../public/SVGs/moneyGreen.svg"
 import ShoppingCart from "../../public/SVGs/ShoppingCart.svg"
 import { CalculatorIcon } from "lucide-react";
-import ZakatCalculator from "./ZakatCalc";
 import { AnimatePresence } from "framer-motion";
 import {motion} from "framer-motion"
 import { useDispatch, useSelector } from "react-redux";
 import { setShowPopup, setPopupComponent , setPopupTitle} from "../../features/PaySlice/PaySlice";
 import PayComponent from "../PayComponent";
 
-const PayZakat = ({ 
+const PaySadaka = ({ 
   offices = [], 
   zakatTypes = [], 
   subventionTypes = [],
@@ -26,7 +25,6 @@ const PayZakat = ({
   onCategoryChange
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
-  const [ zakatPopUp , setZakatPopUp] = useState(false);
   const {showPayPopup,  popupComponent} = useSelector((state) => state.pay);
   const dispatch = useDispatch();
 
@@ -51,7 +49,7 @@ const PayZakat = ({
 
   // Check if all required fields are filled
   const isFormValid = selectedOffice && selectedAid && selectedCategory && donationAmount;
-  const isPayNowValid = selectedOffice && selectedCategory && donationAmount;
+  const isPayNowValid = selectedCategory==1? selectedOffice && selectedAid && selectedCategory && donationAmount:selectedOffice && selectedCategory && donationAmount;
   // Get selected office name
   const getSelectedOfficeName = () => {
     if (!selectedOffice) return "";
@@ -72,15 +70,6 @@ const PayZakat = ({
     onOfficeChange(e.target.value);
   };
 
-  // Handle category selection
-  const handleCategoryChange = (e) => {
-    onCategoryChange(e.target.value);
-    // Reset aid selection when category changes (unless it's the specific category)
-    if (e.target.value !== "1") {
-      onAidChange("");
-    }
-  };
-  
   useEffect(() => {
     if (selectedOffice && categories.length > 0 && !selectedCategory) {
       onCategoryChange(categories[0].id.toString());
@@ -108,6 +97,7 @@ const PayZakat = ({
         serviceTypeId="1" // Default service type ID, adjust as needed
         totalAmount={parseFloat(donationAmount) || 0}
         currency="ريال" // Or whatever currency you're using
+        actionID="2" //sadaka
       />
     ));
     
@@ -132,10 +122,6 @@ const PayZakat = ({
     });
     // Add your cart logic here
   };
-  
-  const handleZakatCalcAppeare = ()=>{
-    setZakatPopUp((prev)=>!prev)
-  }
   
   // Safe office mapping function
   const renderOfficeOptions = () => {
@@ -171,8 +157,8 @@ const PayZakat = ({
       {/* Zakat header */}
       <div className="flex items-center justify-between pl-12 mt-28">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
-          <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
-          اخرج زكاتك
+            <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
+            الصدقة
         </div>
       </div>
 
@@ -228,56 +214,14 @@ const PayZakat = ({
           </div>
         </div>
 
-        {/* radio buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((category) => (
-            <label
-              key={category.id}
-              className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border-2 font-semibold ${
-                selectedCategory === category.id.toString()
-                  ? "border-emerald-600 bg-emerald-50"
-                  : "border-[#B7B7B7]"
-              } ${!selectedOffice ? "opacity-50 cursor-not-allowed" : ""}`}
-            >
-              <input
-                type="radio"
-                name="zakatCategory"
-                value={category.id}
-                checked={selectedCategory === category.id.toString()}
-                onChange={handleCategoryChange}
-                className="text-emerald-600 focus:ring-emerald-600"
-                disabled={!selectedOffice}
-              />
-              {category.name}
-            </label>
-          ))}
-        </div>
-
         
         <hr className="border border-[#B7B7B7] mt-10" />
 
-        {/* zakat calculator */}
-        <div className="flex flex-col md:items-end md:flex-row items-stretch gap-6 mt-6">
-          {/* card */}
-          <div className="flex flex-1 flex-col md:flex-row items-start md:items-end justify-between p-4 gap-4 border border-[#B7B7B7] rounded-lg">
-            <div className="flex items-start gap-2">
-              <CalculatorIcon color="#000000" size={30} />
-              <div className="flex flex-col justify-between gap-2">
-                <h3 className="text-[#16343A] font-bold text-lg md:text-xl">
-                  حاسبة الزكاة
-                </h3>
-                <span className="text-[#666666] text-sm md:text-base font-medium">
-                  أداة ذكية لحساب الزكاة لأموالك وممتلكاتك بسهولة
-                </span>
-              </div>
+        <div className="w-full flex flex-col gap-4">
+            <div className="flex items-center justify-between font-medium text-lg my-4">
+                <span>الاجمالي</span>
+                <span>${donationAmount}</span>
             </div>
-            <button onClick={handleZakatCalcAppeare} className="w-full md:w-auto px-4 py-2 bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white rounded-lg">
-              احسب الآن
-            </button>
-          </div>
-
-          {/* input field */}
-          <div className="flex flex-1 items-center mt-2 md:mt-0">
             <div className="relative w-full">
               <img
                 className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 md:w-6 md:h-6"
@@ -302,9 +246,7 @@ const PayZakat = ({
                 disabled={!selectedOffice}
               />
             </div>
-          </div>
         </div>
-
         {/* buttons row */}
         <div className="w-full flex flex-col sm:flex-row items-center gap-4 mt-6">
           <button
@@ -318,8 +260,11 @@ const PayZakat = ({
             }}
             disabled={!isPayNowValid}
           >
-            <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-            <span>تبرع الآن</span>
+            <div className="flex gap-2 items-center">
+                <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
+                <span>تبرع الآن</span>
+            </div>
+            {/* <span></span> */}
           </button>
 
           <button
@@ -335,37 +280,11 @@ const PayZakat = ({
           </button>
         </div>
       </div>
-      <AnimatePresence>
-        {zakatPopUp && (
-          <motion.div
-            className="fixed top-0 right-0 h-screen w-screen z-[10000] bg-black/50 overflow-y-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => setZakatPopUp(false)}
-          >
-            <motion.div
-              className="bg-white w-full md:w-1/2 h-full shadow-lg"
-              initial={{ x: "100%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: "100%", opacity: 0 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <ZakatCalculator
-                closeZakatCalc={setZakatPopUp}
-                setDonationAmount={setDonationAmount}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
 
-PayZakat.propTypes = {
+PaySadaka.propTypes = {
   offices: PropTypes.array,
   zakatTypes: PropTypes.array,
   subventionTypes: PropTypes.array,
@@ -379,7 +298,7 @@ PayZakat.propTypes = {
   onCategoryChange: PropTypes.func,
 };
 
-PayZakat.defaultProps = {
+PaySadaka.defaultProps = {
   offices: [],
   zakatTypes: [],
   subventionTypes: [],
@@ -393,4 +312,4 @@ PayZakat.defaultProps = {
   onCategoryChange: () => {},
 };
 
-export default PayZakat;
+export default PaySadaka;
