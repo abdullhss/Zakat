@@ -53,7 +53,7 @@ const Navbar = () => {
       name: "الفرص",
       key: "opportunities",
       links: [
-        { name: "اعانات", path: "/opportunities/zakat", icon: coins, isDiamond: true },
+        { name: "مشاريع", path: "/opportunities/projects", icon: coins, isDiamond: true },
       ],
     },
     {

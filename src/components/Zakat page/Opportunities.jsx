@@ -87,7 +87,7 @@ const Opportunities = ({
         <div className="flex flex-col gap-6 px-8 lg:px-24">
                 <div className="flex items-center gap-6">
                     {/* Search Bar */}
-                    <div className="flex flex-1 items-center gap-2 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 w-72">
+                    <div className="flex flex-1 items-center gap-2 bg-[#E5E9EA] border border-gray-300 rounded-lg px-3 py-2 w-72">
                         <Search className="w-5 h-5" />
                         <input
                         type="text"
