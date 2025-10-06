@@ -108,6 +108,7 @@ const PayZakat = ({
         serviceTypeId="1" // Default service type ID, adjust as needed
         totalAmount={parseFloat(donationAmount) || 0}
         currency="ريال" // Or whatever currency you're using
+        SubventionType_Id={isAidEnabled ? selectedAid : 0}
       />
     ));
     

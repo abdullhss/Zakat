@@ -104,7 +104,7 @@ const PayComponent = ({
 
       if (donationType === "international") {
         paymentWayId = "1"; // دولي
-        paymentMethodIdValue = "2"; // حوالة بنكية
+        paymentMethodIdValue = "0"; // حوالة بنكية
       } else if (donationType === "local") {
         paymentWayId = "2"; // محلي
         paymentMethodIdValue = localMethod === "electronic" ? "1" : "2"; // 1: دفع الكتروني, 2: حوالة بنكية

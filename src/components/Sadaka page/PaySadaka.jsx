@@ -98,6 +98,7 @@ const PaySadaka = ({
         totalAmount={parseFloat(donationAmount) || 0}
         currency="ريال" // Or whatever currency you're using
         actionID="2" //sadaka
+        SubventionType_Id={selectedAid}
       />
     ));
     

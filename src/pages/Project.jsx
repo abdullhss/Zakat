@@ -22,6 +22,7 @@ const Project = () => {
     const [donationCards, setDonationCards] = useState([]);
     const [donationError, setDonationError] = useState("");
     const [fetchError, setFetchError] = useState("");
+    const [donationType, setDonationType] = useState(""); // "zakat" or "sadaqa"
     
     // Parse project data with error handling
     const parseProjectData = (data) => {
@@ -46,6 +47,9 @@ const Project = () => {
     // Donation state
     const [donationAmount, setDonationAmount] = useState("");
 
+    // Check if we need to show donation type radio buttons
+    const showDonationTypeRadio = projectData?.AllowZakat && projectData?.actionID === 0;
+
     const handleAmountChange = (e) => {
         const value = e.target.value;
         
@@ -56,6 +60,11 @@ const Project = () => {
         } else {
             setDonationError("يرجى إدخال مبلغ صحيح");
         }
+    };
+
+    const handleDonationTypeChange = (type) => {
+        setDonationType(type);
+        setDonationError(""); // Clear any previous errors when selection changes
     };
 
     // Validate donation amount
@@ -75,6 +84,11 @@ const Project = () => {
         
         if (numericAmount > 1000000) { // Example limit: 1,000,000
             return "مبلغ التبرع كبير جداً، يرجى الاتصال بالدعم";
+        }
+
+        // Additional validation for donation type when required
+        if (showDonationTypeRadio && !donationType) {
+            return "يرجى اختيار نوع التبرع";
         }
         
         return "";
@@ -146,6 +160,12 @@ const Project = () => {
             return;
         }
 
+        // Determine service type based on donation type selection
+        let serviceTypeId = "1"; // Default to Sadaqa
+        if (showDonationTypeRadio) {
+            serviceTypeId = donationType === "zakat" ? "1" : "2";
+        }
+
         // Clear any previous errors
         setDonationError("");
         
@@ -156,16 +176,17 @@ const Project = () => {
             <PayComponent
                 officeName={projectData.OfficeName}
                 officeId={projectData.Office_Id}
-                serviceTypeId="1"
-                SubventionType_Id={projectData.SubventionType_Id || "0"}
+                serviceTypeId={serviceTypeId}
+                SubventionType_Id={projectData.Id}
                 totalAmount={parseFloat(donationAmount) || 0}
                 currency="ريال"
                 actionID={projectData.actionID}
-                Project_Id={projectData.actionID==0?projectData.Id:"0"}
+                Project_Id={projectData.Id}
                 onSuccess={() => {
                     // Handle successful donation
                     console.log("Donation successful");
                     setDonationAmount(""); // Clear donation amount after success
+                    setDonationType(""); // Clear donation type selection
                 }}
                 onError={(error) => {
                     setDonationError(error || "حدث خطأ أثناء عملية الدفع");
@@ -182,10 +203,16 @@ const Project = () => {
             return;
         }
 
+        // For cart, we might want to store the donation type as well
         // Implement cart functionality here
         // For now, we'll show a success message
-        alert(`تم إضافة تبرع بقيمة ${donationAmount} ريال إلى سلة التبرعات`);
+        const donationTypeText = showDonationTypeRadio 
+            ? (donationType === "zakat" ? "زكاة" : "صدقة")
+            : "تبرع";
+            
+        alert(`تم إضافة ${donationTypeText} بقيمة ${donationAmount} ريال إلى سلة التبرعات`);
         setDonationAmount("");
+        setDonationType("");
         setDonationError("");
     };
 
@@ -248,6 +275,19 @@ const Project = () => {
         },
         tap: {
             scale: 0.95
+        }
+    };
+
+    // Radio button animation variants
+    const radioVariants = {
+        hidden: { opacity: 0, x: -20 },
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: {
+                duration: 0.4,
+                ease: "easeOut"
+            }
         }
     };
 
@@ -405,6 +445,58 @@ const Project = () => {
                                 />
                             </div>
                             
+                            {/* Donation Type Radio Buttons - Conditionally Rendered */}
+                            {showDonationTypeRadio && (
+                                <motion.div
+                                    variants={radioVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    className="mb-6 p-4 rounded-xl border border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
+                                >
+                                    <p className="text-base font-semibold text-gray-800 mb-4 text-right">
+                                    اختر نوع التبرع:
+                                    </p>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                    {[
+                                        { label: "زكاة", value: "zakat",},
+                                        { label: "صدقة", value: "sadaqa",},
+                                    ].map(({ label, value, icon }) => (
+                                        <motion.label
+                                        key={value}
+                                        whileHover={{ scale: 1.03 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className={`flex items-center justify-between cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${
+                                            donationType === value
+                                            ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
+                                            : "border-gray-300 bg-white hover:border-[#17433b]"
+                                        }`}
+                                        >
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-lg">{icon}</span>
+                                            <span className="text-sm md:text-base font-medium">{label}</span>
+                                        </div>
+                                        <input
+                                            type="radio"
+                                            name="donationType"
+                                            value={value}
+                                            checked={donationType === value}
+                                            onChange={() => handleDonationTypeChange(value)}
+                                            className="hidden"
+                                        />
+                                        <div
+                                            className={`w-4 h-4 rounded-full border-2 ${
+                                            donationType === value
+                                                ? "border-[#17433b] bg-[#17433b]"
+                                                : "border-gray-400"
+                                            }`}
+                                        ></div>
+                                        </motion.label>
+                                    ))}
+                                    </div>
+                                </motion.div>
+                                )}
+
                             {/* Donation Error Message */}
                             {donationError && (
                                 <motion.div 
@@ -421,10 +513,10 @@ const Project = () => {
                                     whileHover="hover"
                                     whileTap="tap"
                                     onClick={handleDonateNow}
-                                    disabled={!donationAmount || donationError}
+                                    disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
                                     variants={buttonHoverVariants}
                                     className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] transition-opacity text-sm sm:text-base ${
-                                        !donationAmount || donationError ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                                        !donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
                                     }`}
                                 >
                                     <img src={money} alt="donate icon" />
@@ -434,10 +526,10 @@ const Project = () => {
                                     whileHover="hover"
                                     whileTap="tap"
                                     onClick={handleAddToCart}
-                                    disabled={!donationAmount || donationError}
+                                    disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
                                     variants={buttonHoverVariants}
                                     className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors ${
-                                        !donationAmount || donationError ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
+                                        !donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
                                     }`}
                                 >
                                     <img src={shoppingCart} width={24} className="sm:w-8" alt="shopping cart" />
