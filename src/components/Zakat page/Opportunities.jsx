@@ -14,7 +14,8 @@ const Opportunities = ({
   error = null,
   currentPage = 1,
   totalProjectsCount = 0,
-  onPageChange
+  onPageChange,
+  donationValue=0
 }) => {
 
   const location = useLocation();
@@ -77,7 +78,8 @@ const Opportunities = ({
         collected={project.OpeningBalance}
         goal={project.WantedAmount}
         className="bg-white"
-        payNowLink={`/project?data=${JSON.stringify({ ...project, actionID: actionID })}`}
+        payNowLink={`/project?data=${JSON.stringify({ ...project, actionID: actionID , donationValue:donationValue })}`}
+        showBtn={project.AllowZakat}
       />
     ));
   };
@@ -172,6 +174,7 @@ Opportunities.propTypes = {
   currentPage: PropTypes.number,
   totalProjectsCount: PropTypes.number,
   onPageChange: PropTypes.func,
+  donationValue:PropTypes.number,
 };
 
 Opportunities.defaultProps = {
@@ -180,6 +183,7 @@ Opportunities.defaultProps = {
   error: null,
   currentPage: 1,
   totalProjectsCount: 0,
+  donationValue:0,
   onPageChange: () => {},
 };
 

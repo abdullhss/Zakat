@@ -7,6 +7,7 @@ const Zakat = () => {
   const [offices, setOffices] = useState([]);
   const [zakatTypes, setZakatTypes] = useState([]);
   const [donations, setDonations] = useState([]);
+  const [donationValue, setDonationValue] = useState();
   const [subventionTypes, setSubventionTypes] = useState([]);
   const [totalProjectsCount, setTotalProjectsCount] = useState(0);
   const [loading, setLoading] = useState({
@@ -225,6 +226,7 @@ const Zakat = () => {
             selectedOffice={selectedOffice}
             selectedAid={selectedAid}
             selectedCategory={selectedCategory}
+            setDonationValue={setDonationValue}
             onOfficeChange={handleOfficeChange}
             onAidChange={handleAidChange}
             onCategoryChange={handleCategoryChange}
@@ -239,6 +241,7 @@ const Zakat = () => {
               currentPage={currentPage}
               totalProjectsCount={totalProjectsCount}
               onPageChange={handlePageChange}
+              donationValue={donationValue}
             />
           )}
         </div>

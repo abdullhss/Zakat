@@ -8,6 +8,7 @@ const Sadaka = () => {
   const [offices, setOffices] = useState([]);
   const [zakatTypes, setZakatTypes] = useState([]);
   const [donations, setDonations] = useState([]);
+  const [donationValue, setDonationValue] = useState();
   const [subventionTypes, setSubventionTypes] = useState([]);
   const [totalProjectsCount, setTotalProjectsCount] = useState(0);
   const [loading, setLoading] = useState({
@@ -229,6 +230,7 @@ const Sadaka = () => {
             onOfficeChange={handleOfficeChange}
             onAidChange={handleAidChange}
             onCategoryChange={handleCategoryChange}
+            setDonationValue={setDonationValue}
           />
             <Opportunities 
               donations={donations}
@@ -237,6 +239,7 @@ const Sadaka = () => {
               currentPage={currentPage}
               totalProjectsCount={totalProjectsCount}
               onPageChange={handlePageChange}
+              donationValue={donationValue}
             />
         </div>
 

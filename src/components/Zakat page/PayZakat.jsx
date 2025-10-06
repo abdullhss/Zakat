@@ -8,7 +8,7 @@ import { CalculatorIcon } from "lucide-react";
 import ZakatCalculator from "./ZakatCalc";
 import { AnimatePresence } from "framer-motion";
 import {motion} from "framer-motion"
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setShowPopup, setPopupComponent , setPopupTitle} from "../../features/PaySlice/PaySlice";
 import PayComponent from "../PayComponent";
 
@@ -23,11 +23,11 @@ const PayZakat = ({
   selectedCategory,
   onOfficeChange,
   onAidChange,
-  onCategoryChange
+  onCategoryChange,
+  setDonationValue
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
   const [ zakatPopUp , setZakatPopUp] = useState(false);
-  const {showPayPopup,  popupComponent} = useSelector((state) => state.pay);
   const dispatch = useDispatch();
 
   // Use subventionTypes from API or fallback to static aids
@@ -92,6 +92,7 @@ const PayZakat = ({
     const value = e.target.value;
     if (value === "" || (Number(value) > 0 && !isNaN(value))) {
       setDonationAmount(value);
+      setDonationValue(value)
     }
   };
 
@@ -357,6 +358,7 @@ const PayZakat = ({
               <ZakatCalculator
                 closeZakatCalc={setZakatPopUp}
                 setDonationAmount={setDonationAmount}
+                setDonationValue={setDonationValue}
               />
             </motion.div>
           </motion.div>
@@ -378,6 +380,7 @@ PayZakat.propTypes = {
   onOfficeChange: PropTypes.func,
   onAidChange: PropTypes.func,
   onCategoryChange: PropTypes.func,
+  setDonationValue:PropTypes.func
 };
 
 PayZakat.defaultProps = {
@@ -392,6 +395,7 @@ PayZakat.defaultProps = {
   onOfficeChange: () => {},
   onAidChange: () => {},
   onCategoryChange: () => {},
+  setDonationValue:()=>{}
 };
 
 export default PayZakat;

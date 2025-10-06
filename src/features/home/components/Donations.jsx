@@ -149,6 +149,7 @@ const Donations = ({ data }) => {
                 collected={item.ProjectOpeningBalance}
                 goal={item.ProjectWantedAmount}
                 className="min-w-[320px]"
+                showBtn={item.AllowZakat}
               />
             </div>
           ))}

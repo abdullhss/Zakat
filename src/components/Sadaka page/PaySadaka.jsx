@@ -22,7 +22,8 @@ const PaySadaka = ({
   selectedCategory,
   onOfficeChange,
   onAidChange,
-  onCategoryChange
+  onCategoryChange,
+  setDonationValue
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
   const {showPayPopup,  popupComponent} = useSelector((state) => state.pay);
@@ -81,6 +82,7 @@ const PaySadaka = ({
     const value = e.target.value;
     if (value === "" || (Number(value) > 0 && !isNaN(value))) {
       setDonationAmount(value);
+      setDonationValue(value) 
     }
   };
 
@@ -297,6 +299,7 @@ PaySadaka.propTypes = {
   onOfficeChange: PropTypes.func,
   onAidChange: PropTypes.func,
   onCategoryChange: PropTypes.func,
+  setDonationValue:PropTypes.func
 };
 
 PaySadaka.defaultProps = {

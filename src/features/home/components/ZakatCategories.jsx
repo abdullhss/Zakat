@@ -21,7 +21,7 @@ const ZakatCategories = () => {
     {
       id: 2,
       title: "الكفارات والنذور",
-      link:"/opportunities/zakat",
+      link:"/karfaraAndNozor",
       bgColor: "bg-gray-200",
     },
     {

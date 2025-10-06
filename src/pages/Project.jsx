@@ -45,9 +45,10 @@ const Project = () => {
     const percentage = totalAmount > 0 ? ((collected / totalAmount) * 100).toFixed(1) : 0;
     
     // Donation state
-    const [donationAmount, setDonationAmount] = useState("");
+    const [donationAmount, setDonationAmount] = useState(projectData.donationValue);
 
     // Check if we need to show donation type radio buttons
+    // Show radio buttons only if AllowZakat is true AND actionID is 0 (meaning it can be either)
     const showDonationTypeRadio = projectData?.AllowZakat && projectData?.actionID === 0;
 
     const handleAmountChange = (e) => {
@@ -65,6 +66,24 @@ const Project = () => {
     const handleDonationTypeChange = (type) => {
         setDonationType(type);
         setDonationError(""); // Clear any previous errors when selection changes
+    };
+
+    // Get the final actionID based on conditions
+    const getFinalActionID = () => {
+        if (!projectData) return 2; // Default to sadaqa if no project data
+        
+        // If AllowZakat is false, always use actionID 2 (sadaqa)
+        if (!projectData.AllowZakat) {
+            return 2;
+        }
+        
+        // If AllowZakat is true and we have donation type selection
+        if (showDonationTypeRadio) {
+            return donationType === "zakat" ? 1 : 2;
+        }
+        
+        // If AllowZakat is true but no selection needed, use the project's actionID
+        return projectData.actionID || 2;
     };
 
     // Validate donation amount
@@ -160,11 +179,11 @@ const Project = () => {
             return;
         }
 
-        // Determine service type based on donation type selection
-        let serviceTypeId = "1"; // Default to Sadaqa
-        if (showDonationTypeRadio) {
-            serviceTypeId = donationType === "zakat" ? "1" : "2";
-        }
+        // Get the final actionID based on conditions
+        const finalActionID = getFinalActionID();
+        
+        // Determine service type based on actionID
+        const serviceTypeId = finalActionID === 1 ? "1" : "2"; // 1 for zakat, 2 for sadaqa
 
         // Clear any previous errors
         setDonationError("");
@@ -177,10 +196,10 @@ const Project = () => {
                 officeName={projectData.OfficeName}
                 officeId={projectData.Office_Id}
                 serviceTypeId={serviceTypeId}
-                SubventionType_Id={projectData.Id}
+                SubventionType_Id={projectData.SubventionType_Id}
                 totalAmount={parseFloat(donationAmount) || 0}
                 currency="ريال"
-                actionID={projectData.actionID}
+                actionID={finalActionID} // Use the calculated finalActionID
                 Project_Id={projectData.Id}
                 onSuccess={() => {
                     // Handle successful donation
@@ -203,12 +222,9 @@ const Project = () => {
             return;
         }
 
-        // For cart, we might want to store the donation type as well
-        // Implement cart functionality here
-        // For now, we'll show a success message
-        const donationTypeText = showDonationTypeRadio 
-            ? (donationType === "zakat" ? "زكاة" : "صدقة")
-            : "تبرع";
+        // Get the final actionID for cart
+        const finalActionID = getFinalActionID();
+        const donationTypeText = finalActionID === 1 ? "زكاة" : "صدقة";
             
         alert(`تم إضافة ${donationTypeText} بقيمة ${donationAmount} ريال إلى سلة التبرعات`);
         setDonationAmount("");
@@ -418,6 +434,21 @@ const Project = () => {
                                 {projectData.OfficeName || "غير محدد"}
                             </p>
                         </motion.div>
+
+                        {/* Show current donation type if not showing radio buttons */}
+                        {!showDonationTypeRadio && (
+                            <motion.div 
+                                variants={itemVariants}
+                                className="flex flex-col gap-2"
+                            >
+                                <p className="text-base sm:text-lg font-medium">نوع التبرع</p>
+                                <p className="w-full rounded-xl text-base sm:text-lg font-medium bg-white p-2 sm:p-3">
+                                    {projectData.AllowZakat ? 
+                                        (projectData.actionID === 1 ? "زكاة" : "صدقة") 
+                                        : "صدقة"}
+                                </p>
+                            </motion.div>
+                        )}
                     </motion.div>
                     
                     {/* Sidebar */}
@@ -495,7 +526,9 @@ const Project = () => {
                                     ))}
                                     </div>
                                 </motion.div>
-                                )}
+                            )}
+
+                            
 
                             {/* Donation Error Message */}
                             {donationError && (

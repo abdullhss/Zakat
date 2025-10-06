@@ -4,7 +4,7 @@ import money from "../../public/SVGs/moneyGreen.svg"
 import PropTypes from "prop-types";
 import { executeProcedure } from '../../services/apiServices';
 
-export default function ZakatCalc({ closeZakatCalc , setDonationAmount }) {
+export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDonationValue }) {
   const [openToggles, setOpenToggles] = useState({
     cash: false,
     gold: false,
@@ -146,6 +146,7 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount }) {
       setZakatResult(totalZakat);
       setCalculationDetails(details);
       setShowReceipt(true);
+      setDonationValue(totalZakat)
 
     } catch (error) {
       console.error('Error calculating zakat:', error);
@@ -377,5 +378,6 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount }) {
 
 ZakatCalc.propTypes = {
   closeZakatCalc: PropTypes.any,
-  setDonationAmount : PropTypes.any
+  setDonationAmount : PropTypes.any,
+  setDonationValue : PropTypes.any
 }

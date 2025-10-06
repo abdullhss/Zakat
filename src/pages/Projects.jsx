@@ -172,6 +172,7 @@ const Projects = () => {
                   image={`https://framework.md-license.com:8093/ZakatImages/${card.PhotoName}.jpg`}
                   title={card.Name}
                   payNowLink={`/project?data=${JSON.stringify({ ...card, actionID: 0 })}`}
+                  showBtn={card.AllowZakat}
                 />
 
               ))
