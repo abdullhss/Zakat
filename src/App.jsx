@@ -20,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from "react-toastify";
 import Sadaka from "./pages/Sadaka";
 import Projects from "./pages/Projects";
+import Project from "./pages/Project";
 
 // Main Pages (with navbar via Layout)
 
@@ -46,6 +47,7 @@ function App() {
               <Route path="/opportunities/zakat" element={<Zakat/>} />
               <Route path="/opportunities/sadaka" element={<Sadaka/>} />
               <Route path="/opportunities/projects" element={<Projects/>} />
+              <Route path="/project" element={<Project/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />

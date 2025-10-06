@@ -6,6 +6,7 @@ import filter from "../../public/SVGs/fillter.svg"
 import Arrow from "../../public/SVGs/Arrow.svg"
 import { Search } from "lucide-react";
 import DonationCard from "../DonationCard"
+import { useLocation } from "react-router-dom";
 
 const Opportunities = ({ 
   donations = [], 
@@ -15,6 +16,11 @@ const Opportunities = ({
   totalProjectsCount = 0,
   onPageChange
 }) => {
+
+  const location = useLocation();
+  const path = location.pathname.split("/").pop();
+  const actionID = path === "zakat" ? 1 : path === "sadaka" ? 2 : 0;
+
   // Pagination logic - use totalProjectsCount from API
   const cardsPerPage = 6;
   const totalPages = Math.ceil(totalProjectsCount / cardsPerPage);
@@ -71,6 +77,7 @@ const Opportunities = ({
         collected={project.OpeningBalance}
         goal={project.WantedAmount}
         className="bg-white"
+        payNowLink={`/project?data=${JSON.stringify({ ...project, actionID: actionID })}`}
       />
     ));
   };

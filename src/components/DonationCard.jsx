@@ -5,7 +5,8 @@ import money from "../public/SVGs/money.svg"
 import shoppingCart from "../public/SVGs/ShoppingCart.svg"
 import cardWave from "../public/SVGs/cardWave.svg"
 import handWithMoney from "../public/SVGs/handWithMoney.svg"
-const DonationCard = ({ image, title, description, collected, goal  ,showBtn = false , className  }) => {
+import { Link } from "react-router-dom";
+const DonationCard = ({ image, title, description, collected, goal  ,showBtn = false , payNowLink , className  }) => {
   const remaining = goal - collected;
   const percentage = Math.min(Math.round((collected / goal) * 100), 100);
 
@@ -67,10 +68,10 @@ const DonationCard = ({ image, title, description, collected, goal  ,showBtn = f
 
       {/* Buttons */}
       <div className="flex items-center gap-4 relative z-10">
-        <button className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E]">
-          <img src={money} width={30}/>
-          تبرع الان
-        </button>
+        <Link to={payNowLink} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E]">
+            <img src={money} width={30}/>
+            تبرع الان
+        </Link>
         <button className="p-3 rounded-lg border border-[#16343A] text-[#16343A]">
           <img src={shoppingCart} width={30}/>
         </button>
@@ -86,6 +87,7 @@ DonationCard.propTypes = {
   collected: PropTypes.number.isRequired,
   goal: PropTypes.number.isRequired,
   showBtn:PropTypes.bool,
+  payNowLink:PropTypes.string,
   className :PropTypes.string
 };
 

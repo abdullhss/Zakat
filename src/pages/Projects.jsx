@@ -6,7 +6,7 @@ import DonationCard from '../components/DonationCard'
 import { executeProcedure } from "../services/apiServices"
 
 const Projects = () => {
-  const [activeFilter, setActiveFilter] = useState(0) // Default to "الكل" with ID 0
+  const [activeFilter, setActiveFilter] = useState(0)
   const [filters, setFilters] = useState([])
   const [donationCards, setDonationCards] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -166,12 +166,14 @@ const Projects = () => {
               donationCards.map((card, index) => (
                 <DonationCard
                   key={card.Id || index}
-                  collected = {card.ProjectWantedAmount - card.ProjectRemainingAmount}
-                  description= {card.ProjectDesc}
-                  goal= {card.ProjectWantedAmount}
-                  image= {`https://framework.md-license.com:8093/ZakatImages/${card.ProjectPhotoName}.jpg`}
-                  title= {card.ProjectName}
+                  collected={card.OpeningBalance}
+                  description={card.Description}
+                  goal={card.WantedAmount}
+                  image={`https://framework.md-license.com:8093/ZakatImages/${card.PhotoName}.jpg`}
+                  title={card.Name}
+                  payNowLink={`/project?data=${JSON.stringify({ ...card, actionID: 0 })}`}
                 />
+
               ))
             ) : (
               !loading && (
