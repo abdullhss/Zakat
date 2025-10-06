@@ -33,7 +33,7 @@ const ZakatCategories = () => {
     {
       id: 4,
       title: "المشاريع",
-      link:"/opportunities/zakat",
+      link:"/opportunities/projects",
       bgColor: "bg-gray-200",
     },
   ];
