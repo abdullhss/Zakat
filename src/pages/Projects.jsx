@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Diamond from '../components/Diamond'
 import filter from "../public/SVGs/fillter.svg"
-import { Search } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import DonationCard from '../components/DonationCard'
 import { executeProcedure } from "../services/apiServices"
 
@@ -13,8 +13,40 @@ const Projects = () => {
   const [totalPages, setTotalPages] = useState(1)
   const [totalProjectsCount, setTotalProjectsCount] = useState(0)
   const [loading, setLoading] = useState(false)
+  const showLeftArrow =true
+  const showRightArrow= true
 
+  const filtersContainerRef = useRef(null)
   const itemsPerPage = 12
+
+  // Check scroll position to show/hide arrows
+  // const checkScrollPosition = () => {
+  //   const container = filtersContainerRef.current
+  //   if (container) {
+  //     setShowLeftArrow(container.scrollLeft > 0)
+  //     setShowRightArrow(
+  //       container.scrollLeft < container.scrollWidth - container.clientWidth - 10
+  //     )
+  //   }
+  // }
+
+  // Scroll handlers
+  const scrollLeft = () => {
+    if (filtersContainerRef.current) {
+      const container = filtersContainerRef.current
+      const itemWidth = container.scrollWidth / filters.length
+      container.scrollBy({ left: -itemWidth * 4, behavior: 'smooth' })
+    }
+  }
+
+  const scrollRight = () => {
+    if (filtersContainerRef.current) {
+      const container = filtersContainerRef.current
+      const itemWidth = container.scrollWidth / filters.length
+      container.scrollBy({ left: itemWidth * 4, behavior: 'smooth' })
+    }
+  }
+
 
   // Fetch filters on component mount
   useEffect(() => {
@@ -35,7 +67,6 @@ const Projects = () => {
           const filterObjects = [allFilter, ...parsedFilters]
           
           setFilters(filterObjects)
-          
           setActiveFilter(0)
         }
       } catch (error) {
@@ -66,7 +97,6 @@ const Projects = () => {
         console.log("Donation cards response:", response)
         
         if (response && response.decrypted) {
-          // Parse the ProjectsData JSON string
           const projectsDataString = response.decrypted.ProjectsData
           let cardsData = []
           let totalCount = 0
@@ -95,7 +125,7 @@ const Projects = () => {
 
   const handleFilterChange = (filterId) => {
     setActiveFilter(filterId)
-    setCurrentPage(1) // Reset to first page when filter changes
+    setCurrentPage(1)
   }
 
   const handlePrevPage = () => {
@@ -115,30 +145,73 @@ const Projects = () => {
   }
 
   return (
-    <div className="relative overflow-hidden">
-      <div className="flex items-center justify-between pl-12 mt-28">
-        <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
-          <Diamond className="absolute -right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
-          فرص التبرع
-        </div>
+    <div className="relative overflow-hidden"
+    style={{
+            backgroundImage: "url('/background pattern.png')",
+            backgroundRepeat: "repeat",
+            backgroundSize: "auto",
+          }}
+    >
+      <div 
+          className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28"
+      >
+          <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
+              <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
+              فرص التبرع
+          </div>
       </div>
+
       
-      {/* Filters */}
-      <div className='relative flex items-center justify-around mt-6 font-medium text-[#878787] border-b border-[#878787]'>
-        {filters.map((filter) => (
-          <span
-            key={filter.Id}
-            onClick={() => handleFilterChange(filter.Id)}
-            className={`relative py-1 cursor-pointer transition-colors duration-300 ${
-              activeFilter === filter.Id ? 'text-[#17343B]' : 'hover:text-[#17343B]/70'
-            }`}
+      {/* Filters with Scroll - Show exactly 4 filters at a time */}
+      <div className='relative mt-6 mx-8 border-b border-[#878787]'>
+        {/* Left Arrow */}
+        {showLeftArrow && (
+          <button
+            onClick={scrollLeft}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
           >
-            {filter.SubventionTypeName}
-            {activeFilter === filter.Id && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#17343B] animate-[slideIn_0.3s_ease-out]" />
-            )}
-          </span>
-        ))}
+            <ChevronLeft className="w-5 h-5 text-[#17343B]" />
+          </button>
+        )}
+        
+        {/* Right Arrow */}
+        {showRightArrow && (
+          <button
+            onClick={scrollRight}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
+          >
+            <ChevronRight className="w-5 h-5 text-[#17343B]" />
+          </button>
+        )}
+
+        {/* Filters Container - Limited to show 4 filters at a time */}
+        <div
+          ref={filtersContainerRef}
+          // onScroll={checkScrollPosition}
+          className="flex items-center gap-8 overflow-x-auto scrollbar-hide py-2 px-8"
+          style={{ 
+            scrollbarWidth: 'none', 
+            msOverflowStyle: 'none',
+            scrollBehavior: 'smooth'
+          }}
+        >
+          {filters.map((filter) => (
+            <span
+              key={filter.Id}
+              onClick={() => handleFilterChange(filter.Id)}
+              className={`relative whitespace-nowrap py-1 cursor-pointer transition-colors duration-300 flex-shrink-0 min-w-[calc(25%-1.5rem)] text-center ${
+                activeFilter === filter.Id 
+                  ? 'text-[#17343B] font-bold' 
+                  : 'text-[#878787] font-bold hover:text-[#17343B]/70'
+              }`}
+            >
+              {filter.SubventionTypeName}
+              {activeFilter === filter.Id && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#17343B] animate-[slideIn_0.3s_ease-out]" />
+              )}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Search bar */}
@@ -174,7 +247,6 @@ const Projects = () => {
                   payNowLink={`/project?data=${JSON.stringify({ ...card, actionID: 0 })}`}
                   showBtn={card.AllowZakat}
                 />
-
               ))
             ) : (
               !loading && (
@@ -236,6 +308,10 @@ const Projects = () => {
           )}
         </>
       )}
+      
+
+      <div className="rightBow"></div>
+      <div className="leftBow"></div>
     </div>
   )
 }

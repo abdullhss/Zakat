@@ -346,7 +346,7 @@ const Project = () => {
                 className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28"
             >
                 <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
-                    <Diamond className="absolute -right-4 sm:-right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
+                    <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
                     التفاصيل
                 </div>
             </motion.div>
@@ -634,11 +634,11 @@ const Project = () => {
             {/* Similar Donations Section */}
             <motion.div 
                 variants={itemVariants}
-                className="flex flex-col gap-8 px-4 sm:px-12 mt-24 md:mt-28"
+                className="flex flex-col gap-8 px-4 "
             >
                 <div className="flex items-center justify-between">
                     <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
-                        <Diamond className="absolute -right-4 sm:-right-6 top-1/2 -translate-y-1/2 translate-x-1/4" />
+                        <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
                         فرص تبرع مماثلة
                     </div>
                 </div>
@@ -662,7 +662,7 @@ const Project = () => {
                         </div>
                     </div>
                 ) : filteredDonationCards.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4 px-4 md:px-12">
                         {filteredDonationCards.map((item) => (
                             <div
                                 key={item.Id}
@@ -690,6 +690,10 @@ const Project = () => {
                     )
                 )}
             </motion.div>
+            
+
+        <div className="rightBow"></div>
+        <div className="leftBow"></div> 
         </motion.div>
     );
 };
