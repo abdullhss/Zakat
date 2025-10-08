@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,24 +7,32 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { motion } from "framer-motion";
 import FloatingDonationButton from "../../../../globalComponents/FloatingDonationButton";
+import aya from "../../../../public/SVGs/aya.svg";
+import logo from "../../../../../public/logo.png";
+import { executeProcedure } from "../../../../services/apiServices";
 
 // Validation schema using Zod
 const loginSchema = z.object({
-  phoneNumber: z
+  email: z
     .string()
-    .min(1, "رقم الهاتف مطلوب")
-    .regex(/^[0-9+\-\s()]+$/, "رقم الهاتف غير صالح"),
+    .min(1, "البريد الإلكتروني مطلوب")
+    .email("البريد الإلكتروني غير صالح"),
+  password: z
+    .string()
+    .min(1, "كلمة المرور مطلوبة")
+    .min(6, "كلمة المرور يجب أن تكون至少 6 أحرف"),
 });
 
 /**
- * Login component with phone number authentication
+ * Login component with email and password authentication
  */
 const Login = () => {
-  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -33,7 +41,8 @@ const Login = () => {
   } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      phoneNumber: "",
+      email: "",
+      password: "",
     },
   });
 
@@ -43,25 +52,47 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       console.log("Login data:", data);
-      // TODO: Dispatch login action
-      // dispatch(loginUser(data));
+      const response = await executeProcedure("5GbDgnFHgSnsKHp60G95ngKtX9A5Wkofyq68u6hXJGg=",`${data.email}#${data.password}#$????`)
+      console.log(response);
+      
     } catch (error) {
       console.error("Login error:", error);
     }
   };
-
-  /**
-   * Navigate to registration page
-   */
-  const handleCreateAccount = () => {
-    navigate("/register");
-  };
-
-  /**
-   * Navigate to visitor browsing
-   */
   const handleBrowseAsVisitor = () => {
     navigate("/");
+  };
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+
+  const buttonVariants = {
+    initial: { scale: 1 },
+    tap: { scale: 0.95 },
+    hover: { scale: 1.02 }
   };
 
   return (
@@ -69,113 +100,170 @@ const Login = () => {
       {/* Floating Donation Button */}
       <FloatingDonationButton />
 
-      <div className="min-h-screen flex flex-col lg:flex-row" dir="rtl">
+      <motion.div 
+        className="min-h-screen flex flex-col lg:flex-row" 
+        dir="rtl"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
         {/* Right Side - Decorative Background */}
-        <img
-          src={"/src/assets/Desktop/Login/Frame 2147223937.png"}
-          className="md:w-1/2 "
-          alt=""
+        <motion.div
+          className="hidden lg:block lg:w-1/2 bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/loginpage.png')",
+          }}
+          variants={itemVariants}
         />
 
         {/* Left Side - Login Form */}
-        <div className="lg:w-1/2 flex items-center justify-center p-8 lg:p-20 bg-white order-2 lg:order-2">
-          <div className="w-full max-w-lg lg:max-w-xl">
+        <motion.div 
+          className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-white"
+          variants={containerVariants}
+        >
+          <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl">
             {/* Logo */}
-            <div className="text-center mb-8 lg:mb-10">
-              <div className="inline-flex items-center justify-center w-24 h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl mb-6 lg:mb-8 relative shadow-lg">
-                <span className="text-2xl lg:text-3xl font-bold text-white">
-                  وصل
-                </span>
-                <div className="absolute -bottom-2 lg:-bottom-3 bg-white text-emerald-700 px-3 lg:px-4 py-1 lg:py-2 rounded-full text-sm lg:text-base font-medium shadow-md">
-                  الليبية
-                </div>
-              </div>
-            </div>
+            <motion.div variants={itemVariants}>
+              <img
+                src={logo}
+                alt="Logo"
+                className="h-24 sm:h-28 mb-6 mx-auto"
+              />
+            </motion.div>
 
             {/* Login Form */}
-            <div className="text-center mb-8 lg:mb-10">
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3 lg:mb-4">
+            <motion.div 
+              className="text-center mb-6 sm:mb-8 lg:mb-10"
+              variants={itemVariants}
+            >
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-3 lg:mb-4">
                 تسجيل الدخول
               </h1>
-              <p className="text-gray-600 text-base lg:text-lg">
+              <p className="text-gray-600 text-sm sm:text-base lg:text-lg">
                 مرحباً بعودتك! قم بتسجيل الدخول إلى حسابك
               </p>
-            </div>
+            </motion.div>
 
-            <form
+            <motion.form
               onSubmit={handleSubmit(onSubmit)}
-              className="space-y-6 lg:space-y-8"
+              className="space-y-4 sm:space-y-6 lg:space-y-8"
+              variants={containerVariants}
             >
-              {/* Phone Number Input */}
-              <div>
-                <label className="block text-base lg:text-lg font-medium text-gray-700 mb-3">
-                  رقم الهاتف <span className="text-red-500">*</span>
+              {/* Email Input */}
+              <motion.div variants={itemVariants}>
+                <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+                  البريد الإلكتروني <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    {...register("phoneNumber")}
-                    type="tel"
-                    placeholder="رجاء إدخال رقم الهاتف"
-                    className={`w-full px-6 py-4 lg:py-5 pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-lg lg:text-xl ${
-                      errors.phoneNumber ? "border-red-500" : "border-gray-300"
+                    {...register("email")}
+                    type="email"
+                    placeholder="رجاء إدخال البريد الإلكتروني"
+                    className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl ${
+                      errors.email ? "border-red-500" : "border-gray-300"
                     }`}
                   />
-                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                  <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
                     <FontAwesomeIcon
-                      icon={faPhone}
-                      className="text-gray-400 h-6 w-6"
+                      icon={faEnvelope}
+                      className="text-gray-400 h-4 w-4 py-3sm:h-5 sm:w-5"
                     />
                   </div>
                 </div>
-                {errors.phoneNumber && (
-                  <p className="mt-2 text-base text-red-600 text-right">
-                    {errors.phoneNumber.message}
-                  </p>
+                {errors.email && (
+                  <motion.p 
+                    className="mt-1 sm:mt-2 text-xs sm:text-base text-red-600 text-right"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {errors.email.message}
+                  </motion.p>
                 )}
-              </div>
+              </motion.div>
+
+              {/* Password Input */}
+              <motion.div variants={itemVariants}>
+                <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+                  كلمة المرور <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    {...register("password")}
+                    type={showPassword ? "text" : "password"}
+                    placeholder="رجاء إدخال كلمة المرور"
+                    className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 pr-12 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl ${
+                      errors.password ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+                  <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
+                    {/* <FontAwesomeIcon
+                      icon={faEnvelope}
+                      className="text-gray-400 h-4 w-4 sm:h-5 sm:w-5"
+                    /> */}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <FontAwesomeIcon
+                      icon={showPassword ? faEyeSlash : faEye}
+                      className="h-4 w-4 sm:h-5 sm:w-5"
+                    />
+                  </button>
+                </div>
+                {errors.password && (
+                  <motion.p 
+                    className="mt-1 sm:mt-2 text-xs sm:text-base text-red-600 text-right"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {errors.password.message}
+                  </motion.p>
+                )}
+              </motion.div>
 
               {/* Submit Button */}
-              <button
+              <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-emerald-800 text-white py-4 lg:py-5 rounded-lg hover:bg-emerald-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-lg lg:text-xl"
+                variants={buttonVariants}
+                whileTap="tap"
+                whileHover="hover"
+                style={{ background: "linear-gradient(90deg, #24645E -23.06%, #18383D 53.78%, #17343B 60.46%)"}}
+                className="w-full  text-white py-3 rounded-lg hover:bg-emerald-900 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg lg:text-xl"
               >
                 {isSubmitting ? "جاري التسجيل..." : "تسجيل الدخول"}
-              </button>
-
+              </motion.button>
               {/* Browse as Visitor */}
-              <button
+              <motion.button
                 type="button"
                 onClick={handleBrowseAsVisitor}
-                className="w-full border border-gray-300 text-gray-700 py-4 lg:py-5 rounded-lg hover:bg-gray-50 transition-colors font-medium text-lg lg:text-xl"
+                variants={buttonVariants}
+                whileTap="tap"
+                whileHover="hover"
+                className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium text-base sm:text-lg lg:text-xl"
               >
-                تصفح للضيف كزائر
-              </button>
-
-              {/* Create Account Link */}
-              <div className="text-center">
-                <span className="text-gray-600 text-base lg:text-lg">
-                  ليس لديك حساب؟
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCreateAccount}
-                  className="text-emerald-800 hover:text-emerald-800 font-medium transition-colors text-base lg:text-lg"
-                >
-                  إنشاء حساب
-                </button>
-              </div>
-            </form>
+                تصفح كزائر
+              </motion.button>
+            </motion.form>
 
             {/* Quranic Verse */}
-            <div className="mt-8 lg:mt-12 text-center overflow-hidden">
-              <p className="text-xl lg:text-2xl text-gray-700 font-quran leading-relaxed whitespace-nowrap">
-                ﴿ لَن تَنَالُوا الْبِرَّ حَتَّىٰ تُنفِقُوا مِمَّا تُحِبُّونَ ﴾
-              </p>
-            </div>
+            <motion.div 
+              className="w-full flex items-center justify-center mt-6 sm:mt-8 lg:mt-12 text-center overflow-hidden"
+              variants={itemVariants}
+            >
+              <img 
+                src={aya} 
+                alt="Quranic verse" 
+                className="max-w-full h-auto"
+              />
+            </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </>
   );
 };
