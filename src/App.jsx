@@ -23,6 +23,7 @@ import Projects from "./pages/Projects";
 import Project from "./pages/Project";
 import KafaraAndNozor from "./pages/KafaraAndNozor";
 import Campaigns from "./pages/campaigns";
+import DonationRequest from "./pages/DonationRequest";
 
 // Main Pages (with navbar via Layout)
 
@@ -47,12 +48,13 @@ function App() {
             {/* Main Routes - With Layout (Navbar + Content) */}
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
-              <Route path="/opportunities/zakat" element={<Zakat/>} />
-              <Route path="/opportunities/sadaka" element={<Sadaka/>} />
+              <Route path="/services/zakat" element={<Zakat/>} />
+              <Route path="/services/sadaka" element={<Sadaka/>} />
               <Route path="/opportunities/projects" element={<Projects/>} />
-              <Route path="/karfaraAndNozor" element={<KafaraAndNozor/>} />
-              <Route path="/campaigns" element={<Campaigns/>} />
+              <Route path="/services/karfaraAndNozor" element={<KafaraAndNozor/>} />
+              <Route path="/services/campaigns" element={<Campaigns/>} />
               <Route path="/project" element={<Project/>} />
+              <Route path="/services/donation-request" element={<DonationRequest/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />

@@ -15,19 +15,19 @@ const ZakatCategories = () => {
     {
       id: 1,
       title: "أخرج زكاتك",
-      link:"/opportunities/zakat",
+      link:"/services/zakat",
       bgColor: "bg-gray-200",
     },
     {
       id: 2,
       title: "الكفارات والنذور",
-      link:"/karfaraAndNozor",
+      link:"/services/karfaraAndNozor",
       bgColor: "bg-gray-200",
     },
     {
       id: 3,
       title: "الصدقات",
-      link:"/opportunities/sadaka",
+      link:"/services/sadaka",
       bgColor: "bg-gray-200",
     },
     {

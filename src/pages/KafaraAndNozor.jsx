@@ -435,6 +435,7 @@ const KafaraAndNozor = () => {
           </button>
         </div>
       </div>
+      
     </div>
   )
 }
