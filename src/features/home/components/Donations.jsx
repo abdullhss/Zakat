@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Diamond from "../../../components/Diamond";
 import DonationCard from "../../../components/DonationCard";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const Donations = ({ data }) => {
   const donations = JSON.parse(data);
@@ -100,9 +101,9 @@ const Donations = ({ data }) => {
           فرص التبرع
         </div>
 
-        <span className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
+        <Link to={"/opportunities/projects"} className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
           المزيد
-        </span>
+        </Link>
       </div>
 
       {/* donation cards with navigation */}

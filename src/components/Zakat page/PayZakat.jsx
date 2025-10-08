@@ -99,19 +99,19 @@ const PayZakat = ({
   // Handle donate now
   const handleDonateNow = () => {
     const officeName = getSelectedOfficeName();
-    dispatch(setShowPopup(true))
     dispatch(setPopupTitle("الدفع"))
     dispatch(setPopupComponent(
       <PayComponent
-        officeName={officeName}
-        officeId={selectedOffice}
-        accountTypeId={selectedCategory} // Using category as account type
-        serviceTypeId="1" // Default service type ID, adjust as needed
-        totalAmount={parseFloat(donationAmount) || 0}
-        currency="ريال" // Or whatever currency you're using
-        SubventionType_Id={isAidEnabled ? selectedAid : 0}
+      officeName={officeName}
+      officeId={selectedOffice}
+      accountTypeId={selectedCategory} // Using category as account type
+      serviceTypeId="1" // Default service type ID, adjust as needed
+      totalAmount={parseFloat(donationAmount) || 0}
+      currency="ريال" // Or whatever currency you're using
+      SubventionType_Id={isAidEnabled ? selectedAid : 0}
       />
     ));
+    dispatch(setShowPopup(true))
     
     console.log("Donation data:", {
       office: selectedOffice,

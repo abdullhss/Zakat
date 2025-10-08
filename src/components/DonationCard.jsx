@@ -72,9 +72,9 @@ const DonationCard = ({ image, title, description, collected, goal  ,showBtn = f
             <img src={money} width={30}/>
             تبرع الان
         </Link>
-        <button className="p-3 rounded-lg border border-[#16343A] text-[#16343A]">
+        {/* <button className="p-3 rounded-lg border border-[#16343A] text-[#16343A]">
           <img src={shoppingCart} width={30}/>
-        </button>
+        </button> */}
       </div>
     </div>
   );

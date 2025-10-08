@@ -16,6 +16,7 @@ import speaker from "../public/SVGs/Speaker.svg";
 import zakat from "../public/SVGs/zakat.svg";
 import sheep from "../../public/Sheep.svg";
 import DonateRequest from "../public/SVGs/DonateRequest.svg";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -35,7 +36,17 @@ const Navbar = () => {
     navigate("/login");
     setIsMobileMenuOpen(false);
   };
-
+  const handleLogOutClick = () => {
+    localStorage.removeItem("UserData");
+    navigate("/");
+  };
+  const handleCartClicked = () => {
+    if(!localStorage.getItem("UserData")){
+      toast.error("يجب تسجيل الدخول اولا")
+    }else{
+      navigate("/")
+    }
+  }
   const handleSearch = () => {
     console.log("Search clicked");
   };
@@ -61,7 +72,7 @@ const Navbar = () => {
       name: "الخدمات",
       key: "services",
       links: [
-        { name: "الحملات", path: "/opportunities/zakat", icon: speaker, isDiamond: false },
+        { name: "الحملات", path: "/campaigns", icon: speaker, isDiamond: false },
         { name: "الزكاة", path: "/opportunities/zakat", icon: zakat, isDiamond: false },
         { name: "الاضاحي", path: "/opportunities/zakat", icon: sheep, isDiamond: false },
         { name: "طالب تبرع", path: "/opportunities/zakat", icon: DonateRequest, isDiamond: false },
@@ -136,6 +147,7 @@ const Navbar = () => {
                 <FontAwesomeIcon icon={faSearch} className="h-6 w-6" />
               </button>
               <button
+                onClick={handleCartClicked}
                 className="p-2 text-[#17343B] transition-colors"
                 title="السلة"
               >
@@ -143,12 +155,24 @@ const Navbar = () => {
               </button>
             </div>
 
-            <button
-              onClick={handleLoginClick}
-              className="bg-gradient-to-t from-[#17343B] via-[#18383D] to-[#24645E] text-white px-4 py-1 lg:px-10 lg:py-2.5 rounded-lg font-medium text-sm lg:text-base"
-            >
-              تسجيل الدخول
-            </button>
+            {
+              localStorage.getItem("UserData")?(
+                <button
+                  onClick={handleLogOutClick}
+                  className="bg-transparent hover:bg-red-600 hover:text-white transition-all text-red-600 border-2 border-red-600 px-4 py-1 lg:px-10 lg:py-2.5 rounded-lg font-medium text-sm lg:text-base"
+                >
+                  تسجيل الخروج
+                </button>
+              ):(
+                <button
+                  onClick={handleLoginClick}
+                  className="bg-gradient-to-t from-[#17343B] via-[#18383D] to-[#24645E] text-white px-4 py-1 lg:px-10 lg:py-2.5 rounded-lg font-medium text-sm lg:text-base"
+                >
+                  تسجيل الدخول
+                </button>
+              )
+            }
+            
 
             <button
               onClick={toggleMobileMenu}

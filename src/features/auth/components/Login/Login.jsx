@@ -13,6 +13,8 @@ import FloatingDonationButton from "../../../../globalComponents/FloatingDonatio
 import aya from "../../../../public/SVGs/aya.svg";
 import logo from "../../../../../public/logo.png";
 import { executeProcedure } from "../../../../services/apiServices";
+import { t } from "i18next";
+import { toast } from "react-toastify";
 
 // Validation schema using Zod
 const loginSchema = z.object({
@@ -52,9 +54,13 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       console.log("Login data:", data);
-      const response = await executeProcedure("5GbDgnFHgSnsKHp60G95ngKtX9A5Wkofyq68u6hXJGg=",`${data.email}#${data.password}#$????`)
-      console.log(response);
+      console.log(`${data.email}#${data.password}#$????`);
       
+      const response = await executeProcedure("5GbDgnFHgSnsKHp60G95ngKtX9A5Wkofyq68u6hXJGg=",`${data.email}#${data.password}#$????`)
+      console.log(response.decrypted);
+      localStorage.setItem("UserData",JSON.stringify(response.decrypted))
+      toast.success(`مرحبا ${response.decrypted.UserName}`);
+      navigate("/");
     } catch (error) {
       console.error("Login error:", error);
     }

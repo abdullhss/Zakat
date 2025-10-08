@@ -22,6 +22,7 @@ import Sadaka from "./pages/Sadaka";
 import Projects from "./pages/Projects";
 import Project from "./pages/Project";
 import KafaraAndNozor from "./pages/KafaraAndNozor";
+import Campaigns from "./pages/campaigns";
 
 // Main Pages (with navbar via Layout)
 
@@ -36,6 +37,7 @@ function App() {
   const {showPayPopup,  popupComponent , popupTitle} = useSelector((state) => state.pay);
   return (
     <Provider store={store}>
+      <ToastContainer className={"mt-20"} />
       <Router>
         <div className="App" dir="rtl">
           <Routes>
@@ -49,6 +51,7 @@ function App() {
               <Route path="/opportunities/sadaka" element={<Sadaka/>} />
               <Route path="/opportunities/projects" element={<Projects/>} />
               <Route path="/karfaraAndNozor" element={<KafaraAndNozor/>} />
+              <Route path="/campaigns" element={<Campaigns/>} />
               <Route path="/project" element={<Project/>} />
             </Route>
             
@@ -102,7 +105,6 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
-      <ToastContainer className={"mt-20"} />
     </Provider>
   );
 }

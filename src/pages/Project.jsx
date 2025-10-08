@@ -12,6 +12,7 @@ import DonationCard from "../components/DonationCard";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
+import { toast } from "react-toastify";
 
 const Project = () => {
     const location = useLocation();
@@ -23,7 +24,7 @@ const Project = () => {
     const [donationError, setDonationError] = useState("");
     const [fetchError, setFetchError] = useState("");
     const [donationType, setDonationType] = useState(""); // "zakat" or "sadaqa"
-    
+    const UserData = JSON.parse(localStorage.getItem("UserData"));
     // Parse project data with error handling
     const parseProjectData = (data) => {
         try {
@@ -215,21 +216,11 @@ const Project = () => {
     };
 
     const handleAddToCart = () => {
-        const validationError = validateDonation(donationAmount);
-        
-        if (validationError) {
-            setDonationError(validationError);
-            return;
+        if(UserData.Id){
+            console.log(UserData.Id);
+        }else{
+            toast.error("برجاء تسجيل الدخول اولا")
         }
-
-        // Get the final actionID for cart
-        const finalActionID = getFinalActionID();
-        const donationTypeText = finalActionID === 1 ? "زكاة" : "صدقة";
-            
-        alert(`تم إضافة ${donationTypeText} بقيمة ${donationAmount} ريال إلى سلة التبرعات`);
-        setDonationAmount("");
-        setDonationType("");
-        setDonationError("");
     };
 
     const handleSimilarDonationClick = (cardData) => {
@@ -497,12 +488,19 @@ const Project = () => {
                                         key={value}
                                         whileHover={{ scale: 1.03 }}
                                         whileTap={{ scale: 0.98 }}
-                                        className={`flex items-center justify-between cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${
+                                        className={`flex items-center cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${
                                             donationType === value
                                             ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
                                             : "border-gray-300 bg-white hover:border-[#17433b]"
                                         }`}
                                         >
+                                        <div
+                                            className={`w-4 h-4 rounded-full border-2 ${
+                                            donationType === value
+                                                ? "border-[#17433b] bg-[#17433b]"
+                                                : "border-gray-400"
+                                            }`}
+                                        ></div>
                                         <div className="flex items-center gap-2">
                                             <span className="text-lg">{icon}</span>
                                             <span className="text-sm md:text-base font-medium">{label}</span>
@@ -515,13 +513,6 @@ const Project = () => {
                                             onChange={() => handleDonationTypeChange(value)}
                                             className="hidden"
                                         />
-                                        <div
-                                            className={`w-4 h-4 rounded-full border-2 ${
-                                            donationType === value
-                                                ? "border-[#17433b] bg-[#17433b]"
-                                                : "border-gray-400"
-                                            }`}
-                                        ></div>
                                         </motion.label>
                                     ))}
                                     </div>
@@ -559,11 +550,8 @@ const Project = () => {
                                     whileHover="hover"
                                     whileTap="tap"
                                     onClick={handleAddToCart}
-                                    disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
                                     variants={buttonHoverVariants}
-                                    className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors ${
-                                        !donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'
-                                    }`}
+                                    className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors`}
                                 >
                                     <img src={shoppingCart} width={24} className="sm:w-8" alt="shopping cart" />
                                 </motion.button>
