@@ -6,8 +6,12 @@ import greenUnion from "../../../../public/UnionGreen.png";
 import Union from "../../../../public/Union.png";
 import Plant from "../../../../public/plant.webp";
 import Diamond from "../../../components/Diamond";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const HelpRequestComponent = () => {
+  const UserData = localStorage.getItem("UserData");
+  const navigate = useNavigate() ;
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, {
     once: false,
@@ -15,7 +19,12 @@ const HelpRequestComponent = () => {
   });
 
   const handleRequestHelpClick = () => {
-    console.log("اطلب الآن clicked - help request submitted");
+    if(UserData){
+      navigate("/services/donation-request")
+    }
+    else{
+      toast.error("يجب تسجيل الدخول اولا")
+    }
   };
 
   // Animation variants with slower exit transitions

@@ -1,10 +1,18 @@
 import styles from "./HeroBanner.module.css";
 import union from "../../../../public/Union.png";
 import sadaka from "../../../../public/sadaka.png";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const HeroBanner = () => {
+  const UserData = localStorage.getItem("UserData")
+  const navigate = useNavigate() ;
   const handleCreateCampaignClick = () => {
-    console.log("clicked افتراح انشاء حملة");
+    if(UserData){
+      navigate("/services/campaigns")
+    }else{
+      toast.error("يجب تسجيل الدخول اولا")
+    }
   };
 
   return (

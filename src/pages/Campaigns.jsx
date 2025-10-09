@@ -14,7 +14,7 @@ const Campaigns = () => {
     const UserData = JSON.parse(localStorage.getItem("UserData"));
 
     const handleCreateCampaign = () => {
-        if(UserData.Id){
+        if(UserData){
             dispatch(setPopupTitle('إنشاء حملة'));
             dispatch(setPopupComponent(
                 <CreateCampaign/>
@@ -75,7 +75,7 @@ return (
                 حملات التبرع
                 </button>
                 <button 
-                onClick={() => {UserData.Id?setActiveTab('myCampaigns'):toast.error("برجاء تسجيل الدخول اولا")}}
+                onClick={() => {UserData?setActiveTab('myCampaigns'):toast.error("برجاء تسجيل الدخول اولا")}}
                 className={`flex-1 items-center gap-2 font-semibold py-2.5 px-5 rounded-lg shadow-md ${
                     activeTab === 'myCampaigns' 
                     ? 'bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white' 
