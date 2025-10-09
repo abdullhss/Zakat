@@ -3,13 +3,21 @@ import union from "../../../../public/Union.png";
 import sadaka from "../../../../public/sadaka.png";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import {setShowPopup, setPopupComponent , setPopupTitle } from "../../../features/PaySlice/PaySlice";
+import CreateCampaign from "../../../components/CreateCampaign";
 
 const HeroBanner = () => {
   const UserData = localStorage.getItem("UserData")
   const navigate = useNavigate() ;
+  const dispatch = useDispatch();
   const handleCreateCampaignClick = () => {
     if(UserData){
-      navigate("/services/campaigns")
+      dispatch(setPopupTitle('إنشاء حملة'));
+      dispatch(setPopupComponent(
+          <CreateCampaign/>
+      ));
+      dispatch(setShowPopup(true));
     }else{
       toast.error("يجب تسجيل الدخول اولا")
     }

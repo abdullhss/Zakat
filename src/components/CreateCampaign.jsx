@@ -4,6 +4,7 @@ import { DoTransaction } from '../services/apiServices';
 import { HandelFile } from './HandelFile';
 import { useDispatch } from 'react-redux';
 import { setShowPopup} from "../features/PaySlice/PaySlice";
+import { toast } from 'react-toastify';
 
 const CreateCampaign = () => {
   // File upload states (copied from PayComponent)
@@ -141,6 +142,7 @@ const CreateCampaign = () => {
     
 
     // Reset form after submission
+    toast.success("تم انشاء الحملة بنجاح")
     setCampaignData({
       description: "",
       name: "",
