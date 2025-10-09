@@ -58,11 +58,14 @@ const Login = () => {
       
       const response = await executeProcedure("5GbDgnFHgSnsKHp60G95ngKtX9A5Wkofyq68u6hXJGg=",`${data.email}#${data.password}#$????`)
       console.log(response.decrypted);
-      localStorage.setItem("UserData",JSON.stringify(response.decrypted))
+      if(response.decrypted){
+        localStorage.setItem("UserData",JSON.stringify(response.decrypted))
+      }
       toast.success(`مرحبا ${response.decrypted.UserName}`);
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
+      toast.error("خطأ في اسم المستخدم او كلمة المرور")
     }
   };
   const handleBrowseAsVisitor = () => {
