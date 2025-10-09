@@ -22,7 +22,7 @@ import Sadaka from "./pages/Sadaka";
 import Projects from "./pages/Projects";
 import Project from "./pages/Project";
 import KafaraAndNozor from "./pages/KafaraAndNozor";
-import Campaigns from "./pages/campaigns";
+import Campaigns from "./pages/Campaigns.jsx";
 import DonationRequest from "./pages/DonationRequest";
 
 // Main Pages (with navbar via Layout)
