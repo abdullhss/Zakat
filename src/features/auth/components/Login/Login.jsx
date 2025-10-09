@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import FloatingDonationButton from "../../../../globalComponents/FloatingDonationButton";
-import aya from "../../../../public/SVGs/aya.svg";
+import aya from "../../../../public/SVGs/Aya.svg";
 import logo from "../../../../../public/logo.png";
 import { executeProcedure } from "../../../../services/apiServices";
 import { t } from "i18next";
