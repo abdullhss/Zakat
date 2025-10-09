@@ -38,7 +38,12 @@ function App() {
   const {showPayPopup,  popupComponent , popupTitle} = useSelector((state) => state.pay);
   return (
     <Provider store={store}>
-      <ToastContainer className={"mt-20"} />
+      <ToastContainer
+        className="!z-[99999] mt-20"
+        toastClassName="!z-[99999]"
+        bodyClassName="!z-[99999]"
+        style={{ zIndex: 99999 }}
+      />
       <Router>
         <div className="App" dir="rtl">
           <Routes>
