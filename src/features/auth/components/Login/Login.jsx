@@ -11,7 +11,7 @@ import { faEnvelope, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons
 import { motion } from "framer-motion";
 import FloatingDonationButton from "../../../../globalComponents/FloatingDonationButton";
 import aya from "../../../../public/SVGs/Aya.svg";
-import logo from "../../../../../public/logo.png";
+import logo from "../../../../../public/Logo.png";
 import { executeProcedure } from "../../../../services/apiServices";
 import { t } from "i18next";
 import { toast } from "react-toastify";
@@ -25,7 +25,7 @@ const loginSchema = z.object({
   password: z
     .string()
     .min(1, "كلمة المرور مطلوبة")
-    .min(6, "كلمة المرور يجب أن تكون至少 6 أحرف"),
+    .min(6, "كلمة المرور يجب أن تكون 6 أحرف"),
 });
 
 /**
