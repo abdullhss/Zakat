@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import money from "../public/SVGs/moneyGreen.svg"
 import phone from "../public/SVGs/phone.svg"
 import { DoTransaction, executeProcedure } from '../services/apiServices'
+import { toast } from 'react-toastify'
 
 const DonationRequest = () => {
   const [offices, setOffices] = useState([])
@@ -116,16 +117,19 @@ const DonationRequest = () => {
     const response = await DoTransaction("g+a67fXnSBQre/3SDxT2uA==",
       `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}`
     )
-    console.log(response);
-    setFormData({
-    name: '',
-    individualsCount: '',
-    phone: '',
-    amount: '',
-    officeId: '',
-    donationTypeId: '',
-    description: ''
-  })
+    console.log(response.success);
+    if(response.success==200){
+        setFormData({
+        name: '',
+        individualsCount: '',
+        phone: '',
+        amount: '',
+        officeId: '',
+        donationTypeId: '',
+        description: ''
+      })
+      toast.success("تم انشاء الطلب بنجاح")
+    }
   }
 
   return (
