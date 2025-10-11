@@ -24,6 +24,9 @@ import Project from "./pages/Project";
 import KafaraAndNozor from "./pages/KafaraAndNozor";
 import Campaigns from "./pages/Campaigns.jsx";
 import DonationRequest from "./pages/DonationRequest";
+import Campaign from "./pages/Campaign.jsx";
+import DonationRequester from "./pages/DonationRequester.jsx";
+import MainZakatPage from "./pages/MainZakatPage.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -54,11 +57,14 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="/services/zakat" element={<Zakat/>} />
+              <Route path="/zakat" element={<MainZakatPage/>} />
               <Route path="/services/sadaka" element={<Sadaka/>} />
               <Route path="/opportunities/projects" element={<Projects/>} />
               <Route path="/services/karfaraAndNozor" element={<KafaraAndNozor/>} />
               <Route path="/services/campaigns" element={<Campaigns/>} />
+              <Route path="/campaign" element={<Campaign/>} />
               <Route path="/project" element={<Project/>} />
+              <Route path="/DonationRequester" element={<DonationRequester/>} />
               <Route path="/services/donation-request" element={<DonationRequest/>} />
             </Route>
             

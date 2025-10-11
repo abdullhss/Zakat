@@ -73,9 +73,9 @@ const Navbar = () => {
       key: "services",
       links: [
         { name: "الحملات", path: "/services/campaigns", icon: speaker, isDiamond: false },
-        { name: "الزكاة", path: "/services/zakat", icon: zakat, isDiamond: false },
+        { name: "الزكاة", path: "/zakat", icon: zakat, isDiamond: false },
         { name: "الاضاحي", path: "/services/zakat", icon: sheep, isDiamond: false },
-        { name: "طلبات التبرع", path: "/services/donation-request", icon: DonateRequest, isDiamond: false },
+        { name: "طلبات التبرع", path: "/DonationRequester", icon: DonateRequest, isDiamond: false },
       ],
     },
     { type: "main", name: "عن وصل", path: "/about" },

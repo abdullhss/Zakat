@@ -3,7 +3,7 @@ import Union from "../../public/Union.png"
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const ServiceCard = ({ icon, title, descirption , link, className }) => {
+const ServiceCard = ({ icon, title, descirption , link , onClick, className }) => {
   return (
     <div
       className={`relative h-full flex flex-col gap-6 p-6 rounded-2xl shadow-md overflow-hidden ${className}`}
@@ -20,9 +20,13 @@ const ServiceCard = ({ icon, title, descirption , link, className }) => {
         {descirption}
       </p>
       <img className="absolute left-0 top-0" src={Union} />
-      <Link to={link}>
-        <button className="bg-[#17343B] rounded-lg p-0.5 absolute left-2 bottom-2 "><ArrowLeft color="white"/></button>
-      </Link>
+      {link ? (
+        <Link to={link}>
+          <button className="bg-[#17343B] rounded-lg p-0.5 absolute left-2 bottom-2 "><ArrowLeft color="white"/></button>
+        </Link>):(
+            <button onClick={onClick} className="bg-[#17343B] rounded-lg p-0.5 absolute left-2 bottom-2 "><ArrowLeft color="white"/></button>
+        )
+      }
     </div>
   );
 };
@@ -33,6 +37,7 @@ ServiceCard.propTypes = {
   link:PropTypes.string,
   descirption: PropTypes.string.isRequired,
   className: PropTypes.string,
+  onClick: PropTypes.any ,
 };
 
 export default ServiceCard;
