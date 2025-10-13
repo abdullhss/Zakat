@@ -140,30 +140,33 @@ const DonationRequest = () => {
         backgroundSize: "auto",
       }}
     >
-      <div className="flex items-center justify-between pl-12 mt-28">
-        <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row justify-between sm:px-6 lg:pr-0 lg:pl-12 mt-24 lg:mt-28 gap-4">
+        <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl lg:text-2xl px-10 sm:px-8 py-2 w-fit text-center">
           <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4 shadow-xl" />
           طلبات التبرع
         </div>
-      </div>
-      
-      <div className='mt-6 w-full px-12 flex items-center justify-between font-bold text-lg'>
-        برجاء ملئ البيانات للنظر ف طلبك
-        <button
-          className='text-white px-6 py-2 rounded-lg font-normal shadow-lg'
-          style={{background: "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)"}}
-        >
-          متابعة طلب سابق
-        </button>
+        
+        <div className='w-full lg:w-auto flex flex-col sm:flex-row items-center justify-between gap-4'>
+          <div className='font-bold text-base sm:text-lg text-center sm:text-right w-full lg:w-auto'>
+            برجاء ملئ البيانات للنظر ف طلبك
+          </div>
+          <button
+            className='text-white px-6 py-2 rounded-lg font-normal shadow-lg w-[92%] sm:w-auto text-sm sm:text-base'
+            style={{background: "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)"}}
+          >
+            متابعة طلب سابق
+          </button>
+        </div>
       </div>
 
       {/* Form Section */}
-      <div className="px-12 mt-8">
-        <form className="space-y-6" onSubmit={handleSubmit}>
+      <div className="px-4 sm:px-6 lg:px-12 mt-6 lg:mt-8">
+        <form className="space-y-4 lg:space-y-6" onSubmit={handleSubmit}>
           {/* First Row: الاسم و عدد الافراد */}
-          <div className="flex gap-6">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
                 الاسم <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -173,14 +176,14 @@ const DonationRequest = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="رجاء إدخال الاسم"
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl border-gray-300"
+                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
                   required
                 />
               </div>
             </div>
 
             <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
                 عدد الأفراد <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -190,7 +193,7 @@ const DonationRequest = () => {
                   value={formData.individualsCount}
                   onChange={handleInputChange}
                   placeholder="رجاء إدخال عدد الأفراد"
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl border-gray-300"
+                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
                   required
                 />
               </div>
@@ -198,9 +201,9 @@ const DonationRequest = () => {
           </div>
 
           {/* Second Row: رقم الهاتف و المبلغ */}
-          <div className="flex gap-6">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
                 رقم الهاتف <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -210,17 +213,17 @@ const DonationRequest = () => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="رجاء إدخال رقم الهاتف"
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl border-gray-300"
+                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 pl-12"
                   required
                 />
-                <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
-                  <img className='w-3/4' src={phone} alt="Phone" />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                  <img className='w-6 h-6 sm:w-8 sm:h-8' src={phone} alt="Phone" />
                 </div>
               </div>
             </div>
 
             <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
                 المبلغ <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -230,20 +233,20 @@ const DonationRequest = () => {
                   value={formData.amount}
                   onChange={handleInputChange}
                   placeholder="رجاء إدخال المبلغ"
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl border-gray-300"
+                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 pl-12"
                   required
                 />
-                <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
-                  <img src={money} alt="Money" />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                  <img className='w-6 h-6 sm:w-8 sm:h-8' src={money} alt="Money" />
                 </div>
               </div>
             </div>
           </div>
 
           {/* Third Row: المكاتب و نوع التبرع */}
-          <div className="flex gap-6">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
                 المكاتب
               </label>
               <div className="relative">
@@ -251,7 +254,7 @@ const DonationRequest = () => {
                   name="officeId"
                   value={formData.officeId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl border-gray-300 bg-white"
+                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 bg-white"
                   disabled={loading.offices}
                 >
                   <option value="">اختر المكتب</option>
@@ -268,12 +271,12 @@ const DonationRequest = () => {
                 )}
               </div>
               {errors.offices && (
-                <p className="text-red-500 text-sm mt-1">{errors.offices}</p>
+                <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.offices}</p>
               )}
             </div>
 
             <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
                 نوع التبرع
               </label>
               <div className="relative">
@@ -281,7 +284,7 @@ const DonationRequest = () => {
                   name="donationTypeId"
                   value={formData.donationTypeId}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl border-gray-300 bg-white"
+                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 bg-white"
                   disabled={loading.filters}
                 >
                   <option value="">اختر نوع التبرع</option>
@@ -301,14 +304,14 @@ const DonationRequest = () => {
                 )}
               </div>
               {errors.filters && (
-                <p className="text-red-500 text-sm mt-1">{errors.filters}</p>
+                <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.filters}</p>
               )}
             </div>
           </div>
 
           {/* Fourth Row: وصف الحالة */}
           <div>
-            <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
+            <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
               وصف الحالة <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -318,17 +321,17 @@ const DonationRequest = () => {
                 value={formData.description}
                 onChange={handleInputChange}
                 placeholder="رجاء إدخال وصف الحالة"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl border-gray-300 resize-vertical"
+                className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 resize-vertical"
                 required
               />
             </div>
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-center my-8">
+          <div className="flex justify-center my-6 lg:my-8">
             <button
-              onClick={handleSubmit}
-              className="w-full text-white px-12 py-2 rounded-lg font-bold text-lg shadow-lg transition-all hover:scale-105 mb-8"
+              type="submit"
+              className="w-full sm:w-2/3 lg:w-1/2 xl:w-1/3 text-white px-6 sm:px-12 py-3 rounded-lg font-bold text-base sm:text-lg shadow-lg transition-all hover:scale-105 mb-6 lg:mb-8"
               style={{ background: "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)" }}
             >
               طلب

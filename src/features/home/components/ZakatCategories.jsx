@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import Diamond from "../../../components/Diamond";
 import coins from "../../../../public/coins.webp";
 import { Link } from "react-router-dom";
-
+import aya from "../../../public/SVGs/Aya.svg"
 const ZakatCategories = () => {
   const [isInView, setIsInView] = useState(false);
   
@@ -176,7 +176,7 @@ const ZakatCategories = () => {
       animate={isInView ? "visible" : "exit"}
       onViewportEnter={() => setIsInView(true)}
       onViewportLeave={() => setIsInView(false)}
-      viewport={{ amount: 0.3 }}
+      viewport={{ amount: 0.0 }}
       variants={containerVariants}
     >
       <div className="flex flex-col gap-12 items-center">
@@ -185,16 +185,7 @@ const ZakatCategories = () => {
           className="text-center mb-12"
           variants={verseVariants}
         >
-          <h2
-            className="text-4xl md:text-5xl font-semibold text-[#16343A] text-center leading-relaxed font-arabic"
-            dir="rtl"
-            style={{
-              fontFamily:
-                "'Amiri', 'Scheherazade New', 'Arabic Typesetting', serif",
-            }}
-          >
-            ﴿ لَنْ تَنَالُوا الْبِرَّ حَتَّى تُنْفِقُوا مِمَّا تُحِبُّونَ ﴾
-          </h2>
+          <img src={aya}></img>
         </motion.div>
 
         {/* Categories Cards */}
