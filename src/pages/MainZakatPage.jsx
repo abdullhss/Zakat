@@ -35,9 +35,9 @@ const MainZakatPage = () => {
               </div>
             </div>
 
-            <div className='flex items-center gap-12 mr-2'>
-              <ServiceCard icon={<Calculator size={40} color="#17343B" />} descirption={"اداة ذكية لحساب الزكاة لأموالك وممتلكاتك بسهولة"} onClick={handleCalcZakat} className={"flex-1 max-h-48 max-w-[30%]"} title={"الزكاة"}/> 
-              <ServiceCard icon={<ArrowUp size={40} color="#17343B" className='underline underline-offset-2'/>} descirption={"اخرج زكاتك بكل يسر"} className={"flex-1 max-h-48  max-w-[30%]"} link={"/services/zakat"} title={"اخراج الزكاة"}/>
+            <div className='flex items-center flex-col md:flex-row gap-12 mr-2'>
+              <ServiceCard icon={<Calculator size={40} color="#17343B" />} descirption={"اداة ذكية لحساب الزكاة لأموالك وممتلكاتك بسهولة"} onClick={handleCalcZakat} className={"flex-1 max-h-48 w-full lg:max-w-[30%]"} title={"الزكاة"}/> 
+              <ServiceCard icon={<ArrowUp size={40} color="#17343B" className='underline underline-offset-2'/>} descirption={"اخرج زكاتك بكل يسر"} className={"flex-1 max-h-48  w-full lg:max-w-[30%]"} link={"/services/zakat"} title={"اخراج الزكاة"}/>
             </div>
       </div>
             <AnimatePresence>
