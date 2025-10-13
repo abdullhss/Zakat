@@ -86,16 +86,13 @@ const DonationCard = ({
       {/* Buttons (تحت خالص) */}
       <div className="flex items-center gap-4 relative z-10 mt-auto">
         <Link
-          to={cantPay ? "#" : payNowLink}
-          onClick={(e) => {
-            if (cantPay) e.preventDefault();
-          }}
+          to={payNowLink}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white 
             bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] 
-            ${cantPay ? " opacity-50 cursor-not-allowed" : "hover:opacity-90"}`}
+            `}
         >
           <img src={money} width={30} />
-          تبرع الآن
+          {cantPay ? "تم الوصول للهدف" : "تبرع الآن"}
         </Link>
       </div>
     </div>

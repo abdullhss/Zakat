@@ -343,9 +343,9 @@ useEffect(() => {
                                     image={`https://framework.md-license.com:8093/ZakatImages/${campaign.CampaignPhotoName}.jpg`}
                                     title={campaign.CampaignName}
                                     description={campaign.CampaignDesc}
-                                    collected={campaign.CampaignRemainingAmount}
+                                    collected={campaign.WantedAmount - campaign.CampaignRemainingAmount}
                                     goal={campaign.WantedAmount}
-                                    cantPay={campaign.CampaignRemainingAmount==campaign.WantedAmount}
+                                    cantPay={campaign.CampaignRemainingAmount == 0}
                                     payNowLink={`/Campaign?data=${encodeURIComponent(JSON.stringify(campaign))}&isMine=${false}&isMine=false`}
                                 />
                             ))}
@@ -399,9 +399,9 @@ useEffect(() => {
                                     image={`https://framework.md-license.com:8093/ZakatImages/${campaign.CampaignPhotoName}.jpg`}
                                     title={campaign.CampaignName}
                                     description={campaign.CampaignDesc}
-                                    collected={campaign.CampaignRemainingAmount}
+                                    collected={campaign.WantedAmount - campaign.CampaignRemainingAmount}
                                     goal={campaign.WantedAmount}
-                                    cantPay={campaign.CampaignRemainingAmount === campaign.WantedAmount}
+                                    cantPay={campaign.CampaignRemainingAmount === 0}
                                     payNowLink={`/Campaign?data=${encodeURIComponent(JSON.stringify(campaign))}&isMine=${true}&isMine=false`}
                                 />
                             ))}

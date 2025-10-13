@@ -43,8 +43,8 @@ const Campaign = () => {
     const [campaignData, setCampaignData] = useState(() => parseCampaignData(dataParam));
     
     // FIXED: Correct progress calculation
-    const totalAmount = campaignData ? (campaignData.WantedAmount || 0) : 0;
-    const remainingAmount = campaignData ? (campaignData.WantedAmount - campaignData.CampaignRemainingAmount || 0) : 0;
+    const totalAmount = campaignData.WantedAmount;
+    const remainingAmount = campaignData.CampaignRemainingAmount;
     const collected = totalAmount - remainingAmount;
     const remaining = remainingAmount;
     const percentage = totalAmount > 0 ? ((collected / totalAmount) * 100).toFixed(1) : 0;
