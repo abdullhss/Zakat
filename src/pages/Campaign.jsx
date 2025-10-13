@@ -6,7 +6,6 @@ import cardWave from "../public/SVGs/cardWave.svg"
 import Navigate from "../public/SVGs/Navigate.svg"
 import moneyGreen from "../public/SVGs/moneyGreen.svg"
 import money from "../public/SVGs/money.svg"
-import shoppingCart from "../public/SVGs/ShoppingCart.svg"
 import { executeProcedure } from "../services/apiServices";
 import DonationCard from "../components/DonationCard";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,7 +20,6 @@ const Campaign = () => {
     const [donationCards, setDonationCards] = useState([]);
     const [donationError, setDonationError] = useState("");
     const [fetchError, setFetchError] = useState("");
-    const [donationType, setDonationType] = useState(""); // "zakat" or "sadaqa"
     const UserData = JSON.parse(localStorage.getItem("UserData"));
     
     // Get and parse the data from URL
@@ -52,9 +50,6 @@ const Campaign = () => {
     // Donation state
     const [donationAmount, setDonationAmount] = useState("");
 
-    // For campaigns, we'll assume they can accept both zakat and sadaqa unless specified otherwise
-    const showDonationTypeRadio = true; // Campaigns typically allow both types
-
     const handleAmountChange = (e) => {
         const value = e.target.value;
         
@@ -65,17 +60,6 @@ const Campaign = () => {
         } else {
             setDonationError("يرجى إدخال مبلغ صحيح");
         }
-    };
-
-    const handleDonationTypeChange = (type) => {
-        setDonationType(type);
-        setDonationError(""); // Clear any previous errors when selection changes
-    };
-
-    // Get the final actionID based on conditions
-    const getFinalActionID = () => {
-        // For campaigns, use selection or default to sadaqa
-        return donationType === "zakat" ? 1 : 2;
     };
 
     // Validate donation amount
@@ -91,11 +75,6 @@ const Campaign = () => {
         
         if (numericAmount <= 0) {
             return "يجب أن يكون مبلغ التبرع أكبر من الصفر";
-        }
-
-        // Additional validation for donation type when required
-        if (showDonationTypeRadio && !donationType) {
-            return "يرجى اختيار نوع التبرع";
         }
         
         return "";
@@ -168,11 +147,11 @@ const Campaign = () => {
             return;
         }
 
-        // Get the final actionID based on conditions
-        const finalActionID = getFinalActionID();
+        // Fixed actionID as 5
+        const finalActionID = 5;
         
-        // Determine service type based on actionID
-        const serviceTypeId = finalActionID === 1 ? "1" : "2"; // 1 for zakat, 2 for sadaqa
+        // Service type for actionID 5
+        const serviceTypeId = "2"; // Adjust based on your API requirements for actionID 5
 
         // Clear any previous errors
         setDonationError("");
@@ -194,7 +173,6 @@ const Campaign = () => {
                     // Handle successful donation
                     console.log("Donation successful");
                     setDonationAmount(""); // Clear donation amount after success
-                    setDonationType(""); // Clear donation type selection
                     toast.success("تم التبرع بنجاح!");
                 }}
                 onError={(error) => {
@@ -203,16 +181,6 @@ const Campaign = () => {
                 }}
             />
         ));
-    };
-
-    const handleAddToCart = () => {
-        if(UserData){
-            // Add campaign to cart logic here
-            console.log("Adding campaign to cart:", campaignData);
-            toast.success("تم إضافة الحملة إلى سلة التبرعات");
-        } else {
-            toast.error("برجاء تسجيل الدخول اولا")
-        }
     };
 
     const handleSimilarDonationClick = (cardData) => {
@@ -271,19 +239,6 @@ const Campaign = () => {
         },
         tap: {
             scale: 0.95
-        }
-    };
-
-    // Radio button animation variants
-    const radioVariants = {
-        hidden: { opacity: 0, x: -20 },
-        visible: {
-            opacity: 1,
-            x: 0,
-            transition: {
-                duration: 0.4,
-                ease: "easeOut"
-            }
         }
     };
 
@@ -453,64 +408,26 @@ const Campaign = () => {
                                         type="number"
                                         min="1"
                                         step="0.01"
+                                        max={campaignData.CampaignRemainingAmount}
                                         value={donationAmount}
-                                        onChange={handleAmountChange}
+                                        onChange={(e) => {
+                                            const value = parseFloat(e.target.value);
+                                            const max = campaignData.CampaignRemainingAmount;
+
+                                            if (value > max) {
+                                            setDonationAmount(max);
+                                            } else if (value < 1) {
+                                            setDonationAmount(1);
+                                            } else {
+                                            setDonationAmount(e.target.value);
+                                            }
+                                        }}
                                         placeholder="رجاء إدخال مبلغ التبرع"
                                         className="w-full pl-9 sm:pl-10 pr-3 py-3 border-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium border-[#979797] bg-transparent"
-                                    />
+                                        />
+
                                 </div>
                                 
-                                {/* Donation Type Radio Buttons */}
-                                {showDonationTypeRadio && (
-                                    <motion.div
-                                        variants={radioVariants}
-                                        initial="hidden"
-                                        animate="visible"
-                                        className="mb-6 p-4 rounded-xl border border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
-                                    >
-                                        <p className="text-base font-semibold text-gray-800 mb-4 text-right">
-                                            اختر نوع التبرع:
-                                        </p>
-
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {[
-                                                { label: "زكاة", value: "zakat" },
-                                                { label: "صدقة", value: "sadaqa" },
-                                            ].map(({ label, value }) => (
-                                                <motion.label
-                                                    key={value}
-                                                    whileHover={{ scale: 1.03 }}
-                                                    whileTap={{ scale: 0.98 }}
-                                                    className={`flex items-center cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${
-                                                        donationType === value
-                                                            ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
-                                                            : "border-gray-300 bg-white hover:border-[#17433b]"
-                                                    }`}
-                                                >
-                                                    <div
-                                                        className={`w-4 h-4 rounded-full border-2 ${
-                                                            donationType === value
-                                                                ? "border-[#17433b] bg-[#17433b]"
-                                                                : "border-gray-400"
-                                                        }`}
-                                                    ></div>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-sm md:text-base font-medium">{label}</span>
-                                                    </div>
-                                                    <input
-                                                        type="radio"
-                                                        name="donationType"
-                                                        value={value}
-                                                        checked={donationType === value}
-                                                        onChange={() => handleDonationTypeChange(value)}
-                                                        className="hidden"
-                                                    />
-                                                </motion.label>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                )}
-
                                 {/* Donation Error Message */}
                                 {donationError && (
                                     <motion.div 
@@ -527,23 +444,14 @@ const Campaign = () => {
                                         whileHover="hover"
                                         whileTap="tap"
                                         onClick={handleDonateNow}
-                                        disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
+                                        disabled={!donationAmount || donationError}
                                         variants={buttonHoverVariants}
                                         className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] transition-opacity text-sm sm:text-base ${
-                                            !donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                                            !donationAmount || donationError ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
                                         }`}
                                     >
                                         <img src={money} alt="donate icon" />
                                         تبرع الان
-                                    </motion.button>
-                                    <motion.button 
-                                        whileHover="hover"
-                                        whileTap="tap"
-                                        onClick={handleAddToCart}
-                                        variants={buttonHoverVariants}
-                                        className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors`}
-                                    >
-                                        <img src={shoppingCart} width={24} className="sm:w-8" alt="shopping cart" />
                                     </motion.button>
                                 </div>
                             </motion.div>

@@ -54,15 +54,23 @@ const Project = () => {
 
     const handleAmountChange = (e) => {
         const value = e.target.value;
-        
+
         // Validate input is a positive number
         if (value === "" || (/^\d*\.?\d*$/.test(value) && parseFloat(value) >= 0)) {
-            setDonationAmount(value);
+            let numericValue = parseFloat(value);
+
+            // Check if it exceeds the remaining amount
+            if (numericValue > projectData.RemainingAmount) {
+                numericValue = projectData.RemainingAmount;
+            }
+
+            setDonationAmount(numericValue);
             setDonationError("");
         } else {
             setDonationError("يرجى إدخال مبلغ صحيح");
         }
     };
+
 
     const handleDonationTypeChange = (type) => {
         setDonationType(type);
@@ -89,9 +97,6 @@ const Project = () => {
 
     // Validate donation amount
     const validateDonation = (amount) => {
-        if (!amount || amount.trim() === "") {
-            return "يرجى إدخال مبلغ التبرع";
-        }
         
         const numericAmount = parseFloat(amount);
         if (isNaN(numericAmount)) {
@@ -100,10 +105,6 @@ const Project = () => {
         
         if (numericAmount <= 0) {
             return "يجب أن يكون مبلغ التبرع أكبر من الصفر";
-        }
-        
-        if (numericAmount > 1000000) { // Example limit: 1,000,000
-            return "مبلغ التبرع كبير جداً، يرجى الاتصال بالدعم";
         }
 
         // Additional validation for donation type when required
@@ -460,6 +461,7 @@ const Project = () => {
                                     type="number"
                                     min="1"
                                     step="0.01"
+                                    max={projectData.RemainingAmount}
                                     value={donationAmount}
                                     onChange={handleAmountChange}
                                     placeholder="رجاء إدخال مبلغ التبرع"
