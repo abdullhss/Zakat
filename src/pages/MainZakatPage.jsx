@@ -3,7 +3,18 @@ import Diamond from '../components/Diamond'
 import ServiceCard from '../components/ServiceCard'
 import { Calculator } from 'lucide-react'
 import { ArrowUp } from 'lucide-react'
+import ZakatCalculator from "../components/Zakat page/ZakatCalc";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from 'react';
+
 const MainZakatPage = () => {
+  const [zakatPopUp, setZakatPopUp] = useState(false);
+  const [donationAmount, setDonationAmount] = useState(0);
+  const [donationValue, setDonationValue] = useState(0);
+  const handleCalcZakat = ()=>{
+    setZakatPopUp(true);
+    console.log("calc zakat");
+  }
   return (
     <div className="relative overflow-hidden">
       <div
@@ -25,11 +36,37 @@ const MainZakatPage = () => {
             </div>
 
             <div className='flex items-center gap-12 mr-2'>
-              <ServiceCard icon={<Calculator size={40} color="#17343B" />} descirption={"اداة ذكية لحساب الزكاة لأموالك وممتلكاتك بسهولة"} onClick={()=>{}} className={"flex-1 max-w-[30%]"} title={"الزكاة"}/> 
-              <ServiceCard icon={<ArrowUp size={40} color="#17343B" className='underline underline-offset-2'/>} descirption={"اخرج زكاتك بكل يسر"} className={"flex-1 max-w-[30%]"} link={"/services/zakat"} title={"اخراج الزكاة"}/>
+              <ServiceCard icon={<Calculator size={40} color="#17343B" />} descirption={"اداة ذكية لحساب الزكاة لأموالك وممتلكاتك بسهولة"} onClick={handleCalcZakat} className={"flex-1 max-w-[30%]"} title={"الزكاة"}/> 
+              <ServiceCard icon={<ArrowUp size={40} color="#17343B" className='underline underline-offset-2'/>} descirption={"اخرج زكاتك بكل يسر"} className={"flex-1  max-w-[30%]"} link={"/services/zakat"} title={"اخراج الزكاة"}/>
             </div>
       </div>
-      
+            <AnimatePresence>
+              {zakatPopUp && (
+                <motion.div
+                  className="fixed top-0 right-0 h-screen w-screen z-[10000] bg-black/50 overflow-y-auto"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  onClick={() => setZakatPopUp(false)}
+                >
+                  <motion.div
+                    className="bg-white w-full md:w-1/2 h-full shadow-lg"
+                    initial={{ x: "100%", opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: "100%", opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ZakatCalculator
+                      closeZakatCalc={setZakatPopUp}
+                      setDonationAmount={setDonationAmount}
+                      setDonationValue={setDonationValue}
+                    />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
         <div className="rightBow"></div>
         <div className="leftBow"></div>
