@@ -220,31 +220,62 @@ const Project = () => {
     
     const cartData = useSelector((state) => state.cart);
 
-    const handleAddToCart = async () => {
-        if(UserData){
-            if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == projectData.Office_Id || cartData.cartData.CartFirstItemCount == 0){
-                const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
-                `0#${cartData.cartData.CartFirstItemCount||0}#${UserData.Id}#${getFinalActionID()}#${projectData.Id}#${projectData.Office_Id}#${projectData.SubventionType_Id}#${donationAmount}##false`
-                        // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#IsDone  
-                )
-                // update navbar
-                const handleFetchCartData =   async () => {
-                const data = await executeProcedure(
-                    "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
-                    UserData.Id
-                );
-                dispatch(setCartData(data.decrypted));
-                } 
-                handleFetchCartData()
-                toast.success("تمت الاضافة إلى السلة بنجاح")
-            }
-            else{
-                toast.error("يجب ان تكون جميع عناصر السلة من نفس المكتب")
-            }
-        }else{
-            toast.error("برجاء تسجيل الدخول اولا")
+    const safeParseArray = (str) => {
+        try {
+            const parsed = JSON.parse(str);
+            return Array.isArray(parsed) ? parsed : null;
+        } catch {
+            return null;
         }
     };
+
+    const handleAddToCart = async () => {
+    try {
+        if (!UserData) {
+        toast.error("برجاء تسجيل الدخول أولاً");
+        return;
+        }
+
+        const cart = cartData?.cartData ?? {};
+        const firstItemCount = Number(cart.CartFirstItemCount) || 0;
+        const firstItems = safeParseArray(cart.CartFirstItemData);
+        const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
+
+        const projectOfficeId = projectData?.Office_Id ?? null;
+        const projectId = projectData?.Id ?? 0;
+        const subventionId = projectData?.SubventionType_Id ?? 0;
+        const actionId = getFinalActionID();
+        const donation = donationAmount || 0;
+
+        if (!projectOfficeId) {
+        toast.error("حدث خطأ: بيانات المشروع غير مكتملة");
+        return;
+        }
+
+        if (firstItemCount === 0 || firstOfficeId === projectOfficeId) {
+        const payload = `0#${firstItemCount}#${UserData.Id}#${actionId}#${projectId}#${projectOfficeId}#${subventionId}#${donation}##false`;
+
+        const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
+
+        const handleFetchCartData = async () => {
+            const data = await executeProcedure(
+            "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+            UserData.Id
+            );
+            dispatch(setCartData(data.decrypted));
+        };
+
+        await handleFetchCartData();
+        toast.success("تمت الإضافة إلى السلة بنجاح");
+        } else {
+        toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
+        }
+    } catch (error) {
+        console.error("handleAddToCart error:", error);
+        toast.error("حدث خطأ أثناء إضافة العنصر إلى السلة. حاول مرة أخرى.");
+    }
+    };
+
 
     const handleSimilarDonationClick = (cardData) => {
         try {

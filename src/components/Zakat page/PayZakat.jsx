@@ -129,28 +129,52 @@ const PayZakat = ({
   const cartData = useSelector((state) => state.cart);
   const userid = JSON.parse(localStorage.getItem("UserData")).Id;
 
-  const handleAddToCart = async () => {
+  const safeParseArray = (str) => {
+    try {
+      const parsed = JSON.parse(str);
+      return Array.isArray(parsed) ? parsed : null;
+    } catch (e) {
+      return null;
+    }
+  };
 
-    if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == selectedOffice || cartData.cartData.CartFirstItemCount == 0){
-      const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
-        `0#${cartData.cartData.CartFirstItemCount||0}#${userid}#1#0#${selectedOffice}#${isAidEnabled ? selectedAid : 0}#${donationAmount}#${categories[selectedCategory - 1].name}#false`
-        // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#IsDone
-      )      
-      // update navbar
-      const handleFetchCartData =   async () => {
-        const data = await executeProcedure(
-          "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
-          userid
-        );
-        dispatch(setCartData(data.decrypted));
-      } 
-      handleFetchCartData()
-      toast.success("تمت الاضافة إلى السلة بنجاح")
+  const handleAddToCart = async () => {
+    try {
+      const cart = cartData?.cartData ?? {};
+      const firstItemCount = Number(cart.CartFirstItemCount) || 0;
+      const firstItems = safeParseArray(cart.CartFirstItemData);
+      const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
+
+      if (firstItemCount === 0 || firstOfficeId === selectedOffice) {
+        const safeCount = firstItemCount;
+        const safeUserid = userid ?? 0;
+        const safeSelectedAid = isAidEnabled ? selectedAid : 0;
+        const safeDonation = donationAmount || 0;
+        const categoryName = (categories && categories[selectedCategory - 1]?.name) || "";
+
+        const payload = `0#${safeCount}#${safeUserid}#1#0#${selectedOffice}#${safeSelectedAid}#${safeDonation}#${categoryName}#false`;
+
+        const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
+
+        const handleFetchCartData = async () => {
+          const data = await executeProcedure(
+            "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+            userid
+          );
+          dispatch(setCartData(data.decrypted));
+        };
+
+        await handleFetchCartData();
+        toast.success("تمت الاضافة إلى السلة بنجاح");
+      } else {
+        toast.error("يجب ان تكون جميع عناصر السلة من نفس المكتب");
+      }
+    } catch (err) {
+      console.error("handleAddToCart error:", err);
+      toast.error("حصل خطأ أثناء إضافة العنصر للسلة. حاول مرة أخرى.");
     }
-    else{
-      toast.error("يجب ان تكون جميع عناصر السلة من نفس المكتب")
-    }
-  }
+  };
+
   
   const handleZakatCalcAppeare = ()=>{
     setZakatPopUp((prev)=>!prev)

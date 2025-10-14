@@ -121,33 +121,51 @@ const PaySadaka = ({
   const cartData = useSelector((state) => state.cart);
   const userid = JSON.parse(localStorage.getItem("UserData")).Id;
 
-  const handleAddToCart = async () => {
-    if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == selectedOffice || cartData.cartData.CartFirstItemCount == 0){
-      const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
-            `0#${cartData.cartData.CartFirstItemCount||0}#${userid}#2#0#${selectedOffice}#${isAidEnabled ? selectedAid : 0}#${donationAmount}##False`
-                  // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#""#IsDone  
-          )
-      const handleFetchCartData =   async () => {
-              const data = await executeProcedure(
-                "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
-                userid
-              );
-              dispatch(setCartData(data.decrypted));
-          }
-      handleFetchCartData()
-      toast.success("تمت الاضافة إلى السلة بنجاح")
+  const safeParseArray = (str) => {
+    try {
+      const parsed = JSON.parse(str);
+      return Array.isArray(parsed) ? parsed : null;
+    } catch (e) {
+      return null;
     }
-    else{
-      toast.error("يجب ان تكون جميع عناصر السلة من نفس المكتب")
-    }
-    // console.log("Add to cart:", {
-    //   office: selectedOffice,
-    //   aid: selectedAid,
-    //   category: selectedCategory,
-    //   amount: donationAmount
-    // });
-    // Add your cart logic here
   };
+
+  const handleAddToCart = async () => {
+    try {
+      const cart = cartData?.cartData ?? {};
+      const firstItemCount = Number(cart.CartFirstItemCount) || 0;
+      const firstItems = safeParseArray(cart.CartFirstItemData);
+      const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
+
+      if (firstItemCount === 0 || firstOfficeId === selectedOffice) {
+        const safeUserid = userid ?? 0;
+        const safeSelectedAid = isAidEnabled ? selectedAid : 0;
+        const safeDonation = donationAmount || 0;
+        const safeSelectedOffice = selectedOffice ?? 0;
+
+        const payload = `0#${firstItemCount}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
+
+        const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
+
+        const handleFetchCartData = async () => {
+          const data = await executeProcedure(
+            "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+            userid
+          );
+          dispatch(setCartData(data.decrypted));
+        };
+
+        await handleFetchCartData();
+        toast.success("تمت الإضافة إلى السلة بنجاح");
+      } else {
+        toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
+      }
+    } catch (error) {
+      console.error("handleAddToCart error:", error);
+      toast.error("حدث خطأ أثناء إضافة العنصر إلى السلة. حاول مرة أخرى.");
+    }
+  };
+
   
   // Safe office mapping function
   const renderOfficeOptions = () => {
