@@ -161,6 +161,7 @@ const Campaign = () => {
         dispatch(setPopupTitle("الدفع"));
         dispatch(setPopupComponent(
             <PayComponent
+                Project_Id={campaignData.Id} // Using Campaign_Id instead of Project_Id
                 officeName={campaignData.UserName || "حملة تبرع"}
                 officeId={campaignData.GeneralUser_Id} // Using GeneralUser_Id as officeId for campaigns
                 serviceTypeId={serviceTypeId}

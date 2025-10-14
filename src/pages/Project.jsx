@@ -7,12 +7,13 @@ import Navigate from "../public/SVGs/Navigate.svg"
 import moneyGreen from "../public/SVGs/moneyGreen.svg"
 import money from "../public/SVGs/money.svg"
 import shoppingCart from "../public/SVGs/ShoppingCart.svg"
-import { executeProcedure } from "../services/apiServices";
+import { DoTransaction, executeProcedure } from "../services/apiServices";
 import DonationCard from "../components/DonationCard";
 import { useDispatch, useSelector } from "react-redux";
 import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
 import { toast } from "react-toastify";
+import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
 
 const Project = () => {
     const location = useLocation();
@@ -216,9 +217,30 @@ const Project = () => {
         ));
     };
 
-    const handleAddToCart = () => {
+    
+    const cartData = useSelector((state) => state.cart);
+
+    const handleAddToCart = async () => {
         if(UserData){
-            console.log(UserData.Id);
+            if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == projectData.Office_Id || cartData.cartData.CartFirstItemCount == 0){
+                const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
+                `0#${cartData.cartData.CartFirstItemCount}#${UserData.Id}#${getFinalActionID()}#${projectData.Id}#${projectData.Office_Id}#${projectData.SubventionType_Id}#${donationAmount}##false`
+                        // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#IsDone  
+                )
+                // update navbar
+                const handleFetchCartData =   async () => {
+                const data = await executeProcedure(
+                    "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+                    UserData.Id
+                );
+                dispatch(setCartData(data.decrypted));
+                } 
+                handleFetchCartData()
+                toast.success("تمت الاضافة إلى السلة بنجاح")
+            }
+            else{
+                toast.error("يجب ان تكون جميع عناصر السلة من نفس المكتب")
+            }
         }else{
             toast.error("برجاء تسجيل الدخول اولا")
         }
@@ -552,8 +574,11 @@ const Project = () => {
                                     whileHover="hover"
                                     whileTap="tap"
                                     onClick={handleAddToCart}
+                                    disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
                                     variants={buttonHoverVariants}
-                                    className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors`}
+                                    className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors
+                                                                                ${!donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                                                }`}
                                 >
                                     <img src={shoppingCart} width={24} className="sm:w-8" alt="shopping cart" />
                                 </motion.button>

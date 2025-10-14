@@ -10,6 +10,9 @@ import {motion} from "framer-motion"
 import { useDispatch, useSelector } from "react-redux";
 import { setShowPopup, setPopupComponent , setPopupTitle} from "../../features/PaySlice/PaySlice";
 import PayComponent from "../PayComponent";
+import { DoTransaction, executeProcedure } from "../../services/apiServices";
+import { toast } from "react-toastify";
+import cartReducer , {setCartData} from "../../features/CartSlice/CartSlice";
 
 const PaySadaka = ({ 
   offices = [], 
@@ -94,6 +97,7 @@ const PaySadaka = ({
     dispatch(setPopupComponent(
       <PayComponent
         officeName={officeName}
+        
         officeId={selectedOffice}
         accountTypeId={selectedCategory} // Using category as account type
         serviceTypeId="1" // Default service type ID, adjust as needed
@@ -113,16 +117,35 @@ const PaySadaka = ({
   };
 
   // Handle add to cart
-  const handleAddToCart = () => {
-    if (!isFormValid) {
-      return;
+  
+  const cartData = useSelector((state) => state.cart);
+  const userid = JSON.parse(localStorage.getItem("UserData")).Id;
+
+  const handleAddToCart = async () => {
+    if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == selectedOffice || cartData.cartData.CartFirstItemCount == 0){
+      const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
+            `0#${cartData.cartData.CartFirstItemCount}#${userid}#2#0#${selectedOffice}#${isAidEnabled ? selectedAid : 0}#${donationAmount}##False`
+                  // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#""#IsDone  
+          )
+      const handleFetchCartData =   async () => {
+              const data = await executeProcedure(
+                "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+                userid
+              );
+              dispatch(setCartData(data.decrypted));
+          }
+      handleFetchCartData()
+      toast.success("تمت الاضافة إلى السلة بنجاح")
     }
-    console.log("Add to cart:", {
-      office: selectedOffice,
-      aid: selectedAid,
-      category: selectedCategory,
-      amount: donationAmount
-    });
+    else{
+      toast.error("يجب ان تكون جميع عناصر السلة من نفس المكتب")
+    }
+    // console.log("Add to cart:", {
+    //   office: selectedOffice,
+    //   aid: selectedAid,
+    //   category: selectedCategory,
+    //   amount: donationAmount
+    // });
     // Add your cart logic here
   };
   

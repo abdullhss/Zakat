@@ -27,6 +27,9 @@ import DonationRequest from "./pages/DonationRequest";
 import Campaign from "./pages/Campaign.jsx";
 import DonationRequester from "./pages/DonationRequester.jsx";
 import MainZakatPage from "./pages/MainZakatPage.jsx";
+import cartReducer , {setCartData} from "./features/CartSlice/CartSlice";
+import { executeProcedure } from "./services/apiServices.js";
+import { useEffect } from "react";
 
 // Main Pages (with navbar via Layout)
 
@@ -36,9 +39,25 @@ import MainZakatPage from "./pages/MainZakatPage.jsx";
 /**
  * Main App component with routing configuration
  */
+const userID = JSON.parse(localStorage.getItem("UserData")).Id;
+
 function App() {
   const dispatch = useDispatch();
   const {showPayPopup,  popupComponent , popupTitle} = useSelector((state) => state.pay);
+  const cartData = useSelector((state) => state.cart);
+  console.log(cartData);
+  
+  const handleFetchCartData =   async () => {
+    const data = await executeProcedure(
+      "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+      userID
+    );
+    dispatch(setCartData(data.decrypted));
+  } 
+  useEffect(() => {
+    handleFetchCartData();
+  }, []);
+
   return (
     <Provider store={store}>
       <ToastContainer
@@ -54,7 +73,7 @@ function App() {
             <Route path="/login" element={<Login />} />
 
             {/* Main Routes - With Layout (Navbar + Content) */}
-            <Route path="/" element={<Layout />}>
+            <Route path="/" element={<Layout/>}>
               <Route index element={<Home />} />
               <Route path="/services/zakat" element={<Zakat/>} />
               <Route path="/zakat" element={<MainZakatPage/>} />

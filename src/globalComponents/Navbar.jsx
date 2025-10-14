@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faShoppingCart,
   faSearch,
   faBars,
   faTimes,
@@ -17,13 +16,15 @@ import zakat from "../public/SVGs/zakat.svg";
 import sheep from "../../public/Sheep.svg";
 import DonateRequest from "../public/SVGs/DonateRequest.svg";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
-
+  const cartData = useSelector((state) => state.cart);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -148,10 +149,13 @@ const Navbar = () => {
               </button>
               <button
                 onClick={handleCartClicked}
-                className="p-2 text-[#17343B] transition-colors"
+                className="p-2 text-[#17343B] transition-colors relative"
                 title="السلة"
               >
                 <img src={shoppingCart}></img>
+                {cartData?.cartData.CartFirstItemCount>0 &&
+                  <span className="absolute top-0 -right-1 rounded-full w-5 h-5 flex items-center justify-center ">{cartData.cartData.CartFirstItemCount}</span>
+                }
               </button>
             </div>
 

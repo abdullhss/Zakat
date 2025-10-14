@@ -8,9 +8,12 @@ import { CalculatorIcon } from "lucide-react";
 import ZakatCalculator from "./ZakatCalc";
 import { AnimatePresence } from "framer-motion";
 import {motion} from "framer-motion"
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setShowPopup, setPopupComponent , setPopupTitle} from "../../features/PaySlice/PaySlice";
 import PayComponent from "../PayComponent";
+import { DoTransaction, executeProcedure } from "../../services/apiServices";
+import cartReducer , {setCartData} from "../../features/CartSlice/CartSlice";
+import { toast } from "react-toastify";
 
 const PayZakat = ({ 
   offices = [], 
@@ -37,7 +40,7 @@ const PayZakat = ({
         name: type.SubventionTypeName
       }))
     : [];
-
+    
   // Use zakatTypes from API or fallback to static categories
   const categories = zakatTypes.length > 0 
     ? zakatTypes.map(type => ({
@@ -51,7 +54,7 @@ const PayZakat = ({
 
   // Check if all required fields are filled
   const isFormValid = selectedOffice && selectedAid && selectedCategory && donationAmount;
-  const isPayNowValid = selectedOffice && selectedCategory && donationAmount;
+  const isPayNowValid = isAidEnabled == 1 ? selectedOffice && selectedAid && selectedCategory && donationAmount : selectedOffice && selectedCategory && donationAmount;
   // Get selected office name
   const getSelectedOfficeName = () => {
     if (!selectedOffice) return "";
@@ -103,6 +106,7 @@ const PayZakat = ({
     dispatch(setPopupComponent(
       <PayComponent
       officeName={officeName}
+      PaymentDesc={subventionTypes[selectedCategory].SubventionTypeName}
       officeId={selectedOffice}
       accountTypeId={selectedCategory} // Using category as account type
       serviceTypeId="1" // Default service type ID, adjust as needed
@@ -122,18 +126,31 @@ const PayZakat = ({
   };
 
   // Handle add to cart
-  const handleAddToCart = () => {
-    if (!isFormValid) {
-      return;
+  const cartData = useSelector((state) => state.cart);
+  const userid = JSON.parse(localStorage.getItem("UserData")).Id;
+
+  const handleAddToCart = async () => {
+
+    if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == selectedOffice || cartData.cartData.CartFirstItemCount == 0){
+      const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
+        `0#${cartData.cartData.CartFirstItemCount}#${userid}#1#0#${selectedOffice}#${isAidEnabled ? selectedAid : 0}#${donationAmount}#${categories[selectedCategory - 1].name}#false`
+        // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#IsDone
+      )      
+      // update navbar
+      const handleFetchCartData =   async () => {
+        const data = await executeProcedure(
+          "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+          userid
+        );
+        dispatch(setCartData(data.decrypted));
+      } 
+      handleFetchCartData()
+      toast.success("تمت الاضافة إلى السلة بنجاح")
     }
-    console.log("Add to cart:", {
-      office: selectedOffice,
-      aid: selectedAid,
-      category: selectedCategory,
-      amount: donationAmount
-    });
-    // Add your cart logic here
-  };
+    else{
+      toast.error("يجب ان تكون جميع عناصر السلة من نفس المكتب")
+    }
+  }
   
   const handleZakatCalcAppeare = ()=>{
     setZakatPopUp((prev)=>!prev)
@@ -327,11 +344,9 @@ const PayZakat = ({
           <button
             onClick={handleAddToCart}
             className={`w-full sm:w-auto flex items-center justify-center border rounded-lg p-2 ${
-              !isFormValid
-                ? "border-gray-300 cursor-not-allowed"
-                : "border-[#16343A]"
+                        !isPayNowValid ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
             }`}
-            disabled={!isFormValid}
+            disabled={!isPayNowValid}
           >
             <img src={ShoppingCart} alt="سلة التسوق" className="w-5 h-5" />
           </button>
