@@ -124,7 +124,7 @@ const PaySadaka = ({
   const handleAddToCart = async () => {
     if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == selectedOffice || cartData.cartData.CartFirstItemCount == 0){
       const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
-            `0#${cartData.cartData.CartFirstItemCount}#${userid}#2#0#${selectedOffice}#${isAidEnabled ? selectedAid : 0}#${donationAmount}##False`
+            `0#${cartData.cartData.CartFirstItemCount||0}#${userid}#2#0#${selectedOffice}#${isAidEnabled ? selectedAid : 0}#${donationAmount}##False`
                   // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#""#IsDone  
           )
       const handleFetchCartData =   async () => {

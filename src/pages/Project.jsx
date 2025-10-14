@@ -224,7 +224,7 @@ const Project = () => {
         if(UserData){
             if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == projectData.Office_Id || cartData.cartData.CartFirstItemCount == 0){
                 const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
-                `0#${cartData.cartData.CartFirstItemCount}#${UserData.Id}#${getFinalActionID()}#${projectData.Id}#${projectData.Office_Id}#${projectData.SubventionType_Id}#${donationAmount}##false`
+                `0#${cartData.cartData.CartFirstItemCount||0}#${UserData.Id}#${getFinalActionID()}#${projectData.Id}#${projectData.Office_Id}#${projectData.SubventionType_Id}#${donationAmount}##false`
                         // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#IsDone  
                 )
                 // update navbar

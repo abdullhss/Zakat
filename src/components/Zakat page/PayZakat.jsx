@@ -133,7 +133,7 @@ const PayZakat = ({
 
     if(JSON.parse(cartData.cartData.CartFirstItemData)[0].Office_Id == selectedOffice || cartData.cartData.CartFirstItemCount == 0){
       const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==",
-        `0#${cartData.cartData.CartFirstItemCount}#${userid}#1#0#${selectedOffice}#${isAidEnabled ? selectedAid : 0}#${donationAmount}#${categories[selectedCategory - 1].name}#false`
+        `0#${cartData.cartData.CartFirstItemCount||0}#${userid}#1#0#${selectedOffice}#${isAidEnabled ? selectedAid : 0}#${donationAmount}#${categories[selectedCategory - 1].name}#false`
         // 0#MainId#GeneralUser_Id#Action_Id#Project_Id#Office_Id#SubventionType_Id#PaymentValue#IsDone
       )      
       // update navbar
