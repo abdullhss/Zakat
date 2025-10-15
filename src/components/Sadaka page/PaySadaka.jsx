@@ -119,7 +119,7 @@ const PaySadaka = ({
   // Handle add to cart
   
   const cartData = useSelector((state) => state.cart);
-  const userid = JSON.parse(localStorage.getItem("UserData")).Id;
+  const userid = JSON.parse(localStorage.getItem("UserData"))?.Id;
 
   const safeParseArray = (str) => {
     try {
@@ -131,38 +131,42 @@ const PaySadaka = ({
   };
 
   const handleAddToCart = async () => {
-    try {
-      const cart = cartData?.cartData ?? {};
-      const firstItemCount = Number(cart.CartFirstItemCount) || 0;
-      const firstItems = safeParseArray(cart.CartFirstItemData);
-      const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
+    if(userid){
+          try {
+            const cart = cartData?.cartData ?? {};
+            const firstItemCount = Number(cart.CartFirstItemCount) || 0;
+            const firstItems = safeParseArray(cart.CartFirstItemData);
+            const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
 
-      if (firstItemCount == 0 || firstOfficeId == selectedOffice) {
-        const safeUserid = userid ?? 0;
-        const safeSelectedAid = isAidEnabled ? selectedAid : 0;
-        const safeDonation = donationAmount || 0;
-        const safeSelectedOffice = selectedOffice ?? 0;
+            if (firstItemCount == 0 || firstOfficeId == selectedOffice) {
+              const safeUserid = userid ?? 0;
+              const safeSelectedAid = isAidEnabled ? selectedAid : 0;
+              const safeDonation = donationAmount || 0;
+              const safeSelectedOffice = selectedOffice ?? 0;
 
-        const payload = `0#${firstItems?.[0]?.Id || 0}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
+              const payload = `0#${firstItems?.[0]?.Id || 0}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
 
-        const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
+              const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
 
-        const handleFetchCartData = async () => {
-          const data = await executeProcedure(
-            "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
-            userid
-          );
-          dispatch(setCartData(data.decrypted));
-        };
+              const handleFetchCartData = async () => {
+                const data = await executeProcedure(
+                  "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+                  userid
+                );
+                dispatch(setCartData(data.decrypted));
+              };
 
-        await handleFetchCartData();
-        toast.success("تمت الإضافة إلى السلة بنجاح");
-      } else {
-        toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
-      }
-    } catch (error) {
-      console.error("handleAddToCart error:", error);
-      toast.error("حدث خطأ أثناء إضافة العنصر إلى السلة. حاول مرة أخرى.");
+              await handleFetchCartData();
+              toast.success("تمت الإضافة إلى السلة بنجاح");
+            } else {
+              toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
+            }
+          } catch (error) {
+            console.error("handleAddToCart error:", error);
+            toast.error("حدث خطأ أثناء إضافة العنصر إلى السلة. حاول مرة أخرى.");
+          }
+    }else{
+            toast.error("برجاء تسجيل الدخول أولاً");
     }
   };
 

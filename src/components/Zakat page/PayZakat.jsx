@@ -127,7 +127,7 @@ const PayZakat = ({
 
   // Handle add to cart
   const cartData = useSelector((state) => state.cart);
-  const userid = JSON.parse(localStorage.getItem("UserData")).Id;
+  const userid = JSON.parse(localStorage.getItem("UserData"))?.Id;
 
   const safeParseArray = (str) => {
     try {
@@ -139,7 +139,8 @@ const PayZakat = ({
   };
 
   const handleAddToCart = async () => {
-    try {
+    if(userid){
+          try {
       const cart = cartData?.cartData ?? {};
       const firstItemCount = Number(cart.CartFirstItemCount) || 0;
       const firstItems = safeParseArray(cart.CartFirstItemData);
@@ -170,9 +171,12 @@ const PayZakat = ({
       } else {
         toast.error("يجب ان تكون جميع عناصر السلة من نفس المكتب");
       }
-    } catch (err) {
-      console.error("handleAddToCart error:", err);
-      toast.error("حصل خطأ أثناء إضافة العنصر للسلة. حاول مرة أخرى.");
+      } catch (err) {
+        console.error("handleAddToCart error:", err);
+        toast.error("حصل خطأ أثناء إضافة العنصر للسلة. حاول مرة أخرى.");
+      }
+    } else{
+        toast.error("برجاء تسجيل الدخول أولاً");
     }
   };
 

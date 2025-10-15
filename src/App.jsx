@@ -40,7 +40,8 @@ import Cart from "./pages/Cart.jsx";
 /**
  * Main App component with routing configuration
  */
-const userID = JSON.parse(localStorage.getItem("UserData")).Id;
+const storedUser = localStorage.getItem("UserData");
+const userID = storedUser ? JSON.parse(storedUser)?.Id : null;
 
 function App() {
   const dispatch = useDispatch();
@@ -56,7 +57,9 @@ function App() {
     dispatch(setCartData(data.decrypted));
   } 
   useEffect(() => {
-    handleFetchCartData();
+    if(userID != null){
+      handleFetchCartData();
+    }
   }, []);
 
   return (
