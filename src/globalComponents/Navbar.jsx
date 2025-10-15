@@ -42,11 +42,12 @@ const Navbar = () => {
     navigate("/");
   };
   const handleCartClicked = () => {
-    if(!localStorage.getItem("UserData")){
-      toast.error("يجب تسجيل الدخول اولا")
-    }else{
-      navigate("/")
+    const userId = JSON.parse(localStorage.getItem("UserData"))?.Id;
+    if (!userId) {
+      toast.error("يجب تسجيل الدخول اولا");
+      return;
     }
+    navigate("/cart");
   }
   const handleSearch = () => {
     console.log("Search clicked");

@@ -137,13 +137,13 @@ const PaySadaka = ({
       const firstItems = safeParseArray(cart.CartFirstItemData);
       const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
 
-      if (firstItemCount === 0 || firstOfficeId === selectedOffice) {
+      if (firstItemCount == 0 || firstOfficeId == selectedOffice) {
         const safeUserid = userid ?? 0;
         const safeSelectedAid = isAidEnabled ? selectedAid : 0;
         const safeDonation = donationAmount || 0;
         const safeSelectedOffice = selectedOffice ?? 0;
 
-        const payload = `0#${firstItemCount}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
+        const payload = `0#${firstItems?.[0]?.Id}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
 
         const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
 

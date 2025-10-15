@@ -106,7 +106,7 @@ const PayZakat = ({
     dispatch(setPopupComponent(
       <PayComponent
       officeName={officeName}
-      PaymentDesc={subventionTypes[selectedCategory].SubventionTypeName}
+      PaymentDesc={categories[selectedCategory-1].name}
       officeId={selectedOffice}
       accountTypeId={selectedCategory} // Using category as account type
       serviceTypeId="1" // Default service type ID, adjust as needed
@@ -144,15 +144,16 @@ const PayZakat = ({
       const firstItemCount = Number(cart.CartFirstItemCount) || 0;
       const firstItems = safeParseArray(cart.CartFirstItemData);
       const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
-
-      if (firstItemCount === 0 || firstOfficeId === selectedOffice) {
+      console.log(firstItems?.[0]?.Id);
+      
+      if (firstItemCount == 0 || firstOfficeId == selectedOffice) {
         const safeCount = firstItemCount;
         const safeUserid = userid ?? 0;
         const safeSelectedAid = isAidEnabled ? selectedAid : 0;
         const safeDonation = donationAmount || 0;
         const categoryName = (categories && categories[selectedCategory - 1]?.name) || "";
 
-        const payload = `0#${safeCount}#${safeUserid}#1#0#${selectedOffice}#${safeSelectedAid}#${safeDonation}#${categoryName}#false`;
+        const payload = `0#${firstItems?.[0]?.Id}#${safeUserid}#1#0#${selectedOffice}#${safeSelectedAid}#${safeDonation}#${categoryName}#false`;
 
         const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
 

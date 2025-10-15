@@ -30,6 +30,7 @@ import MainZakatPage from "./pages/MainZakatPage.jsx";
 import cartReducer , {setCartData} from "./features/CartSlice/CartSlice";
 import { executeProcedure } from "./services/apiServices.js";
 import { useEffect } from "react";
+import Cart from "./pages/Cart.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -85,6 +86,7 @@ function App() {
               <Route path="/project" element={<Project/>} />
               <Route path="/DonationRequester" element={<DonationRequester/>} />
               <Route path="/services/donation-request" element={<DonationRequest/>} />
+              <Route path="/cart" element={<Cart/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />
