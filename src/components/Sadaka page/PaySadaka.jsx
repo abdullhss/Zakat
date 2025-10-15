@@ -143,7 +143,7 @@ const PaySadaka = ({
         const safeDonation = donationAmount || 0;
         const safeSelectedOffice = selectedOffice ?? 0;
 
-        const payload = `0#${firstItems?.[0]?.Id}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
+        const payload = `0#${firstItems?.[0]?.Id || 0}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
 
         const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
 

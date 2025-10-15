@@ -253,7 +253,7 @@ const Project = () => {
         }
 
         if (firstItemCount == 0 || firstOfficeId == projectOfficeId) {
-        const payload = `0#${firstItems?.[0]?.Id}#${UserData.Id}#${actionId}#${projectId}#${projectOfficeId}#${subventionId}#${donation}##false`;
+        const payload = `0#${firstItems?.[0]?.Id || 0}#${UserData.Id}#${actionId}#${projectId}#${projectOfficeId}#${subventionId}#${donation}##false`;
 
         const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
 

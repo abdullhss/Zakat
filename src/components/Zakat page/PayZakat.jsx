@@ -153,7 +153,7 @@ const PayZakat = ({
         const safeDonation = donationAmount || 0;
         const categoryName = (categories && categories[selectedCategory - 1]?.name) || "";
 
-        const payload = `0#${firstItems?.[0]?.Id}#${safeUserid}#1#0#${selectedOffice}#${safeSelectedAid}#${safeDonation}#${categoryName}#false`;
+        const payload = `0#${firstItems?.[0]?.Id || 0}#${safeUserid}#1#0#${selectedOffice}#${safeSelectedAid}#${safeDonation}#${categoryName}#false`;
 
         const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
 

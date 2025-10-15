@@ -113,8 +113,7 @@ function App() {
             />
           </Routes>
         </div>
-      </Router>
-
+        
       <AnimatePresence>
         {showPayPopup && (
           <motion.div
@@ -139,6 +138,8 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      </Router>
+
     </Provider>
   );
 }

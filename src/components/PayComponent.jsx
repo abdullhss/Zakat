@@ -7,6 +7,8 @@ import { HandelFile } from "./HandelFile";
 import {setShowPopup} from "../features/PaySlice/PaySlice"
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
+import { useNavigate } from "react-router-dom";
 const PayComponent = ({
   officeName = "",
   officeId = "",
@@ -17,7 +19,8 @@ const PayComponent = ({
   actionID="1",
   SubventionType_Id="0",
   Project_Id="0",
-  PaymentDesc=""
+  PaymentDesc="",
+  Salla=false
 }) => {
   const [donationType, setDonationType] = useState(null);
   const [localMethod, setLocalMethod] = useState(null);
@@ -36,6 +39,7 @@ const PayComponent = ({
   const [fileError, setFileError] = useState(""); // New state for file error
   const fileRef = useRef(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate() ;
   const gradientBtn =
     "bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white";
   const grayBtn = "bg-[#C9C9C9] text-black";
@@ -170,6 +174,18 @@ const PayComponent = ({
         toast.success("تم الدفع بنجاح");
         dispatch(setShowPopup(false));
         
+        if(Salla && JSON.parse(localStorage.getItem("UserData")).Id){
+            const handleFetchCartData =   async () => {
+              const data = await executeProcedure(
+                "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+                JSON.parse(localStorage.getItem("UserData")).Id
+              );
+              dispatch(setCartData(data.decrypted));
+            } 
+            handleFetchCartData();
+            navigate("/")
+        }
+          
       } else {
         console.log("error payment");
       }
@@ -586,7 +602,8 @@ PayComponent.propTypes = {
   actionID:PropTypes.number,
   SubventionType_Id:PropTypes.string,
   Project_Id:PropTypes.string,
-  PaymentDesc:PropTypes.string
+  PaymentDesc:PropTypes.string,
+  Salla : PropTypes.bool
 };
 
 export default PayComponent;

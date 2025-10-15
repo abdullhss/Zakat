@@ -88,10 +88,22 @@ const Cart = () => {
   
   const summary = getSummaryData();
   const officeName = getOfficeName();
-  const projectid = JSON.parse(useSelector(state=>state.cart.cartData.CartFirstItemData))[0].Id;
+  const cartFirstItemData = useSelector(state => state.cart.cartData?.CartFirstItemData);
+
+  let projectid = null;
+  try {
+    if (cartFirstItemData) {
+      const parsed = typeof cartFirstItemData === "string" 
+        ? JSON.parse(cartFirstItemData) 
+        : cartFirstItemData;
+      projectid = parsed[0]?.Id || null;
+    }
+  } catch (err) {
+    console.error("Error parsing CartFirstItemData:", err);
+  }
   
-  console.log(projectid);
   const handlePayCart = ()=>{
+    console.log(projectid);
     
     dispatch(setShowPopup(true));
     dispatch(setPopupTitle("الدفع"));
@@ -102,6 +114,7 @@ const Cart = () => {
             actionID={activeTab === "charity" ? 7 : 6}
             officeId={currentData[0].Office_Id}
             officeName={currentData[0].OfficeName}
+            Salla={true}
         />
     ));
   }
