@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import moenyWhite from "../public/SVGs/moneyWhite.svg";
 import { executeProcedure , DoTransaction} from "../services/apiServices";
 import { HandelFile } from "./HandelFile";
-import {setShowPopup} from "../features/PaySlice/PaySlice"
+import {setShowPopup , closeAllPopups} from "../features/PaySlice/PaySlice"
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
@@ -173,6 +173,8 @@ const PayComponent = ({
         setFileError(""); // Clear file error on success
         toast.success("تم الدفع بنجاح");
         dispatch(setShowPopup(false));
+        dispatch(closeAllPopups());
+        
         
         if(Salla && JSON.parse(localStorage.getItem("UserData")).Id){
             const handleFetchCartData =   async () => {

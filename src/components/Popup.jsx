@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { setShowPopup, setPopupComponent} from "../features/PaySlice/PaySlice";
+import { setShowPopup, setPopupComponent , closePopup} from "../features/PaySlice/PaySlice";
 
 export default function Popup({ title, bodyComponent }) {
   const {showPayPopup,  popupComponent} = useSelector((state) => state.pay);
@@ -17,7 +17,7 @@ export default function Popup({ title, bodyComponent }) {
       <div className="flex items-center justify-between p-4 border-b">
         <h1 className="text-xl font-semibold">{title}</h1>
         <button
-          onClick={()=>{dispatch(setShowPopup(false))}}
+          onClick={()=>{dispatch(closePopup())}}
           className="w-8 h-8 flex items-center justify-center text-white"
         >
           <span className="text-xl bg-gradient-to-l p-1 from-[#17343B] via-[#18383D] to-[#24645E] rounded-md">
