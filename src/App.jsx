@@ -14,7 +14,12 @@ import Zakat from "./pages/Zakat";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
-import { setShowPopup} from "./features/PaySlice/PaySlice";
+import {   setShowPopup,
+  setPopupComponent,
+  setPopupTitle,
+  openPopup,
+  closePopup,
+  closeAllPopups,} from "./features/PaySlice/PaySlice";
 import Popup from "./components/Popup";
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from "react-toastify";
@@ -45,7 +50,7 @@ const userID = storedUser ? JSON.parse(storedUser)?.Id : null;
 
 function App() {
   const dispatch = useDispatch();
-  const {showPayPopup,  popupComponent , popupTitle} = useSelector((state) => state.pay);
+  const {showPayPopup,  popupComponent , popupTitle ,popups  } = useSelector((state) => state.pay);
   const cartData = useSelector((state) => state.cart);
   console.log(cartData);
   
@@ -118,7 +123,7 @@ function App() {
         </div>
         
       <AnimatePresence>
-        {showPayPopup && (
+        {showPayPopup && popups.length === 0 && (
           <motion.div
             dir="rtl"
             className="fixed top-0 right-0 h-screen w-screen z-[10000] bg-black/50 overflow-y-auto"
@@ -136,11 +141,46 @@ function App() {
               transition={{ duration: 0.4, ease: "easeInOut" }}
               onClick={(e) => e.stopPropagation()}
             >
-              <Popup title={popupTitle} bodyComponent={popupComponent} onClose={() => dispatch(setShowPopup(true))}/>
+              <Popup
+                title={popupTitle}
+                bodyComponent={popupComponent}
+                onClose={() => dispatch(setShowPopup(false))}
+              />
             </motion.div>
           </motion.div>
         )}
+
+        {/* النظام الجديد - أكتر من Popup */}
+
+        {[...popups].reverse().map((popup, index) => (
+          <motion.div
+            key={index}
+            dir="rtl"
+            className={`fixed top-0 right-0 h-screen w-screen z-[${10001 + index}] bg-black/50 overflow-y-auto`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => dispatch(closePopup())}
+          >
+            <motion.div
+              className="bg-white w-full md:w-1/2 h-full shadow-lg"
+              initial={{ x: "100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "100%", opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Popup
+                title={popup.title}
+                bodyComponent={popup.component}
+                onClose={() => dispatch(closePopup())}
+              />
+            </motion.div>
+          </motion.div>
+        ))}
       </AnimatePresence>
+
       </Router>
 
     </Provider>
