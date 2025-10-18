@@ -54,7 +54,7 @@ const PayZakat = ({
 
   // Check if all required fields are filled
   const isFormValid = selectedOffice && selectedAid && selectedCategory && donationAmount;
-  const isPayNowValid = isAidEnabled == 1 ? selectedOffice && selectedAid && selectedCategory && donationAmount : selectedOffice && selectedCategory && donationAmount;
+  const isPayNowValid = selectedOffice && selectedCategory && donationAmount;
   // Get selected office name
   const getSelectedOfficeName = () => {
     if (!selectedOffice) return "";

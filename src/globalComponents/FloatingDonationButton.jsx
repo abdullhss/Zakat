@@ -9,21 +9,14 @@ import { toast } from "react-toastify";
 const FloatingDonationButton = () => {
 
   const dispatch = useDispatch() ;
-  const state = useSelector(state=>state)
-  const userdata = JSON.parse(localStorage.getItem("UserData"))
-  const userId = userdata?.Id
+
   const handleDonationClick = () => {
-    if(userId){
         dispatch(
           openPopup({
             title: "التبرع السريع",
             component: <FastDonation />,
           })
         );
-    }
-    else{
-      toast.error("يجب تسجيل الدخول اولا")
-    }
   };
 
   return (

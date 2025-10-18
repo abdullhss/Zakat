@@ -151,7 +151,7 @@ const PayComponent = ({
         accountNum, // AccountNum - now properly set
         uploadedFileId || "", // AttachmentPhotoName
         "False", // IsApproved
-        JSON.parse(localStorage.getItem("UserData")).Id || 0 // GeneralUser_Id
+        JSON.parse(localStorage.getItem("UserData"))?.Id || 0 // GeneralUser_Id
       ].join("#");
 
       console.log("Calling procedure with params:", params);

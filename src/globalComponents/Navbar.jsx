@@ -87,6 +87,10 @@ const Navbar = () => {
     <header className="fixed top-0 left-0 right-0 z-[10000] bg-white shadow-sm border-b border-gray-100">
       <nav className="px-4 lg:px-6 relative" dir="rtl">
         <div className="flex items-center justify-between h-16 lg:h-20">
+          <Link to="/" className=" lg:hidden flex items-center flex-shrink-0 h-full">
+            <img alt="وصل الليبية" src={logo}></img>
+          </Link>
+
           <div className="hidden lg:flex items-start space-x-8 space-x-reverse h-full">
             {/* Logo */}
             <Link to="/" className="flex items-center flex-shrink-0 h-full">

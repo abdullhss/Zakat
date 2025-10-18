@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Diamond from "../../../components/Diamond";
 import LibraryCard from "../../../components/LibraryCard";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const Librarys = ({ data }) => {
   const libs = JSON.parse(data);
@@ -95,9 +96,9 @@ const Librarys = ({ data }) => {
           المكاتب
         </div>
 
-        <span className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
+        <Link to={"/offices"} className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
           المزيد
-        </span>
+        </Link>
       </div>
 
       {/* libraries cards with navigation */}

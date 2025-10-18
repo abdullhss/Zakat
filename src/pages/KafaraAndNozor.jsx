@@ -225,7 +225,7 @@ const KafaraAndNozor = () => {
         </div>
       </div>
       
-      <div className='w-full md:px-12 mt-8'>
+      <div className='w-full px-4 md:px-12 mt-8'>
         {/* Tabs */}
         <div className='w-full flex items-center gap-6 mb-8'>
           <button 
