@@ -188,7 +188,7 @@ const OpportunitiesTab = ({Officeid}) => {
     return (
         <div className='mt-6'>
             {/* Tabs Section */}
-            <div className='flex items-center justify-between w-full px-8 mt-2 gap-4'>
+            <div className='flex items-center justify-between w-full md:px-8 mt-2 gap-4'>
                 <button 
                     onClick={() => handleTabChange('current')}
                     className={`flex-1 py-3 rounded-md transition-all duration-300 ${
@@ -222,11 +222,11 @@ const OpportunitiesTab = ({Officeid}) => {
             </div>
 
             {/* Filters with Scroll */}
-            <div className='relative mt-6 mx-8 border-b border-[#878787]'>
+            <div className='relative mt-6 md:mx-8 border-b border-[#878787]'>
                 {/* Left Arrow - Only show when there's content to scroll to */}
                     <button
                         onClick={scrollLeft}
-                        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                        className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
                     >
                         <ChevronLeft className="w-5 h-5 text-[#17343B]" />
                     </button>
@@ -234,7 +234,7 @@ const OpportunitiesTab = ({Officeid}) => {
                 {/* Right Arrow - Only show when there's content to scroll to */}
                     <button
                         onClick={scrollRight}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                        className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
                     >
                         <ChevronRight className="w-5 h-5 text-[#17343B]" />
                     </button>
@@ -272,7 +272,7 @@ const OpportunitiesTab = ({Officeid}) => {
             </div>
 
             {/* Projects Content */}
-            <div className="px-8 py-6">
+            <div className="md:px-8 py-6">
                 {loading ? (
                     <div className="text-center py-8">
                         <p className="text-gray-600">جاري التحميل...</p>
