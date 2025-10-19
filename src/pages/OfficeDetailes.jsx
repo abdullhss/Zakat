@@ -144,6 +144,16 @@ const OfficeDetailes = () => {
               backgroundSize: "auto",
             }}
           ></div>
+          <div className="absolute bottom-0 left-0 w-40 h-40 z-30">
+            <div className="absolute bottom-[-25rem] left-[8rem] w-[30rem] h-[30rem] rounded-full bg-[#000]/20"></div>
+            <div className="absolute bottom-[-20rem] left-[0rem] w-[30rem] h-[30rem] rounded-full bg-[#000]/30"></div>
+          </div>
+
+          <div className="absolute top-0 right-0 w-40 h-40 z-30">
+            <div className="absolute top-[-15rem] right-[5rem] w-[30rem] h-[30rem] rounded-full bg-[#000]/20"></div>
+            <div className="absolute top-[-18rem] right-[-10rem] w-[30rem] h-[30rem] rounded-full bg-[#000]/30"></div>
+          </div>
+          
         </motion.section>
         
         {/* Title */}
