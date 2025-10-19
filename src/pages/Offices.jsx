@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import filter from "../public/SVGs/fillter.svg"
 import LocationIcon from "../public/SVGs/LocationIcon.svg"
 import OfficeCard from '../components/OfficeCard'
@@ -18,7 +19,6 @@ const Offices = () => {
     }, [])
 
     useEffect(() => {
-        // Filter offices based on search term and selected city
         let filtered = offices;
         
         if (searchTerm) {
@@ -30,27 +30,23 @@ const Offices = () => {
         }
         
         if (selectedCity) {
-            filtered = filtered.filter(office => 
-                office.CityName === selectedCity
-            );
+            filtered = filtered.filter(office => office.CityName === selectedCity);
         }
         
         setFilteredOffices(filtered);
     }, [offices, searchTerm, selectedCity])
 
     const fetchOffice = async () => {
-        const response = await executeProcedure("mdemtAbueh2oz+k6MjjaFaOfTRzNK4XQQy0TBhCaV0Y=","0")
-        setOffices(JSON.parse(response.decrypted.OfficesData))
-        setFilteredOffices(JSON.parse(response.decrypted.OfficesData))
+        const response = await executeProcedure("mdemtAbueh2oz+k6MjjaFaOfTRzNK4XQQy0TBhCaV0Y=", "0")
+        const data = JSON.parse(response.decrypted.OfficesData)
+        setOffices(data)
+        setFilteredOffices(data)
     }
 
     const fetchCities = async () => {
         try {
             const response = await executeProcedure("xR3P2FQ9gQI7pvkeyawk7A==", "1#100")
-            // Assuming the response structure is similar to offices
-            // You might need to adjust this based on the actual response structure
             setCities(JSON.parse(response.decrypted.CitiesData))
-            
         } catch (error) {
             console.error('Error fetching cities:', error);
         }
@@ -93,7 +89,6 @@ const Offices = () => {
                     >
                         <option value="">جميع المدن</option>
                         {cities.map(city => (
-                            // Adjust the property names based on your actual API response structure
                             <option key={city.Id} value={city.CityName}>
                                 {city.CityName}
                             </option>
@@ -107,11 +102,21 @@ const Offices = () => {
                 </div>
             </div>
 
-            {/* Offices Grid */}
+            {/* Offices Grid with animation */}
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 px-4 md:px-12 pb-12'>
-                {filteredOffices.map((office) => (
-                    <OfficeCard key={office.Id} office={office} />
-                ))}
+                <AnimatePresence>
+                    {filteredOffices.map((office, index) => (
+                        <motion.div
+                            key={office.Id}
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -30 }}
+                            transition={{ duration: 0.4, delay: index * 0.05 }}
+                        >
+                            <OfficeCard office={office} />
+                        </motion.div>
+                    ))}
+                </AnimatePresence>
             </div>
         </div>
     )

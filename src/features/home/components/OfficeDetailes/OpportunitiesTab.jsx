@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { executeProcedure } from '../../../../services/apiServices';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import DonationCard from '../../../../components/DonationCard';
+import { motion, AnimatePresence } from "framer-motion";
 
 const OpportunitiesTab = ({Officeid}) => {
     const [filters, setFilters] = useState([]);
@@ -277,24 +278,37 @@ const OpportunitiesTab = ({Officeid}) => {
                         <p className="text-gray-600">جاري التحميل...</p>
                     </div>
                 ) : projects.length > 0 ? (
-                    <div>
-                        {/* Projects Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {projects.map((project,index) => (
-                                <DonationCard
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeTab + '-' + activeFilter + '-' + currentPage}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.5, ease: "easeOut" }}
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                        >
+                            {projects.map((project, index) => (
+                                <motion.div
                                     key={index}
-                                    cantPay={activeTab === 'current' ? false : true}
-                                    showBtn={project.AllowZakat}
-                                    collected={(project.WantedAmount - project.RemainingAmount).toFixed(2)}
-                                    goal={project.WantedAmount.toFixed(2)}
-                                    description={project.Description}
-                                    image={`https://framework.md-license.com:8093/ZakatImages/${project.PhotoName}.jpg`}
-                                    title={project.Name}
-                                    payNowLink={`/project?data=${JSON.stringify({...project , actionID:0})}`}
-                                />
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: index * 0.05 }}
+                                >
+                                    <DonationCard
+                                        cantPay={activeTab === 'current' ? false : true}
+                                        showBtn={project.AllowZakat}
+                                        collected={(project.WantedAmount - project.RemainingAmount).toFixed(2)}
+                                        goal={project.WantedAmount.toFixed(2)}
+                                        description={project.Description}
+                                        image={`https://framework.md-license.com:8093/ZakatImages/${project.PhotoName}.jpg`}
+                                        title={project.Name}
+                                        payNowLink={`/project?data=${JSON.stringify({...project , actionID:0})}`}
+                                    />
+                                </motion.div>
                             ))}
-                        </div>
-                    </div>
+                        </motion.div>
+                    </AnimatePresence>
+
                 ) : (
                     <div className="text-center py-12">
                         <div className="text-gray-400 mb-4">
