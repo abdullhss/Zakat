@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Diamond from "../../../components/Diamond";
 import NewsCard from "../../../components/NewsCard";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const LastNews = ({ data }) => {
   const news = JSON.parse(data);
@@ -85,9 +86,9 @@ const LastNews = ({ data }) => {
           آخر الأخبار
         </div>
 
-        <span className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
+        <Link to={`/news`} className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
           المزيد
-        </span>
+        </Link>
       </div>
 
       {/* news cards with navigation */}

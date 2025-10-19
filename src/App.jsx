@@ -39,6 +39,7 @@ import Cart from "./pages/Cart.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import Offices from "./pages/Offices.jsx";
 import OfficeDetailes from "./pages/OfficeDetailes.jsx";
+import News from "./pages/News.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -100,6 +101,7 @@ function App() {
               <Route path="/services/donation-request" element={<DonationRequest/>} />
               <Route path="/offices" element={<Offices/>} />
               <Route path="/office" element={<OfficeDetailes/>} />
+              <Route path="/news" element={<News/>} />
               <Route path="/cart" element={<Cart/>} />
             </Route>
             
