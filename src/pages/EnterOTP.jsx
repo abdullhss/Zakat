@@ -102,8 +102,10 @@ const EnterOTP = () => {
         console.log(TransToken);
         const otpString = otp.join('');
         
-        const response = ExecuteAuthentication(TransToken , otpString);
-        if(response.result == 200){
+        const response = await ExecuteAuthentication(TransToken , otpString);
+        console.log(response);
+        
+        if(response.success == 200){
             navigate("/login")
         }
     } catch (error) {
