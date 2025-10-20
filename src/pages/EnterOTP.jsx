@@ -99,11 +99,11 @@ const EnterOTP = () => {
     e.preventDefault();
     try {
         const TransToken = localStorage.getItem("TransToken")
-        console.log(TransToken);
+        
         const otpString = otp.join('');
         
         const response = await ExecuteAuthentication(TransToken , otpString);
-        console.log(response);
+        
         
         if(response.success == 200){
             navigate("/login")

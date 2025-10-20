@@ -54,11 +54,11 @@ const Login = () => {
    */
   const onSubmit = async (data) => {
     try {
-      console.log("Login data:", data);
-      console.log(`${data.phone}#${data.password}#$????`);
+      
+      
       
       const response = await executeProcedure("5GbDgnFHgSnsKHp60G95ngKtX9A5Wkofyq68u6hXJGg=",`${data.phone}#${data.password}#$????`)
-      console.log(response.decrypted);
+      
       if(response.decrypted){
         localStorage.setItem("UserData",JSON.stringify(response.decrypted))
       }

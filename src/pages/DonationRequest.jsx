@@ -33,8 +33,8 @@ const DonationRequest = () => {
           "0"
         );
         
-        console.log("API Response:", response);
-        console.log("Decrypted Response:", response.decrypted);
+        
+        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -48,7 +48,7 @@ const DonationRequest = () => {
                 : data.OfficesData;
               
               setOffices(Array.isArray(officesData) ? officesData : []);
-              console.log("Parsed offices:", officesData);
+              
             } catch (parseError) {
               console.error("Error parsing OfficesData:", parseError);
               setOffices([]);
@@ -78,11 +78,11 @@ const DonationRequest = () => {
           "1#100"
         )
         
-        console.log("Filters response:", response)
+        
         
         if (response && response.decrypted && response.decrypted.SubventionTypesData) {
           const parsedFilters = JSON.parse(response.decrypted.SubventionTypesData)
-          console.log("Parsed filters:", parsedFilters)
+          
           
           const allFilter = { Id: 0, SubventionTypeName: "الكل" }
           const filterObjects = [allFilter, ...parsedFilters]
@@ -117,7 +117,7 @@ const DonationRequest = () => {
     const response = await DoTransaction("g+a67fXnSBQre/3SDxT2uA==",
       `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}`
     )
-    console.log(response.success);
+    
     if(response.success==200){
         setFormData({
         name: '',

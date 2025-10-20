@@ -137,11 +137,11 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
             });
           }
           
-          console.log(`${calc.type} calculation:`, zakaValue);
+          
         }
       });
 
-      console.log('Total Zakat:', totalZakat);
+      
       setDonationAmount(totalZakat)
       setZakatResult(totalZakat);
       setCalculationDetails(details);
@@ -164,8 +164,8 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
           "0"
         );
         
-        console.log("API Response:", response);
-        console.log("Decrypted Response:", response.decrypted);
+        
+        
 
         if (response.decrypted && response.decrypted.ZakatGoldValues) {
           // Parse the ZakatGoldValues string into an array
@@ -181,7 +181,7 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
           }));
           
           setGoldOptions(options);
-          console.log("Gold Options:", options);
+          
         }
       } catch (error) {
         console.error("Error fetching gold data:", error);

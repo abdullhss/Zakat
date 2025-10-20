@@ -79,12 +79,12 @@ const PayComponent = ({
         }
       });
 
-      console.log("Upload response:", result);
+      
 
       if (result.status === 200) {
         setUploadedFileId(result.id);
         setUploadedFileName(file.name);
-        console.log("File uploaded successfully with ID:", result.id);
+        
       } else {
         console.error("Upload failed:", result.error);
       }
@@ -154,10 +154,10 @@ const PayComponent = ({
         JSON.parse(localStorage.getItem("UserData"))?.Id || 0 // GeneralUser_Id
       ].join("#");
 
-      console.log("Calling procedure with params:", params);
+      
 
       const response = await DoTransaction("rCSWIwrXh3HGKRYh9gCA8g==", params);
-      console.log("payment response:", response);
+      
 
       if (response?.success) {
         // Reset form or navigate to success page
@@ -189,7 +189,7 @@ const PayComponent = ({
         }
           
       } else {
-        console.log("error payment");
+        
       }
 
     } catch (error) {
@@ -210,11 +210,11 @@ const PayComponent = ({
     } 
     // For bank transfers without file upload yet
     else if (donationType === "international" || localMethod === "bank") {
-        console.log("error payment");
+        
     }
     // If no donation type selected
     else if (!donationType) {
-        console.log("error payment");
+        
     }
   };
 
@@ -260,11 +260,11 @@ const PayComponent = ({
           "sUlbVhUJKwC+dwRdG8NZb+RoLowRJemxolOItXOYojg=",
           params
         );
-        console.log("Local bank accounts params:", params);
-        console.log("Local bank accounts response:", response);
+        
+        
         
         const localData = JSON.parse(response?.decrypted?.OfficeBanksData || "[]");
-        console.log("Local bank accounts data:", localData);
+        
         
         setLocalBankAccountsData(localData);
       } catch (error) {

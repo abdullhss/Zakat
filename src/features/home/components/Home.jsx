@@ -24,7 +24,7 @@ function Home() {
           "0"
         );
         setMainScreenData(response);
-        console.log(response.decrypted);
+        
         
       } catch (error) {
         console.error("Error fetching main screen data:", error);

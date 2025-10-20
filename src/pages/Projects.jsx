@@ -57,11 +57,11 @@ const Projects = () => {
           "1#100"
         )
         
-        console.log("Filters response:", response)
+        
         
         if (response && response.decrypted && response.decrypted.SubventionTypesData) {
           const parsedFilters = JSON.parse(response.decrypted.SubventionTypesData)
-          console.log("Parsed filters:", parsedFilters)
+          
           
           const allFilter = { Id: 0, SubventionTypeName: "الكل" }
           const filterObjects = [allFilter, ...parsedFilters]
@@ -87,14 +87,14 @@ const Projects = () => {
         const startNum = (currentPage - 1) * itemsPerPage + 1
         const params = `O#${activeFilter}#${startNum}#${itemsPerPage}`
         
-        console.log("Fetching donation cards with params:", params)
+        
         
         const response = await executeProcedure(
           "B0/KqqIyiS3j4lbxUKXJCw==",
           params
         )
         
-        console.log("Donation cards response:", response)
+        
         
         if (response && response.decrypted) {
           const projectsDataString = response.decrypted.ProjectsData
@@ -106,7 +106,7 @@ const Projects = () => {
             totalCount = response.decrypted.totalCount || cardsData.length || 0
           }
           
-          console.log("Parsed cards data:", cardsData)
+          
           
           setDonationCards(Array.isArray(cardsData) ? cardsData : [])
           setTotalProjectsCount(totalCount)

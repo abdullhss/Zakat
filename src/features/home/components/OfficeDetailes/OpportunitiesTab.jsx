@@ -35,11 +35,11 @@ const OpportunitiesTab = ({Officeid}) => {
                     "1#100"
                 )
                 
-                console.log("Filters response:", response)
+                
                 
                 if (response && response.decrypted && response.decrypted.SubventionTypesData) {
                     const parsedFilters = JSON.parse(response.decrypted.SubventionTypesData)
-                    console.log("Parsed filters:", parsedFilters)
+                    
                     
                     const allFilter = { Id: 0, SubventionTypeName: "الكل" }
                     const filterObjects = [allFilter, ...parsedFilters]
@@ -68,22 +68,15 @@ const OpportunitiesTab = ({Officeid}) => {
             const StartNum = (currentPage - 1) * countPerPage + 1;
             const SubventionTypeId = activeFilter === 0 ? 0 : activeFilter;
             
-            console.log("Fetching with params:", {
-                Officeid,
-                SubventionTypeId,
-                StartNum,
-                countPerPage,
-                activeTab,
-                procedure: STORED_PROCEDURES[activeTab]
-            });
+            
 
             const response = await executeProcedure(
                 STORED_PROCEDURES[activeTab],
                 `${Officeid}#${SubventionTypeId}#${'S'}#${StartNum}#${countPerPage}`
             );
-            console.log(`${Officeid}#${SubventionTypeId}#${'S'}#${StartNum}#${countPerPage}`);
             
-            console.log("Projects response:", response);
+            
+            
             
             // Handle case where response.decrypted might be undefined
             if (response && response.decrypted) {
@@ -98,8 +91,8 @@ const OpportunitiesTab = ({Officeid}) => {
                 setTotalProjectsCount(totalCount);
                 setTotalPages(Math.ceil(totalCount / countPerPage));
                 
-                console.log("Parsed projects:", projectsData);
-                console.log("Total count:", totalCount);
+                
+                
             } else {
                 // Handle case where response.decrypted is undefined
                 console.warn("No decrypted data in response:", response);

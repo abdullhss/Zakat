@@ -43,7 +43,7 @@ const KafaraAndNozor = () => {
           "0"
         );
         
-        console.log("API Response:", response);
+        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -55,7 +55,7 @@ const KafaraAndNozor = () => {
                 : data.OfficesData;
               
               setOffices(Array.isArray(officesData) ? officesData : []);
-              console.log("Parsed offices:", officesData);
+              
             } catch (parseError) {
               console.error("Error parsing OfficesData:", parseError);
               setOffices([]);
@@ -85,7 +85,7 @@ const KafaraAndNozor = () => {
           "0"
         );
         
-        console.log("Kafara Value API Response:", response);
+        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -100,7 +100,7 @@ const KafaraAndNozor = () => {
               if (Array.isArray(kafaraData) && kafaraData.length > 0) {
                 const kafaraValue = kafaraData[0].KafaraValue || 0;
                 setKafaraValue(kafaraValue);
-                console.log("Kafara value:", kafaraValue);
+                
                 
                 // Auto-calculate initial kafara amount
                 if (!isManualAmount) {

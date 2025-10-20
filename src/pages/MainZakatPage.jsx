@@ -13,7 +13,7 @@ const MainZakatPage = () => {
   const [donationValue, setDonationValue] = useState(0);
   const handleCalcZakat = ()=>{
     setZakatPopUp(true);
-    console.log("calc zakat");
+    
   }
   return (
     <div className="relative overflow-hidden">

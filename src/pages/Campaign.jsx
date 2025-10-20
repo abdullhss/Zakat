@@ -172,7 +172,7 @@ const Campaign = () => {
                 Campaign_Id={campaignData.Id} // Using Campaign_Id instead of Project_Id
                 onSuccess={() => {
                     // Handle successful donation
-                    console.log("Donation successful");
+                    
                     setDonationAmount(""); // Clear donation amount after success
                     toast.success("تم التبرع بنجاح!");
                 }}

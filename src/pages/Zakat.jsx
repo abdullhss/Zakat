@@ -34,8 +34,8 @@ const Zakat = () => {
           "0"
         );
         
-        console.log("API Response:", response);
-        console.log("Decrypted Response:", response.decrypted);
+        
+        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -49,7 +49,7 @@ const Zakat = () => {
                 : data.OfficesData;
               
               setOffices(Array.isArray(officesData) ? officesData : []);
-              console.log("Parsed offices:", officesData);
+              
             } catch (parseError) {
               console.error("Error parsing OfficesData:", parseError);
               setOffices([]);
@@ -65,7 +65,7 @@ const Zakat = () => {
                 : data.ZakatTypesData;
               
               setZakatTypes(Array.isArray(zakatTypesData) ? zakatTypesData : []);
-              console.log("Parsed zakat types:", zakatTypesData);
+              
             } catch (parseError) {
               console.error("Error parsing ZakatTypesData:", parseError);
               setZakatTypes([]);
@@ -105,13 +105,13 @@ const Zakat = () => {
         const startNum = (currentPage - 1) * 6; // Calculate start number based on current page
         const params = `${selectedOffice}#${selectedAid || "0"}#z#${startNum+1}#6`;
         
-        console.log("Fetching donations with params:", params);
+        
         
         const response = await executeProcedure(
           "phjR2bFDp5o0FyA7euBbsp/Ict4BDd2zHhHDfPlrwnk=",
           params
         );
-        console.log("Donations response:", response);
+        
         
         let donationsData = [];
         let subventionTypesData = [];
@@ -124,7 +124,7 @@ const Zakat = () => {
           if (data.ProjectsCount) {
             try {
               projectsCount = parseInt(data.ProjectsCount) || 0;
-              console.log("Projects count:", projectsCount);
+              
             } catch (parseError) {
               console.error("Error parsing ProjectsCount:", parseError);
               projectsCount = 0;
@@ -139,7 +139,7 @@ const Zakat = () => {
                 : data.ProjectsData;
               
               donationsData = Array.isArray(projectsData) ? projectsData : [];
-              console.log("Parsed projects:", donationsData);
+              
             } catch (parseError) {
               console.error("Error parsing ProjectsData:", parseError);
               donationsData = [];
@@ -154,7 +154,7 @@ const Zakat = () => {
                 : data.SubventionTypes;
               
               subventionTypesData = Array.isArray(parsedSubventionTypes) ? parsedSubventionTypes : [];
-              console.log("Parsed subvention types:", subventionTypesData);
+              
             } catch (parseError) {
               console.error("Error parsing SubventionTypes:", parseError);
               subventionTypesData = [];

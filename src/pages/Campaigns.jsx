@@ -48,7 +48,7 @@ useEffect(() => {
                 "792hE7jGjfELBbjahPuEaeKSFknF+Bg3QdRnCfJ7ssk=",
                 `${donationCurrentPage}#6`
             );
-            console.log("Donation campaigns:", response);
+            
             
             // Fix: Parse the JSON string to array
             const campaignsData = JSON.parse(response.decrypted.CampaignsData);
@@ -77,7 +77,7 @@ useEffect(() => {
                 "uIcc/W+fVBc3HevZNS9f4AzhqGV1bGCighxc8yfJRmk=",
                 `${UserData.Id}#${myCampaignsCurrentPage}#6`
             );
-            console.log("My campaigns:", response);
+            
             
             // Fix: Parse the JSON string to array and fix the count
             const myCampaignsData = JSON.parse(response.decrypted.CampaignsData);

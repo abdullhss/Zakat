@@ -15,11 +15,11 @@ function Register() {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    
     dispatch(registerUser(data));
   };
   useEffect(() => {
-    console.log(error?.message);
+    
   }, [error]);
 
   return (

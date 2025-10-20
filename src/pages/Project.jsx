@@ -206,7 +206,7 @@ const Project = () => {
                 Project_Id={projectData.Id}
                 onSuccess={() => {
                     // Handle successful donation
-                    console.log("Donation successful");
+                    
                     setDonationAmount(""); // Clear donation amount after success
                     setDonationType(""); // Clear donation type selection
                 }}

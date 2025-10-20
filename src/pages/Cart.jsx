@@ -25,7 +25,7 @@ const Cart = () => {
   const fetchData = async () => {
     try {
       const response = await executeProcedure("5wqtvajPizixFRBAU+AEElAsxJWj3ghjcdWQmhzmZpg=", userid);
-      console.log(response.decrypted);
+      
       
       if (response.decrypted) {
         const parsedData = {
@@ -42,7 +42,7 @@ const Cart = () => {
 
   const handleDeleteItem = async (itemId, isCharity = false) => {
     // Implement delete functionality here
-    console.log(`Deleting item ${itemId} from ${isCharity ? 'charity' : 'zakat'}`);
+    
     // You'll need to call an API to remove the item from cart
     // Then refetch the data
     // await deleteCartItem(itemId, isCharity);
@@ -103,7 +103,7 @@ const Cart = () => {
   }
   
   const handlePayCart = ()=>{
-    console.log(projectid);
+    
     
     dispatch(setShowPopup(true));
     dispatch(setPopupTitle("الدفع"));

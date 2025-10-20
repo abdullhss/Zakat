@@ -50,7 +50,7 @@ const Navbar = () => {
     navigate("/cart");
   }
   const handleSearch = () => {
-    console.log("Search clicked");
+    
   };
 
   // Function to handle sublink click

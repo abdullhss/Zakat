@@ -58,7 +58,7 @@ function App() {
   const dispatch = useDispatch();
   const {showPayPopup,  popupComponent , popupTitle ,popups  } = useSelector((state) => state.pay);
   const cartData = useSelector((state) => state.cart);
-  console.log(cartData);
+  
   
   const handleFetchCartData =   async () => {
     const data = await executeProcedure(

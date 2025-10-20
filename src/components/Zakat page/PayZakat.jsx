@@ -116,13 +116,7 @@ const PayZakat = ({
       />
     ));
     dispatch(setShowPopup(true))
-    
-    console.log("Donation data:", {
-      office: selectedOffice,
-      aid: selectedAid,
-      category: selectedCategory,
-      amount: donationAmount
-    });
+
   };
 
   // Handle add to cart
@@ -145,7 +139,6 @@ const PayZakat = ({
       const firstItemCount = Number(cart.CartFirstItemCount) || 0;
       const firstItems = safeParseArray(cart.CartFirstItemData);
       const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
-      console.log(firstItems?.[0]?.Id);
       
       if (firstItemCount == 0 || firstOfficeId == selectedOffice) {
         const safeCount = firstItemCount;

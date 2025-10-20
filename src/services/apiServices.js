@@ -30,7 +30,7 @@ export const executeProcedure = async (ProcedureName, procedureValues) => {
       DataToken: "Zakat",
     };
 
-    // console.log("Data to encrypt:", dataToEncrypt);
+    // 
 
     // Encrypt using public key
     const encryptedData = AES256Encryption.encrypt(
@@ -78,7 +78,7 @@ export const executeProcedure = async (ProcedureName, procedureValues) => {
       );
     }
 
-    // console.log("Decrypted response:", decryptedResponse.data.Result[0]);
+    // 
 
     return {
       success: true,
@@ -105,7 +105,7 @@ export const DoTransaction = async (tableName, ColumnsValues , WantedAction=0 ,)
       PointId:0
     };
 
-    console.log("Data to encrypt:", dataToEncrypt);
+    
 
     // Encrypt using public key
     const encryptedData = AES256Encryption.encrypt(
@@ -153,7 +153,7 @@ export const DoTransaction = async (tableName, ColumnsValues , WantedAction=0 ,)
       );
     }
 
-    console.log("Decrypted response:", decryptedResponse.result);
+    
 
     return {
       success:  decryptedResponse.result,
@@ -179,7 +179,7 @@ export const RequireAuthentication = async (FunctionName, ProcedureName , Parame
       DataToken: "Zakat",
     };
 
-    console.log("Data to encrypt:", dataToEncrypt);
+    
 
     // Encrypt using public key
     const encryptedData = AES256Encryption.encrypt(
@@ -231,7 +231,7 @@ export const RequireAuthentication = async (FunctionName, ProcedureName , Parame
       );
     }
 
-    console.log("Decrypted response:", decryptedResponse);
+    
 
     return {
       success:  decryptedResponse.result,
@@ -256,7 +256,7 @@ export const ExecuteAuthentication = async (TransToken   , VerCode    ) => {
       DataToken: "Zakat"
     };
 
-    console.log("Data to encrypt:", dataToEncrypt);
+    
 
     // Encrypt using public key
     const encryptedData = AES256Encryption.encrypt(
@@ -308,7 +308,7 @@ export const ExecuteAuthentication = async (TransToken   , VerCode    ) => {
       );
     }
 
-    console.log("Decrypted response:", decryptedResponse);
+    
 
     return {
       success:  decryptedResponse.result,

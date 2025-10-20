@@ -8,13 +8,13 @@
 
 // useEffect(() => {
 //     if (method === "get") {
-//     console.log();
+
 //     } else if (method === "post") {
 //     const fetchData = async () => {
 //         try {
 //         const response = await axios.post(url, body);
 //         setData(response.data);
-//         console.log(response);
+//         
 //         } catch (err) {
 //         setError(err.message);
 //         }
@@ -78,7 +78,7 @@ export default UseAxios;
 //   body: { title: "BMW Pencil" },
 // });
 
-// console.log(data);
+// 
 
 
 // //* GET
@@ -87,7 +87,7 @@ export default UseAxios;
 //   method: "get",
 // });
 
-// console.log(data);
+// 
 
 // //* PUT
 

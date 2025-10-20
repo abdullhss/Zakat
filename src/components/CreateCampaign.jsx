@@ -59,12 +59,12 @@ const CreateCampaign = () => {
         }
       });
 
-      console.log("Upload response:", result);
+      
 
       if (result.status === 200) {
         setUploadedFileId(result.id);
         setUploadedFileName(file.name);
-        console.log("File uploaded successfully with ID:", result.id);
+        
       } else {
         console.error("Upload failed:", result.error);
       }
@@ -128,8 +128,8 @@ const CreateCampaign = () => {
     }
 
     // Here you would typically send the data to your API
-    console.log("Campaign Data:", campaignData);
-    console.log("Uploaded File ID:", uploadedFileId);
+    
+    
     const currentDate = new Date();
     const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
     const userData = localStorage.getItem("UserData") 
@@ -138,7 +138,7 @@ const CreateCampaign = () => {
         `0#${campaignData.name}#${campaignData.description}#${campaignData.type}#${campaignData.targetAmount}#${campaignData.targetAmount}#${formattedDate}#False#default#True#${GeneralUser_Id}#${uploadedFileId}`
         // Id#CampaignName#CampaignDesc#CampaignType#WantedAmount#CampaignRemainingAmount#CreatedDate#IsApproved#ApprovedDate#IsActive#GeneralUser_Id#CampaignPhotoID
     )
-    console.log(response);
+    
     
 
     // Reset form after submission

@@ -8,7 +8,7 @@ function NavigationMenu() {
   const [selectedNavLink, setSelectedNavLink] = useState([]);
   useEffect(() => {
     if (selectedNavLink && Object.keys(selectedNavLink).length > 0) {
-      console.log(selectedNavLink);
+      
     }
   }, [selectedNavLink]);
 

@@ -108,12 +108,7 @@ const PaySadaka = ({
       />
     ));
     
-    console.log("Donation data:", {
-      office: selectedOffice,
-      aid: selectedAid,
-      category: selectedCategory,
-      amount: donationAmount
-    });
+    
   };
 
   // Handle add to cart

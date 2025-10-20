@@ -51,7 +51,7 @@ const DonationRequester = () => {
                 'rejected': 'R'  // مرفوض
             }[activeTab];
 
-            console.log('Active tab:', activeTab, 'Symbol:', statusSymbol);
+            
             
             try {
                 const response = await executeProcedure(
@@ -59,8 +59,8 @@ const DonationRequester = () => {
                     `${userid}#${statusSymbol}#${currentPage}#${pageSize}`
                 );
                 
-                console.log("API Response:", response.decrypted);
-                console.log("API Parameters:", `${userid}#${statusSymbol}#${currentPage}#${pageSize}`);
+                
+                
 
                 if (response.decrypted) {
                     try {

@@ -75,14 +75,14 @@ const Signup = () => {
     try {
         const response = await RequireAuthentication("8d8VWC1xFIjp4ztA3Mny/g==","x9FJkPguBjCejvcgGD0tLw==",`${data.name}#${data.email}#${data.phone}#${data.nationalId}#${data.password}`,"Sms",data.phone)
         localStorage.setItem("TransToken",response.TransToken)
-        console.log(response);
+        
         
         if(response.success == 200){
             navigate("/otp")
             toast.success("تم ارسال ال OTP بنجاح")
         }
         else{
-            console.log(response);
+            
             toast.error(response.error)
         }
     } catch (error) {

@@ -37,8 +37,8 @@ const FastDonation = () => {
           "0"
         );
         
-        console.log("API Response:", response);
-        console.log("Decrypted Response:", response.decrypted);
+        
+        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -51,7 +51,7 @@ const FastDonation = () => {
                 : data.OfficesData;
               
               setOffices(Array.isArray(officesData) ? officesData : []);
-              console.log("Parsed offices:", officesData);
+              
             } catch (parseError) {
               console.error("Error parsing OfficesData:", parseError);
               setOffices([]);
@@ -86,14 +86,14 @@ const FastDonation = () => {
         
         const params = `${selectedOffice}#0#z#1#100`;
         
-        console.log("Fetching subvention types with params:", params);
+        
         
         const response = await executeProcedure(
           "phjR2bFDp5o0FyA7euBbsp/Ict4BDd2zHhHDfPlrwnk=",
           params
         );
         
-        console.log("Subvention types response:", response);
+        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -106,7 +106,7 @@ const FastDonation = () => {
                 : data.SubventionTypes;
               
               setSubventionTypes(Array.isArray(parsedSubventionTypes) ? parsedSubventionTypes : []);
-              console.log("Parsed subvention types:", parsedSubventionTypes);
+              
             } catch (parseError) {
               console.error("Error parsing SubventionTypes:", parseError);
               setSubventionTypes([]);
@@ -164,7 +164,7 @@ const FastDonation = () => {
   };
 
   const setDonationValue = (value) => {
-    console.log('Setting donation value:', value);
+    
   };
 
   const handlePayNow = () => {

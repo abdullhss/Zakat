@@ -8,7 +8,7 @@ const ZakatCategories = () => {
   const [isInView, setIsInView] = useState(false);
   
   const handleDonateClick = (category) => {
-    console.log(`تبرع الآن clicked for ${category}`);
+    
   };
 
   const categories = [
