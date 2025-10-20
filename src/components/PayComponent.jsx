@@ -188,8 +188,6 @@ const PayComponent = ({
             navigate("/")
         }
           
-      } else {
-        
       }
 
     } catch (error) {
@@ -209,13 +207,9 @@ const PayComponent = ({
       callPaymentProcedure();
     } 
     // For bank transfers without file upload yet
-    else if (donationType === "international" || localMethod === "bank") {
-        
-    }
+    
     // If no donation type selected
-    else if (!donationType) {
-        
-    }
+    
   };
 
   // Check if pay button should be enabled
