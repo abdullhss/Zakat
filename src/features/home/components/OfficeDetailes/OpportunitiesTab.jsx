@@ -129,13 +129,13 @@ const OpportunitiesTab = ({Officeid}) => {
     // Scroll functions
     const scrollLeft = () => {
         if (filtersContainerRef.current) {
-            filtersContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+            filtersContainerRef.current.scrollBy({ left: -350, behavior: 'smooth' });
         }
     };
 
     const scrollRight = () => {
         if (filtersContainerRef.current) {
-            filtersContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+            filtersContainerRef.current.scrollBy({ left: 350, behavior: 'smooth' });
         }
     };
 
@@ -191,7 +191,7 @@ const OpportunitiesTab = ({Officeid}) => {
             <div className='flex items-center justify-between w-full md:px-8 mt-2 gap-4'>
                 <button 
                     onClick={() => handleTabChange('current')}
-                    className={`flex-1 py-3 rounded-md transition-all duration-300 ${
+                    className={`flex-1 py-3 rounded-md transition-all font-medium duration-300 ${
                         activeTab === 'current' 
                             ? 'text-white shadow-lg' 
                             : 'text-[#878787] bg-[#C9C9C9]'
@@ -206,7 +206,7 @@ const OpportunitiesTab = ({Officeid}) => {
                 </button>
                 <button 
                     onClick={() => handleTabChange('completed')}
-                    className={`flex-1 py-3 rounded-md transition-all duration-300 ${
+                    className={`flex-1 py-3 rounded-md transition-all font-medium duration-300 ${
                         activeTab === 'completed' 
                             ? 'text-white shadow-lg' 
                             : 'text-[#878787] bg-[#C9C9C9]'
@@ -226,7 +226,7 @@ const OpportunitiesTab = ({Officeid}) => {
                 {/* Left Arrow - Only show when there's content to scroll to */}
                     <button
                         onClick={scrollLeft}
-                        className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                        className="absolute -left-4 md:-left-2 top-1/2 -translate-y-1/2 z-10 bg-white p-1 md:p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
                     >
                         <ChevronLeft className="w-5 h-5 text-[#17343B]" />
                     </button>
@@ -234,7 +234,7 @@ const OpportunitiesTab = ({Officeid}) => {
                 {/* Right Arrow - Only show when there's content to scroll to */}
                     <button
                         onClick={scrollRight}
-                        className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
+                        className="absolute -right-4 md:-right-2 top-1/2 -translate-y-1/2 z-10 bg-white p-1 md:p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors border border-gray-200"
                     >
                         <ChevronRight className="w-5 h-5 text-[#17343B]" />
                     </button>

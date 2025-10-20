@@ -52,7 +52,7 @@ const OfficeDetailes = () => {
   };
 
   const getTabClass = (tabName) => {
-    const baseClass = "py-2 px-4 cursor-pointer transition-colors";
+    const baseClass = "py-2 px-4 cursor-pointer transition-colors font-medium";
     const activeClass = "border-b-2 border-[#18383D] text-[#18383D] font-semibold";
     const inactiveClass = "text-gray-600 hover:text-[#18383D]";
     return `${baseClass} ${activeTab === tabName ? activeClass : inactiveClass}`;

@@ -5,9 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faPhone, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import FloatingDonationButton from "../../../../globalComponents/FloatingDonationButton";
 import aya from "../../../../public/SVGs/Aya.svg";
@@ -18,10 +18,11 @@ import { toast } from "react-toastify";
 
 // Validation schema using Zod
 const loginSchema = z.object({
-  email: z
+  phone: z
     .string()
-    .min(1, "البريد الإلكتروني مطلوب")
-    .email("البريد الإلكتروني غير صالح"),
+    .min(1, "رقم الهاتف مطلوب")
+    .regex(/^[0-9]+$/, "رقم الهاتف يجب أن يحتوي على أرقام فقط")
+    .min(10, "رقم الهاتف يجب أن يكون على الأقل 10 أرقام"),
   password: z
     .string()
     .min(1, "كلمة المرور مطلوبة")
@@ -29,7 +30,7 @@ const loginSchema = z.object({
 });
 
 /**
- * Login component with email and password authentication
+ * Login component with phone number and password authentication
  */
 const Login = () => {
   const dispatch = useDispatch();
@@ -43,7 +44,7 @@ const Login = () => {
   } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      phone: "",
       password: "",
     },
   });
@@ -54,9 +55,9 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       console.log("Login data:", data);
-      console.log(`${data.email}#${data.password}#$????`);
+      console.log(`${data.phone}#${data.password}#$????`);
       
-      const response = await executeProcedure("5GbDgnFHgSnsKHp60G95ngKtX9A5Wkofyq68u6hXJGg=",`${data.email}#${data.password}#$????`)
+      const response = await executeProcedure("5GbDgnFHgSnsKHp60G95ngKtX9A5Wkofyq68u6hXJGg=",`${data.phone}#${data.password}#$????`)
       console.log(response.decrypted);
       if(response.decrypted){
         localStorage.setItem("UserData",JSON.stringify(response.decrypted))
@@ -65,7 +66,7 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("خطأ في اسم المستخدم او كلمة المرور")
+      toast.error("خطأ في رقم الهاتف او كلمة المرور")
     }
   };
   const handleBrowseAsVisitor = () => {
@@ -158,35 +159,35 @@ const Login = () => {
               className="space-y-4 sm:space-y-6 lg:space-y-8"
               variants={containerVariants}
             >
-              {/* Email Input */}
+              {/* Phone Input */}
               <motion.div variants={itemVariants}>
                 <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
-                  البريد الإلكتروني <span className="text-red-500">*</span>
+                  رقم الهاتف <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <input
-                    {...register("email")}
-                    type="email"
-                    placeholder="رجاء إدخال البريد الإلكتروني"
+                    {...register("phone")}
+                    type="tel"
+                    placeholder="رجاء إدخال رقم الهاتف"
                     className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base sm:text-lg lg:text-xl ${
-                      errors.email ? "border-red-500" : "border-gray-300"
+                      errors.phone ? "border-red-500" : "border-gray-300"
                     }`}
                   />
                   <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
                     <FontAwesomeIcon
-                      icon={faEnvelope}
+                      icon={faPhone}
                       className="text-gray-400 h-4 w-4 py-3sm:h-5 sm:w-5"
                     />
                   </div>
                 </div>
-                {errors.email && (
+                {errors.phone && (
                   <motion.p 
                     className="mt-1 sm:mt-2 text-xs sm:text-base text-red-600 text-right"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   >
-                    {errors.email.message}
+                    {errors.phone.message}
                   </motion.p>
                 )}
               </motion.div>
@@ -207,7 +208,7 @@ const Login = () => {
                   />
                   <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
                     {/* <FontAwesomeIcon
-                      icon={faEnvelope}
+                      icon={faPhone}
                       className="text-gray-400 h-4 w-4 sm:h-5 sm:w-5"
                     /> */}
                   </div>
@@ -258,7 +259,10 @@ const Login = () => {
                 تصفح كزائر
               </motion.button>
             </motion.form>
-
+            <div className="w-full flex items-center justify-center mt-6 font-medium text-lg">
+              <span className="text-[#6E6E6E] font-normal" >ليس لديك حساب ؟ </span>
+              <Link className="text-[#17343B] mx-2" to={"/signup"}> انشاء حساب </Link>
+            </div>
             {/* Quranic Verse */}
             <motion.div 
               className="w-full flex items-center justify-center mt-6 sm:mt-8 lg:mt-12 text-center overflow-hidden"

@@ -40,6 +40,8 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import Offices from "./pages/Offices.jsx";
 import OfficeDetailes from "./pages/OfficeDetailes.jsx";
 import News from "./pages/News.jsx";
+import EnterOTP from "./pages/EnterOTP.jsx";
+import Signup from "./pages/Signup.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -85,6 +87,8 @@ function App() {
           <Routes>
             {/* Auth Routes - No Layout (Full Screen) */}
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/OTP" element={<EnterOTP />} />
 
             {/* Main Routes - With Layout (Navbar + Content) */}
             <Route path="/" element={<Layout/>}>
