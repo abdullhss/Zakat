@@ -41,7 +41,7 @@ export class HandelFile {
       }),
       encode_plc1: file ? (await getBase64(file))?.split(",")[1] : "",
     };
-    
+    console.log("jsonData",jsonData);
     
     let { data } = await axios.post(
       CONFIG.BASE_URL + "UploadFileWebSite", 
