@@ -75,7 +75,7 @@ const Signup = () => {
     try {
         const response = await RequireAuthentication("8d8VWC1xFIjp4ztA3Mny/g==","x9FJkPguBjCejvcgGD0tLw==",`${data.name}#${data.email}#${data.phone}#${data.nationalId}#${data.password}`,"Sms",data.phone)
         localStorage.setItem("TransToken",response.TransToken)
-        if(response.result == 200){
+        if(response.success == 200){
             navigate("/otp")
         }
         else{
