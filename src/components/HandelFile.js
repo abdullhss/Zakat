@@ -10,7 +10,7 @@ export const getBase64 = (file) => {
     reader.onerror = (error) => reject(error);
   });
 };
-
+//  BASE_URL: "https://client-frw.almedadsoft.com/emsserver.dll/ERPDatabaseWorkFunctions/",
 const CONFIG = {
   API_TOKEN: "TTRgG@i$$ol@m$Wegh77",
   DATA_TOKEN: "Zakat",
