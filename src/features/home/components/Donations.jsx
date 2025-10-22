@@ -138,7 +138,8 @@ const Donations = ({ data }) => {
             msOverflowStyle: "none",
           }}
         >
-          {donations.map((item, index) => (
+          {donations.map((item, index) => {
+           return(
             <div
               key={item.Id}
               className="flex-shrink-0"
@@ -151,9 +152,27 @@ const Donations = ({ data }) => {
                 goal={item.ProjectWantedAmount}
                 className="min-w-[320px]"
                 showBtn={item.AllowZakat}
+                payNowLink={`project?data=${encodeURIComponent(JSON.stringify({ 
+                  Id: item.Id,
+                  Name: item.ProjectName,
+                  Description: item.ProjectDesc,
+                  SubventionType_Id: item.SubventionType_Id,
+                  WantedAmount: item.ProjectWantedAmount,
+                  OpeningBalance: item.ProjectOpeningBalance,
+                  RemainingAmount: item.ProjectRemainingAmount,
+                  AllowZakat: item.AllowZakat,
+                  Importance_Id: item.Importance_Id,
+                  Office_Id: item.Office_Id,
+                  IsActive: item.IsActive,
+                  PhotoName: item.ProjectPhotoName,
+                  SubventionTypeName: item.SubventionTypeName,
+                  ImportanceName: item.ImportanceName,
+                  OfficeName: item.OfficeName,
+                  actionID: 0
+                }))}`}
               />
             </div>
-          ))}
+          )})}
         </div>
 
         {/* shadow overlay */}

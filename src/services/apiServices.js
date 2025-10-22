@@ -323,3 +323,79 @@ export const ExecuteAuthentication = async (TransToken   , VerCode    ) => {
     };
   }
 };
+export const DoMultiTransaction = async (MultiTableName, MultiColumnsValues , WantedAction=0 ,) => {
+  try {
+    // Data to encrypt
+    const dataToEncrypt = {
+      MultiTableName: MultiTableName,
+      MultiColumnsValues: MultiColumnsValues,
+      WantedAction:WantedAction,
+      DataToken: "Zakat",
+      PointId:0
+    };
+
+    console.log("Data to encrypt:", dataToEncrypt);
+
+    // Encrypt using public key
+    const encryptedData = AES256Encryption.encrypt(
+      dataToEncrypt,
+      API_CONFIG.PUBLIC_KEY
+    );
+
+    // Request payload
+    const payload = {
+      ApiToken: API_CONFIG.API_TOKEN,
+      Data: encryptedData,
+    };
+
+    // Make API call
+    const response = await api.post("/DoMultiTransaction", payload);
+
+    // Decrypt response fields
+    const decryptedResponse = {};
+
+    if (response.data.Result) {
+      decryptedResponse.result = AES256Encryption.decrypt(
+        response.data.Result,
+        API_CONFIG.PUBLIC_KEY
+      );
+      decryptedResponse.MultiIdinties = AES256Encryption.decrypt(
+        response.data.MultiIdinties,
+        API_CONFIG.PUBLIC_KEY
+      );
+    }
+
+    if (response.data.Error) {
+      decryptedResponse.error = AES256Encryption.decrypt(
+        response.data.Error,
+        API_CONFIG.PUBLIC_KEY
+      );
+    }
+
+    if (response.data.Data) {
+      decryptedResponse.data = AES256Encryption.decrypt(
+        response.data.Data,
+        API_CONFIG.PUBLIC_KEY
+      );
+    }
+
+    if (response.data.ServerTime) {
+      decryptedResponse.serverTime = AES256Encryption.decrypt(
+        response.data.ServerTime,
+        API_CONFIG.PUBLIC_KEY
+      );
+    }
+
+    return {
+      success:  decryptedResponse.result,
+      MultiIdinties:  decryptedResponse.MultiIdinties,
+    };
+  } catch (error) {
+    console.error("API call failed:", error);
+    return {
+      success: false,
+      error: error.message,
+      details: error.response?.data,
+    };
+  }
+};

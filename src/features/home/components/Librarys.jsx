@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Diamond from "../../../components/Diamond";
 import LibraryCard from "../../../components/LibraryCard";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Librarys = ({ data }) => {
   const libs = JSON.parse(data);
@@ -76,7 +76,7 @@ const Librarys = ({ data }) => {
       transition: { duration: 0.5, ease: "easeOut" }
     }
   };
-
+  const navigate = useNavigate() ;
   return (
     <motion.div
       className="flex flex-col gap-6 mt-8"
@@ -143,6 +143,7 @@ const Librarys = ({ data }) => {
                 title={office.OfficeName}
                 description={`${office.Address} - ${office.PhoneNum}`}
                 className="w-[320px]"
+                onClick={()=>{navigate(`/office?data=${encodeURIComponent(JSON.stringify(office))}`)}}
               />
             </div>
           ))}

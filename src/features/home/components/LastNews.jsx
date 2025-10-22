@@ -4,13 +4,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Diamond from "../../../components/Diamond";
 import NewsCard from "../../../components/NewsCard";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LastNews = ({ data }) => {
   const news = JSON.parse(data);
   const scrollContainerRef = useRef(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { amount: 0.2, once: false }); // replay animation
+  const navigate = useNavigate();
 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -60,6 +61,13 @@ const LastNews = ({ data }) => {
   useEffect(() => {
     setTimeout(checkScrollPosition, 100);
   }, [news]);
+
+  // Handle news card click
+  const handleNewsClick = (item) => {
+    navigate('/news/details', { 
+      state: { newsItem: item } 
+    });
+  };
 
   // Simple fade up animation
   const fadeUpVariants = {
@@ -123,13 +131,14 @@ const LastNews = ({ data }) => {
           {news.map((item, index) => (
             <div
               key={item.Id}
-              className="flex-shrink-0"
+              className="flex-shrink-0 cursor-pointer"
+              onClick={() => handleNewsClick(item)}
             >
               <NewsCard
                 image={`https://framework.md-license.com:8093/ZakatImages/${item.NewsMainPhotoName}.jpg`}
                 title={item.NewsMainTitle}
                 descirption={item.NewsSubTitle}
-                className="w-[320px]"
+                className="w-[320px] transition-transform duration-300 hover:scale-105"
               />
             </div>
           ))}

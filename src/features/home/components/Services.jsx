@@ -25,7 +25,7 @@ const Services = () => {
     {
       icon: <img src={speaker} alt="Speaker" />,
       title: "الحملات",
-      link:"/zakat",
+      link:"/services/campaigns",
       description: "خدمة تتيح لك إنشاء حملة لجمع التبرعات في مختلف المجالات الخيرية و نشرها ليصل أثرها إلي مستحقيها"
     },
     {
@@ -37,7 +37,7 @@ const Services = () => {
     {
       icon: <img src={Sheep} alt="Sheep" />,
       title: "الأضاحي",
-      link:"/zakat",
+      link:"/sacrifice",
       description: "خدمة لتوكيل ذبح الأضاحي والهدي والعقيقة والفدية والصدقة ، وتوزيعها على مستحقيها."
     }
   ]

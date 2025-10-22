@@ -42,6 +42,8 @@ import OfficeDetailes from "./pages/OfficeDetailes.jsx";
 import News from "./pages/News.jsx";
 import EnterOTP from "./pages/EnterOTP.jsx";
 import Signup from "./pages/Signup.jsx";
+import Sacrifice from "./pages/Sacrifice.jsx";
+import NewsDetails from "./pages/NewsDetails.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -107,6 +109,8 @@ function App() {
               <Route path="/office" element={<OfficeDetailes/>} />
               <Route path="/news" element={<News/>} />
               <Route path="/cart" element={<Cart/>} />
+              <Route path="/sacrifice" element={<Sacrifice/>} />
+              <Route path="/news/details" element={<NewsDetails />} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />
