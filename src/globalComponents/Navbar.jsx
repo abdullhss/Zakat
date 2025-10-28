@@ -49,9 +49,6 @@ const Navbar = () => {
     }
     navigate("/cart");
   }
-  const handleSearch = () => {
-    
-  };
 
   // Function to handle sublink click
   const handleSublinkClick = () => {
@@ -80,7 +77,7 @@ const Navbar = () => {
         { name: "طلبات التبرع", path: "/DonationRequester", icon: DonateRequest, isDiamond: false },
       ],
     },
-    { type: "main", name: "عن وصل", path: "/about" },
+    { type: "main", name: "عن وصل", path: "/about-us" },
   ];
 
   return (
@@ -144,14 +141,7 @@ const Navbar = () => {
 
           {/* Left Side */}
           <div className="flex items-center space-x-3 space-x-reverse">
-            <div className="hidden md:flex items-center space-x-3 space-x-reverse">
-              <button
-                onClick={handleSearch}
-                className="p-2 text-[#17343B] transition-colors"
-                title="البحث"
-              >
-                <FontAwesomeIcon icon={faSearch} className="h-6 w-6" />
-              </button>
+            <div className="md:flex items-center space-x-3 space-x-reverse">
               <button
                 onClick={handleCartClicked}
                 className="p-2 text-[#17343B] transition-colors relative"
@@ -159,7 +149,7 @@ const Navbar = () => {
               >
                 <img src={shoppingCart}></img>
                 {cartData?.cartData.CartFirstItemCount>0 &&
-                  <span className="absolute top-0 -right-1 rounded-full w-5 h-5 flex items-center justify-center ">{cartData.cartData.CartFirstItemCount}</span>
+                  <span className="absolute top-0 -right-1 bg-[#24645E] text-white rounded-full w-5 h-5 flex items-center justify-center ">{cartData.cartData.CartFirstItemCount}</span>
                 }
               </button>
             </div>

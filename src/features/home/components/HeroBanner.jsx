@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
-import { setShowPopup, setPopupComponent, setPopupTitle } from "../../../features/PaySlice/PaySlice";
-import CreateCampaign from "../../../components/CreateCampaign";
+import { useDispatch, useSelector } from "react-redux";
+import { openPopup } from "../../../features/PaySlice/PaySlice";
+import FastDonation from "../../../components/FastDonation";
 
 import Wasl from "../../../../public/Wasl.svg";
 import giveHand from "../../../../public/giveHand.svg";
@@ -10,10 +10,16 @@ import takeHand from "../../../../public/takeHand.svg";
 import zakat from "../../../../public/Zakat.svg";
 import salla from "../../../../public/Salla.svg";
 import donationRequest from "../../../../public/donationRequest.svg";
+import fastDonation from "../../../../public/fastDonation.svg";
+import shoppingCart from "../../../public/SVGs/ShoppingCart.svg";
 
 const HeroBanner = () => {
   const UserData = localStorage.getItem("UserData");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // 👇 جلب بيانات السلة من Redux
+  const cartData = useSelector((state) => state.cart);
 
   const handleSallaClicked = () => {
     if (UserData) {
@@ -31,6 +37,15 @@ const HeroBanner = () => {
     }
   };
 
+  const handleDonationClick = () => {
+    dispatch(
+      openPopup({
+        title: "التبرع السريع",
+        component: <FastDonation />,
+      })
+    );
+  };
+
   return (
     <section
       className="relative w-full h-[400px] bg-[#18383D] overflow-hidden bg-cover bg-center bg-no-repeat"
@@ -40,7 +55,7 @@ const HeroBanner = () => {
       <img
         src={Wasl}
         alt="Wasl"
-        className="absolute top-0 right-1/2 translate-x-1/2 w-[250px] md:w-[300px] lg:w-[350px]"
+        className="absolute top-0 right-1/2 translate-x-1/2 w-[250px] md:w-[500px] lg:w-[700px]"
       />
 
       {/* النصوص */}
@@ -73,6 +88,13 @@ const HeroBanner = () => {
         className="cursor-pointer absolute left-6 sm:left-10 top-2/3 w-[120px] sm:w-[160px] md:w-[200px] lg:w-[250px] transition-transform duration-200 hover:scale-105"
       />
 
+      <img
+        src={fastDonation}
+        alt="fast donation"
+        onClick={handleDonationClick}
+        className="cursor-pointer absolute right-6 sm:left-10 top-12 w-[120px] sm:w-[160px] md:w-[200px] transition-transform duration-200 hover:scale-105"
+      />
+
       {/* الزكاة */}
       <img
         src={zakat}
@@ -81,12 +103,27 @@ const HeroBanner = () => {
       />
 
       {/* السلة */}
-      <img
+      <div
         onClick={handleSallaClicked}
-        src={salla}
-        alt="salla"
-        className="cursor-pointer absolute bottom-0 right-1/2 translate-x-1/2 w-[120px] sm:w-[160px] md:w-[200px] lg:w-[250px] transition-transform duration-200 hover:scale-105"
-      />
+        className="cursor-pointer absolute bottom-0 right-1/2 translate-x-1/2 transition-transform duration-200 hover:scale-105"
+      >
+        <div className="relative">
+          <img
+            src={shoppingCart}
+            alt="cart"
+            className="w-6 md:w-8 absolute bottom-1 right-8 md:right-10"
+          />
+
+          {cartData?.cartData?.CartFirstItemCount > 0 && (
+            <span className="absolute top-2 right-4 md:right-7 bg-[#24645E] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {cartData.cartData.CartFirstItemCount}
+            </span>
+          )}
+
+          {/* شعار السلة (Salla) */}
+          <img src={salla} alt="salla" className="w-[150px] md:w-[200px]" />
+        </div>
+      </div>
     </section>
   );
 };

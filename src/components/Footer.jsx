@@ -43,7 +43,7 @@ const Footer = () => {
           {/* Company Section */}
           <div className='col-span-2'>
             <h3 className="text-lg font-semibold mb-4">الشركة</h3>
-            <div className="space-y-2 text-sm">
+            <div className="flex flex-col gap-2 text-sm">
               <p>الرئيسية</p>
               <Link to={"/about-us"}>معلومات عنا</Link>
               <Link to={"/about-us"}>اتصل بنا</Link>

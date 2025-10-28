@@ -10,7 +10,6 @@ import DownloadApp from "./DownloadApp";
 import Footer from "../../../components/Footer";
 import { executeProcedure } from "../../../services/apiServices";
 import { useEffect, useState } from "react";
-import FloatingDonationButton from "../../../globalComponents/FloatingDonationButton";
 
 function Home() {
   const [mainScreenData, setMainScreenData] = useState(null);

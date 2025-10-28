@@ -1,19 +1,21 @@
 /* eslint-disable react/prop-types */
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import FloatingDonationButton from "./globalComponents/FloatingDonationButton";
 import Navbar from "./globalComponents/Navbar";
 
-
 const Layout = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Fixed Navbar */}
       <Navbar />
-      <FloatingDonationButton />
 
-      {/* Floating Donation Button */}
+      {/* Floating Donation Button - يظهر في كل الصفحات ما عدا الصفحة الرئيسية */}
+      {!isHomePage && <FloatingDonationButton />}
 
-      {/* Main Content - with top padding to account for fixed navbar */}
+      {/* Main Content */}
       <main className="pt-16 lg:pt-20">
         <Outlet />
       </main>
