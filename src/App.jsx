@@ -44,6 +44,7 @@ import EnterOTP from "./pages/EnterOTP.jsx";
 import Signup from "./pages/Signup.jsx";
 import Sacrifice from "./pages/Sacrifice.jsx";
 import NewsDetails from "./pages/NewsDetails.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -111,6 +112,7 @@ function App() {
               <Route path="/cart" element={<Cart/>} />
               <Route path="/sacrifice" element={<Sacrifice/>} />
               <Route path="/news/details" element={<NewsDetails />} />
+              <Route path="/about-us" element={<AboutUs />} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />

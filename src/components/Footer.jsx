@@ -2,6 +2,7 @@ import React from 'react';
 import { Facebook, Instagram, Linkedin, Mail, Twitter } from 'lucide-react';
 
 import logoImage from '../../public/LogoWhite.png';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -44,8 +45,8 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">الشركة</h3>
             <div className="space-y-2 text-sm">
               <p>الرئيسية</p>
-              <p>معلومات عنا</p>
-              <p>اتصل بنا</p>
+              <Link to={"/about-us"}>معلومات عنا</Link>
+              <Link to={"/about-us"}>اتصل بنا</Link>
             </div>
           </div>
           
