@@ -4,7 +4,7 @@ import sadaka from "../../../../public/sadaka.png";
 import Wasl from "../../../../public/Wasl.svg";
 import giveHand from "../../../../public/giveHand.svg";
 import takeHand from "../../../../public/takeHand.svg";
-import zakat from "../../../../public/zakat.svg";
+import zakat from "../../../../public/Zakat.svg";
 import salla from "../../../../public/Salla.svg";
 import donationRequest from "../../../../public/donationRequest.svg";
 import { Link, useNavigate } from "react-router-dom";
