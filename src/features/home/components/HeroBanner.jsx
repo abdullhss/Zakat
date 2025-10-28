@@ -72,7 +72,7 @@ const HeroBanner = () => {
       <img
         src={giveHand}
         alt="give hand"
-        className="absolute top-14 right-0 w-[160px] md:w-[300px] lg:w-[400px]"
+        className="absolute right-0 top-20 md:top-0 w-[160px] md:w-[300px] lg:w-[450px]"
       />
       <img
         src={takeHand}
@@ -92,7 +92,7 @@ const HeroBanner = () => {
         src={fastDonation}
         alt="fast donation"
         onClick={handleDonationClick}
-        className="cursor-pointer absolute right-6 sm:left-10 top-12 w-[120px] sm:w-[160px] md:w-[200px] transition-transform duration-200 hover:scale-105"
+        className="cursor-pointer absolute right-10 sm:left-10 top-1/2 w-[120px] sm:w-[160px] md:w-[200px] transition-transform duration-200 hover:scale-105"
       />
 
       {/* الزكاة */}
