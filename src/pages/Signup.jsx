@@ -31,7 +31,7 @@ const signupSchema = z.object({
   nationalId: z
     .string()
     .min(1, "الرقم الوطني مطلوب")
-    .min(10, "الرقم الوطني يجب أن يكون على الأقل 10 أرقام"),
+    .min(10, "الرقم الوطني يجب أن يكون على الأقل 14 رقم"),
   password: z
     .string()
     .min(1, "كلمة المرور مطلوبة")
@@ -228,13 +228,23 @@ const Signup = () => {
                   </label>
                   <div className="relative">
                     <input
-                      {...register("phone")}
+                      {...register("phone", {
+                        pattern: {
+                          value: /^[0-9]+$/,
+                          message: "يُسمح بإدخال الأرقام فقط",
+                        },
+                      })}
                       type="tel"
+                      inputMode="numeric"
                       placeholder="رجاء إدخال رقم الهاتف"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                      }}
                       className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base ${
                         errors.phone ? "border-red-500" : "border-gray-300"
                       }`}
                     />
+
                     <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
                       <FontAwesomeIcon
                         icon={faPhone}
@@ -297,13 +307,24 @@ const Signup = () => {
                   </label>
                   <div className="relative">
                     <input
-                      {...register("nationalId")}
+                      {...register("nationalId", {
+                        pattern: {
+                          value: /^[0-9]+$/,
+                          message: "يُسمح بإدخال الأرقام فقط",
+                        }
+                      })}
                       type="text"
+                      inputMode="numeric"
+                      maxLength={14}
                       placeholder="رجاء إدخال الرقم الوطني"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                      }}
                       className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base ${
                         errors.nationalId ? "border-red-500" : "border-gray-300"
                       }`}
                     />
+
                     <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
                       <FontAwesomeIcon
                         icon={faIdCard}

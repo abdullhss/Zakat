@@ -5,6 +5,7 @@ import money from "../public/SVGs/moneyGreen.svg"
 import phone from "../public/SVGs/phone.svg"
 import { DoTransaction, executeProcedure } from '../services/apiServices'
 import { toast } from 'react-toastify'
+import { Link } from 'react-router-dom'
 
 const DonationRequest = () => {
   const [offices, setOffices] = useState([])
@@ -151,12 +152,13 @@ const DonationRequest = () => {
           <div className='font-bold text-base sm:text-lg text-center sm:text-right w-full lg:w-auto'>
             برجاء ملئ البيانات للنظر ف طلبك
           </div>
-          <button
+          <Link
+            to={"/DonationRequester"}
             className='text-white px-6 py-2 rounded-lg font-normal shadow-lg w-[92%] sm:w-auto text-sm sm:text-base'
             style={{background: "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)"}}
           >
             متابعة طلب سابق
-          </button>
+          </Link>
         </div>
       </div>
 

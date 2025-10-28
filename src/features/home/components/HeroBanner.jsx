@@ -1,7 +1,13 @@
 import styles from "./HeroBanner.module.css";
 import union from "../../../../public/Union.png";
 import sadaka from "../../../../public/sadaka.png";
-import { useNavigate } from "react-router-dom";
+import Wasl from "../../../../public/Wasl.svg";
+import giveHand from "../../../../public/giveHand.svg";
+import takeHand from "../../../../public/takeHand.svg";
+import zakat from "../../../../public/zakat.svg";
+import salla from "../../../../public/Salla.svg";
+import donationRequest from "../../../../public/donationRequest.svg";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import {setShowPopup, setPopupComponent , setPopupTitle } from "../../../features/PaySlice/PaySlice";
@@ -10,70 +16,59 @@ import CreateCampaign from "../../../components/CreateCampaign";
 const HeroBanner = () => {
   const UserData = localStorage.getItem("UserData")
   const navigate = useNavigate() ;
-  const dispatch = useDispatch();
-  const handleCreateCampaignClick = () => {
-    if(UserData){
-      dispatch(setPopupTitle('إنشاء حملة'));
-      dispatch(setPopupComponent(
-          <CreateCampaign/>
-      ));
-      dispatch(setShowPopup(true));
-    }else{
-      toast.error("يجب تسجيل الدخول اولا")
-    }
-  };
 
+  const handlSallaClicked = ()=>{
+    if(UserData){
+      navigate("/cart")
+    }
+    else{
+      toast.error("برجاء تسجيل الدخول اولا")
+    }
+  }
+  const handleDonationRequist = ()=>{
+    if(UserData){
+      navigate("/services/donation-request")
+    }
+    else{
+      toast.error("برجاء تسجيل الدخول اولا")
+    }
+  }
   return (
     <section
-      className={`${styles.heroBg} bg-[#18383D] relative w-full h-[400px] overflow-hidden`}
+      className={`bg-[#18383D] relative w-full h-[400px] overflow-hidden`}
       style={{
-        backgroundImage: `url(${sadaka})`,
+        backgroundImage: `url('/herobg.svg')`,
         backgroundSize: "cover", 
         backgroundPosition: "center", 
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* Content Container */}
-      <div className="relative w-full z-50 flex items-center justify-between h-full px-8 lg:px-24">
-        {/* Left Side - Text Content */}
-        <div className="text-white text-right flex-1">
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4 leading-tight">
-            كن ساعياً للخير
-          </h1>
-          <p className="text-xl lg:text-2xl mb-8 opacity-90">
-            عبر برامج الحملات
-          </p>
+      
+      {/* منصة وصل الليبية */}
+      <img src={Wasl} className="absolute top-0 right-1/2 translate-x-1/2">
+      </img>
 
-          <button
-            onClick={handleCreateCampaignClick}
-            className="bg-gradient-to-t from-[#A47B53] to-[#DBAD81] text-white px-16 py-4 rounded-xl text-lg font-semibold shadow-lg"
-          >
-            اقتراح أنشاء حملة
-          </button>
-        </div>
+      <div className="flex flex-col gap-6 items-center absolute top-1/2 right-1/2 translate-x-1/2">
+        <span className="text-xl md:text-3xl lg:text-4xl font-bold text-[#FFFFFF]">صندوق الزكاة الليبي</span>
+        <span className="text-lg md:text-2xl lg:text-3xl text-[#FFD59E]">حلقــة الوصل بينك وبين الفقير </span>
       </div>
 
-      {/* Right Decoration */}
-      <div
-        className="absolute top-0 right-0 w-1/6 h-full z-10"
-        style={{
-          backgroundImage: `url(${union.src})`,
-          backgroundRepeat: "repeat",
-          transform: "rotate(180deg)",
-          backgroundSize: "auto",
-        }}
-      ></div>
+      {/* hands */}
+      <img src={giveHand} className="absolute top-0 right-0 translate-x-1/5">
+      </img>
+      <img src={takeHand} className="absolute left-0 top-1/4  ">
+      </img>
 
-      {/* Left Decoration */}
-      <div
-        className="absolute top-0 left-0 w-1/6 h-full z-10"
-        style={{
-          backgroundImage: `url(${union.src})`,
-          backgroundRepeat: "repeat",
-          transform: "rotate(180deg)",
-          backgroundSize: "auto",
-        }}
-      ></div>
+      <img src={donationRequest} onClick={handleDonationRequist} className="cursor-pointer absolute left-16 top-2/3 w-60">
+      </img>
+
+      {/* zakat */}
+      <img src={zakat} className="absolute top-0 left-0">
+      </img>
+
+      {/* salla */}
+        <img onClick={handlSallaClicked} src={salla} className="cursor-pointer absolute bottom-0 right-1/2 translate-x-1/2">
+        </img>
     </section>
   );
 };
