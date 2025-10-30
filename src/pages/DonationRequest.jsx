@@ -6,6 +6,21 @@ import phone from "../public/SVGs/phone.svg"
 import { DoTransaction, executeProcedure } from '../services/apiServices'
 import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
+import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+
+// Fix for default markers in react-leaflet
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.divIcon({
+  html: `<div style="background-color: #24645E; width: 25px; height: 25px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>`,
+  iconSize: [25, 25],
+  iconAnchor: [12, 25],
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const DonationRequest = () => {
   const [offices, setOffices] = useState([])
@@ -22,10 +37,16 @@ const DonationRequest = () => {
     amount: '',
     officeId: '',
     donationTypeId: '',
-    description: ''
+    description: '',
+    address: ''
   })
 
-  // fetch offices from API
+  // Map state
+  const [position, setPosition] = useState([30.0444, 31.2357]) // Default to Cairo
+  const [markerPosition, setMarkerPosition] = useState([30.0444, 31.2357])
+  const [isMapReady, setIsMapReady] = useState(false)
+
+  // Fetch offices from API
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,22 +55,16 @@ const DonationRequest = () => {
           "0"
         );
         
-        
-        
-        
         if (response && response.decrypted) {
           const data = response.decrypted;
           
-          // Check if OfficesData exists and parse it
           if (data.OfficesData) {
             try {
-              // If OfficesData is a string, parse it, otherwise use it directly
               const officesData = typeof data.OfficesData === 'string' 
                 ? JSON.parse(data.OfficesData) 
                 : data.OfficesData;
               
               setOffices(Array.isArray(officesData) ? officesData : []);
-              
             } catch (parseError) {
               console.error("Error parsing OfficesData:", parseError);
               setOffices([]);
@@ -70,7 +85,7 @@ const DonationRequest = () => {
     fetchData();
   }, []);
 
-  // fetch types of donations from API
+  // Fetch types of donations from API
   useEffect(() => {
     const fetchFilters = async () => {
       try {
@@ -79,12 +94,8 @@ const DonationRequest = () => {
           "1#100"
         )
         
-        
-        
         if (response && response.decrypted && response.decrypted.SubventionTypesData) {
           const parsedFilters = JSON.parse(response.decrypted.SubventionTypesData)
-          
-          
           const allFilter = { Id: 0, SubventionTypeName: "الكل" }
           const filterObjects = [allFilter, ...parsedFilters]
           
@@ -102,6 +113,38 @@ const DonationRequest = () => {
     fetchFilters()
   }, [])
 
+  // Map click handler component
+  function MapClickHandler() {
+    useMapEvents({
+      click(e) {
+        const { lat, lng } = e.latlng;
+        setMarkerPosition([lat, lng]);
+        setPosition([lat, lng]);
+        
+        // Reverse geocoding to get address (simplified version)
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.display_name) {
+              setFormData(prev => ({
+                ...prev,
+                address: data.display_name
+              }));
+            }
+          })
+          .catch(error => {
+            console.error("Error fetching address:", error);
+            // If reverse geocoding fails, use coordinates as address
+            setFormData(prev => ({
+              ...prev,
+              address: `موقع: ${lat.toFixed(4)}, ${lng.toFixed(4)}`
+            }));
+          });
+      },
+    });
+    return null;
+  }
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -110,25 +153,59 @@ const DonationRequest = () => {
     }))
   }
 
+  const handleAddressSearch = () => {
+    if (!formData.address.trim()) return;
+
+    // Simple geocoding using Nominatim
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.address)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          const { lat, lon } = data[0];
+          const newPosition = [parseFloat(lat), parseFloat(lon)];
+          setPosition(newPosition);
+          setMarkerPosition(newPosition);
+        } else {
+          toast.error("لم يتم العثور على العنوان المطلوب");
+        }
+      })
+      .catch(error => {
+        console.error("Error searching address:", error);
+        toast.error("حدث خطأ في البحث عن العنوان");
+      });
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    // Validate required fields including address
+    if (!formData.address.trim()) {
+      toast.error("الرجاء إدخال العنوان أو تحديده على الخريطة");
+      return;
+    }
+
     const currentDate = new Date();
     const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
     const userid = JSON.parse(localStorage.getItem('UserData'))?.Id || 0
-    const response = await DoTransaction("g+a67fXnSBQre/3SDxT2uA==",
-      `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}`
+    
+    const response = await DoTransaction(
+      "g+a67fXnSBQre/3SDxT2uA==",
+      `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}#${formData.address}#${markerPosition[0]}#${markerPosition[1]}`
     )
     
-    if(response.success==200){
-        setFormData({
+    if(response.success == 200){
+      setFormData({
         name: '',
         individualsCount: '',
         phone: '',
         amount: '',
         officeId: '',
         donationTypeId: '',
-        description: ''
+        description: '',
+        address: ''
       })
+      setMarkerPosition([30.0444, 31.2357])
+      setPosition([30.0444, 31.2357])
       toast.success("تم انشاء الطلب بنجاح")
     }
   }
@@ -291,7 +368,7 @@ const DonationRequest = () => {
                 >
                   <option value="">اختر نوع التبرع</option>
                   {filters
-                    .filter(filter => filter.Id !== 0) // Remove the "الكل" option
+                    .filter(filter => filter.Id !== 0)
                     .map(filter => (
                       <option key={filter.Id} value={filter.Id}>
                         {filter.SubventionTypeName}
@@ -311,7 +388,56 @@ const DonationRequest = () => {
             </div>
           </div>
 
-          {/* Fourth Row: وصف الحالة */}
+          {/* Address Section with Map */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                العنوان <span className="text-red-500">*</span>
+              </label>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input 
+                  name="address" 
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  placeholder="ادخل العنوان أو انقر على الخريطة لتحديد الموقع"
+                  className="flex-1 px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddressSearch}
+                  className="px-4 py-2 sm:py-3 bg-emerald-800 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm sm:text-base"
+                >
+                  بحث
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 mt-1 text-right">
+                يمكنك إدخال العنوان أو النقر على الخريطة لتحديد الموقع تلقائياً
+              </p>
+            </div>
+
+            {/* Map */}
+            <div className="h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden border-2 border-gray-300">
+              <MapContainer
+                center={position}
+                zoom={13}
+                scrollWheelZoom={true}
+                style={{ height: '100%', width: '100%' }}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <Marker position={markerPosition}>
+                  <Popup>
+                    موقع الطلب <br /> {formData.address || 'لم يتم تحديد العنوان بعد'}
+                  </Popup>
+                </Marker>
+                <MapClickHandler />
+              </MapContainer>
+            </div>
+          </div>
+
+          {/* Description */}
           <div>
             <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
               وصف الحالة <span className="text-red-500">*</span>
