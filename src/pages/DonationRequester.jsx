@@ -63,9 +63,12 @@ const DonationRequester = () => {
                 
 
                 if (response.decrypted) {
+                    
                     try {
                         // Parse the AssistancesData string into actual array
                         const parsedData = JSON.parse(response.decrypted.AssistancesData);
+                        console.log(parsedData);
+                        
                         setDonationsData(parsedData);
                         
                         // Calculate total pages based on count and page size
@@ -75,7 +78,7 @@ const DonationRequester = () => {
                         
                     } catch (error) {
                         console.error('Error parsing donations data:', error);
-                        setError('حدث خطأ في تحويل بيانات التبرعات.');
+                        setError('لا يوجد طلبات معلقة');
                         setDonationsData([]);
                     }
                 } else {

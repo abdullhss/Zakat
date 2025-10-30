@@ -57,10 +57,26 @@ const DonationRequestState = ({ data, status }) => {
 
         <div className="mb-4">
           <h2 className="text-black text-lg mb-3 font-semibold">وصف الحالة</h2>
-          <p className="text-[#666666] text-sm leading-relaxed font-medium">
+          <p className="text-[#666666] text-sm leading-relaxed font-medium pb-4">
             {data?.AssistanceDesc || 'Qorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis. Class aptent torquent per'}
           </p>
         </div>
+
+        {data.ResreachFileName && (
+          <div className="w-full flex items-center justify-center">
+            <button
+              onClick={() =>
+                window.open(
+                  `https://framework.md-license.com:8093/ZakatImages/${data.ResreachFileName}.pdf`,
+                  "_blank"
+                )
+              }
+              className="font-medium bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white p-2 w-full rounded-md"
+            >
+              عرض نتيجة البحث
+            </button>
+          </div>
+        )}
       </div>
   )
 }

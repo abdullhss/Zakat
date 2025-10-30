@@ -41,14 +41,6 @@ const Navbar = () => {
     localStorage.removeItem("UserData");
     navigate("/");
   };
-  const handleCartClicked = () => {
-    const userId = JSON.parse(localStorage.getItem("UserData"))?.Id;
-    if (!userId) {
-      toast.error("يجب تسجيل الدخول اولا");
-      return;
-    }
-    navigate("/cart");
-  }
 
   // Function to handle sublink click
   const handleSublinkClick = () => {
@@ -78,6 +70,7 @@ const Navbar = () => {
       ],
     },
     { type: "main", name: "من نحن", path: "/about-us" },
+    { type: "main", name: " اللوائح و القوانين", path: "/tos" },
   ];
 
   return (
@@ -141,18 +134,6 @@ const Navbar = () => {
 
           {/* Left Side */}
           <div className="flex items-center space-x-3 space-x-reverse">
-            <div className="md:flex items-center space-x-3 space-x-reverse">
-              <button
-                onClick={handleCartClicked}
-                className="p-2 text-[#17343B] transition-colors relative"
-                title="السلة"
-              >
-                <img src={shoppingCart}></img>
-                {cartData?.cartData.CartFirstItemCount>0 &&
-                  <span className="absolute top-0 -right-1 bg-[#24645E] text-white rounded-full w-5 h-5 flex items-center justify-center ">{cartData.cartData.CartFirstItemCount}</span>
-                }
-              </button>
-            </div>
 
             {
               localStorage.getItem("UserData")?(

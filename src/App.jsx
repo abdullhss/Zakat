@@ -46,6 +46,7 @@ import Sacrifice from "./pages/Sacrifice.jsx";
 import NewsDetails from "./pages/NewsDetails.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
+import TermsAndConditions from "./pages/TermsAndConditions.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -115,6 +116,7 @@ function App() {
               <Route path="/news/details" element={<NewsDetails />} />
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs/>} />
+              <Route path="/tos" element={<TermsAndConditions/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />
