@@ -19,15 +19,15 @@ const ZakatCategories = () => {
       bgColor: "bg-gray-200",
     },
     {
-      id: 2,
-      title: "الكفارات والنذور",
-      link:"/services/karfaraAndNozor",
-      bgColor: "bg-gray-200",
-    },
-    {
       id: 3,
       title: "الصدقات",
       link:"/services/sadaka",
+      bgColor: "bg-gray-200",
+    },
+    {
+      id: 2,
+      title: "الكفارات والفدية والنذور",
+      link:"/services/karfaraAndNozor",
       bgColor: "bg-gray-200",
     },
     {
@@ -228,7 +228,7 @@ const ZakatCategories = () => {
                   whileHover="hover"
                   whileTap="tap"
                 >
-                  تبرع الآن
+                  ادفع الان
                 </motion.button>
               </Link>
             </motion.div>

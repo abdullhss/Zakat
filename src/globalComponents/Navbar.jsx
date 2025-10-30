@@ -77,7 +77,7 @@ const Navbar = () => {
         { name: "طلبات التبرع", path: "/DonationRequester", icon: DonateRequest, isDiamond: false },
       ],
     },
-    { type: "main", name: "عن وصل", path: "/about-us" },
+    { type: "main", name: "من نحن", path: "/about-us" },
   ];
 
   return (

@@ -139,6 +139,7 @@ const Librarys = ({ data }) => {
               className="flex-shrink-0"
             >
               <LibraryCard
+                PhoneNum= {office.PhoneNum}
                 image={`https://framework.md-license.com:8093/ZakatImages/${office.OfficePhotoName}.jpg`}
                 title={office.OfficeName}
                 description={`${office.Address} - ${office.PhoneNum}`}

@@ -305,7 +305,7 @@ const PaySadaka = ({
           >
             <div className="flex gap-2 items-center">
                 <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-                <span>تبرع الآن</span>
+                <span>ادفع الان</span>
             </div>
             {/* <span></span> */}
           </button>

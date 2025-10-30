@@ -360,7 +360,7 @@ const PayZakat = ({
             disabled={!isPayNowValid}
           >
             <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-            <span>تبرع الآن</span>
+            <span>ادفع الان</span>
           </button>
 
           <button

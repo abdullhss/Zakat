@@ -45,6 +45,7 @@ import Signup from "./pages/Signup.jsx";
 import Sacrifice from "./pages/Sacrifice.jsx";
 import NewsDetails from "./pages/NewsDetails.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -113,6 +114,7 @@ function App() {
               <Route path="/sacrifice" element={<Sacrifice/>} />
               <Route path="/news/details" element={<NewsDetails />} />
               <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/contact" element={<ContactUs/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />

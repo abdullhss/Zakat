@@ -8,16 +8,19 @@ import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PayS
 import PayComponent from "../components/PayComponent";
 
 const KafaraAndNozor = () => {
-  const [activeTab, setActiveTab] = useState('kafara'); // 'kafara' or 'nothor'
+  const [activeTab, setActiveTab] = useState('kafara'); // 'kafara', 'nothor', or 'fedya'
   const [offices, setOffices] = useState([]);
   const [kafaraValue, setKafaraValue] = useState(0);
   const [selectedOffice, setSelectedOffice] = useState('');
   const [donationAmount, setDonationAmount] = useState('');
   const [nothorDescription, setNothorDescription] = useState('');
   const [kafaraDescription, setKafaraDescription] = useState('');
+  const [fedyaDescription, setFedyaDescription] = useState('');
   const [counter, setCounter] = useState(1);
   const [kafaraAmount, setKafaraAmount] = useState('');
+  const [fedyaAmount, setFedyaAmount] = useState('');
   const [isManualAmount, setIsManualAmount] = useState(false);
+  const [isFedyaManualAmount, setIsFedyaManualAmount] = useState(false);
   const [loading, setLoading] = useState({ offices: true, kafaraValue: true });
   const [errors, setErrors] = useState({ offices: null, kafaraValue: null });
   
@@ -31,7 +34,9 @@ const KafaraAndNozor = () => {
   const isPayNowValid = selectedOffice && (
     activeTab === 'nothor' 
       ? donationAmount && parseFloat(donationAmount) > 0
-      : kafaraAmount && parseFloat(kafaraAmount) > 0
+      : activeTab === 'kafara'
+      ? kafaraAmount && parseFloat(kafaraAmount) > 0
+      : fedyaAmount && parseFloat(fedyaAmount) > 0
   );
 
   // Fetch offices data
@@ -106,6 +111,10 @@ const KafaraAndNozor = () => {
                 if (!isManualAmount) {
                   setKafaraAmount((kafaraValue * counter).toString());
                 }
+                // Auto-calculate initial fedya amount
+                if (!isFedyaManualAmount) {
+                  setFedyaAmount((kafaraValue * counter).toString());
+                }
               }
             } catch (parseError) {
               console.error("Error parsing KafaraValueData:", parseError);
@@ -134,6 +143,13 @@ const KafaraAndNozor = () => {
     }
   }, [counter, kafaraValue, isManualAmount]);
 
+  // Update fedya amount when counter changes
+  useEffect(() => {
+    if (!isFedyaManualAmount && kafaraValue > 0) {
+      setFedyaAmount((kafaraValue * counter).toString());
+    }
+  }, [counter, kafaraValue, isFedyaManualAmount]);
+
   const handleOfficeChange = (e) => {
     setSelectedOffice(e.target.value);
   };
@@ -150,10 +166,20 @@ const KafaraAndNozor = () => {
     setKafaraDescription(e.target.value);
   };
 
+  const handleFedyaDescriptionChange = (e) => {
+    setFedyaDescription(e.target.value);
+  };
+
   const handleKafaraAmountChange = (e) => {
     const value = e.target.value;
     setKafaraAmount(value);
     setIsManualAmount(value !== "" && value !== (kafaraValue * counter).toString());
+  };
+
+  const handleFedyaAmountChange = (e) => {
+    const value = e.target.value;
+    setFedyaAmount(value);
+    setIsFedyaManualAmount(value !== "" && value !== (kafaraValue * counter).toString());
   };
 
   const incrementCounter = () => {
@@ -174,13 +200,30 @@ const KafaraAndNozor = () => {
     setIsManualAmount(false);
   };
 
+  const resetFedyaToCalculatedAmount = () => {
+    setFedyaAmount((kafaraValue * counter).toString());
+    setIsFedyaManualAmount(false);
+  };
+
   const handleDonateNow = () => {
-    const amount = activeTab === 'nothor' ? donationAmount : kafaraAmount;
-    const description = activeTab === 'nothor' ? nothorDescription : kafaraDescription;
-    const actionID = activeTab === 'nothor' ? '4' : '3'; // 3 for kafara, 4 for nothor
+    let amount, description, actionID;
+
+    if (activeTab === 'nothor') {
+      amount = donationAmount;
+      description = nothorDescription;
+      actionID = '4'; // for nothor
+    } else if (activeTab === 'kafara') {
+      amount = kafaraAmount;
+      description = kafaraDescription;
+      actionID = '3'; // for kafara
+    } else if (activeTab === 'fedya') {
+      amount = fedyaAmount;
+      description = fedyaDescription;
+      actionID = '9'; // for fedya
+    }
 
     dispatch(setShowPopup(true));
-    dispatch(setPopupTitle("الكفارات والنذور"));
+    dispatch(setPopupTitle("الكفارات والنذور والفدية"));
     dispatch(setPopupComponent(
       <PayComponent
         officeName={officeName}
@@ -221,7 +264,7 @@ const KafaraAndNozor = () => {
       <div className="flex items-center justify-between pl-12 mt-28">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
           <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
-          الكفارات والنذور
+          الكفارات والنذور والفدية
         </div>
       </div>
       
@@ -247,6 +290,16 @@ const KafaraAndNozor = () => {
             onClick={() => setActiveTab('nothor')}
           >
             النذور
+          </button>
+          <button 
+            className={`flex-1 px-6 py-3 rounded-lg font-medium text-lg transition-all ${
+              activeTab === 'fedya' 
+                ? 'bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+            onClick={() => setActiveTab('fedya')}
+          >
+            الفدية
           </button>
         </div>
 
@@ -418,6 +471,106 @@ const KafaraAndNozor = () => {
           </div>
         )}
 
+        {/* الفدية Form */}
+        {activeTab === 'fedya' && (
+          <div className='flex flex-col gap-8'>
+            <div className='flex flex-col md:flex-row items-center gap-6'>
+              <div className="flex-1 w-full">
+                <label className="block mb-2 text-gray-700 font-medium">
+                  المكاتب
+                </label>
+                <select
+                  value={selectedOffice}
+                  onChange={handleOfficeChange}
+                  className="w-full border-2 border-gray-300 rounded-lg p-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold"
+                  disabled={loading.offices}
+                >
+                  <option className="bg-white text-black" value="">
+                    {loading.offices ? "جاري تحميل المكاتب..." : "اختر مكتب"}
+                  </option>
+                  {renderOfficeOptions()}
+                </select>
+              </div>
+              
+              <div className="flex-1 w-full">
+                <label className="block mb-2 text-gray-700 font-medium">
+                  العدد
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={incrementCounter}
+                    className="bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white w-10 h-10 rounded-lg flex items-center justify-center text-xl font-bold hover:opacity-90 transition-opacity"
+                  >
+                    +
+                  </button>
+                  <input
+                    type="number"
+                    min="1"
+                    value={counter}
+                    onChange={handleCounterChange}
+                    className="w-20 border-2 border-gray-300 rounded-lg p-2 text-center focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                  />
+                  <button
+                    onClick={decrementCounter}
+                    className="bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white w-10 h-10 rounded-lg flex items-center justify-center text-xl font-bold hover:opacity-90 transition-opacity"
+                  >
+                    -
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className='flex flex-col md:flex-row items-center gap-6'>
+              <div className="flex-1 w-full">
+                <label className="block mb-2 text-gray-700 font-medium">
+                  المبلغ
+                </label>
+                <div className="relative w-full">
+                  <img
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 md:w-6 md:h-6"
+                    src={moneyGreen}
+                    alt="Money"
+                  />
+                  <input
+                    type="number"
+                    min="1"
+                    value={fedyaAmount}
+                    onChange={handleFedyaAmountChange}
+                    placeholder="المبلغ"
+                    className="w-full pl-12 pr-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium"
+                  />
+                  {isFedyaManualAmount && (
+                    <button
+                      onClick={resetFedyaToCalculatedAmount}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 text-xs bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700 transition-colors"
+                    >
+                      إعادة الحساب
+                    </button>
+                  )}
+                </div>
+                {!isFedyaManualAmount && kafaraValue > 0 && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    (المبلغ المحسوب: {kafaraValue} × {counter} = {kafaraValue * counter})
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className='w-full'>
+              <label className="block mb-2 text-gray-700 font-medium">
+                وصف الفدية (اختياري)
+              </label>
+              <textarea
+                value={fedyaDescription}
+                onChange={handleFedyaDescriptionChange}
+                placeholder="أضف وصفاً للفدية (اختياري)"
+                className="w-full border-2 border-gray-300 rounded-lg p-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold min-h-[100px] resize-vertical"
+                rows={4}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Donate Now Button */}
         <div className="flex justify-center mt-12 mb-8">
           <button
@@ -431,7 +584,7 @@ const KafaraAndNozor = () => {
             disabled={!isPayNowValid}
           >
             <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-            <span>تبرع الآن</span>
+            <span>ادفع الان</span>
           </button>
         </div>
       </div>

@@ -92,7 +92,7 @@ const DonationCard = ({
             `}
         >
           <img src={money} width={30} />
-          {cantPay ? "تم الوصول للهدف" : "تبرع الآن"}
+          {cantPay ? "تم الوصول للهدف" : "ادفع الان"}
         </Link>
       </div>
     </div>

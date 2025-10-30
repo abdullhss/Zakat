@@ -46,7 +46,7 @@ const Footer = () => {
             <div className="flex flex-col gap-2 text-sm">
               <p>الرئيسية</p>
               <Link to={"/about-us"}>معلومات عنا</Link>
-              <Link to={"/about-us"}>اتصل بنا</Link>
+              <Link to={"/contact"}>اتصل بنا</Link>
             </div>
           </div>
           
