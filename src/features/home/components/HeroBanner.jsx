@@ -18,7 +18,6 @@ const HeroBanner = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // 👇 جلب بيانات السلة من Redux
   const cartData = useSelector((state) => state.cart);
 
   const handleSallaClicked = () => {
@@ -40,7 +39,7 @@ const HeroBanner = () => {
   const handleDonationClick = () => {
     dispatch(
       openPopup({
-        title: "التبرع السريع",
+        title: "الدفع السريع",
         component: <FastDonation />,
       })
     );
@@ -72,7 +71,7 @@ const HeroBanner = () => {
       <img
         src={giveHand}
         alt="give hand"
-        className="absolute right-0 top-20 md:top-0 w-[160px] md:w-[300px] lg:w-[450px]"
+        className="absolute right-0 top-8 md:top-0 w-[160px] md:w-[300px] lg:w-[450px]"
       />
       <img
         src={takeHand}
@@ -92,7 +91,7 @@ const HeroBanner = () => {
         src={fastDonation}
         alt="fast donation"
         onClick={handleDonationClick}
-        className="cursor-pointer absolute right-10 sm:left-10 top-1/2 w-[120px] sm:w-[160px] md:w-[200px] transition-transform duration-200 hover:scale-105"
+        className="cursor-pointer absolute right-0 sm:left-10 top-28 lg:top-1/2 w-[120px] sm:w-[160px] md:w-[200px] transition-transform duration-200 hover:scale-105"
       />
 
       {/* الزكاة */}

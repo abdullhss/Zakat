@@ -290,7 +290,7 @@ const PayComponent = ({
       </div>
 
       <div className="p-4 flex-1 overflow-y-auto space-y-4">
-        <p className="text-lg font-semibold mb-6">اختر نوع التبرع السريع</p>
+        <p className="text-lg font-semibold mb-6">اختر نوع الدفع السريع</p>
         <div className="flex gap-4">
           <button
             className={`flex-1 py-3 rounded-md font-medium ${

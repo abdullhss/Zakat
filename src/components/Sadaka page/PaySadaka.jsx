@@ -277,7 +277,7 @@ const PaySadaka = ({
                 value={donationAmount}
                 onChange={handleAmountChange}
                 placeholder={
-                  selectedOffice ? "رجاء إدخال مبلغ التبرع" : "يرجى اختيار مكتب أولاً"
+                  selectedOffice ? "رجاء ادخال المبلغ المدفوع" : "يرجى اختيار مكتب أولاً"
                 }
                 className={`w-full pl-10 pr-3 py-2 border-2 rounded-lg text-sm md:text-base
                   focus:outline-none focus:ring-2 focus:ring-emerald-600

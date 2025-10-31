@@ -18,8 +18,10 @@ import DonateRequest from "../public/SVGs/DonateRequest.svg";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import {setCartData} from "../features/CartSlice/CartSlice";
 
 const Navbar = () => {
+  const dispatch = useDispatch() ;
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -39,7 +41,7 @@ const Navbar = () => {
   };
   const handleLogOutClick = () => {
     localStorage.removeItem("UserData");
-    navigate("/");
+    dispatch(setCartData(null))
   };
 
   // Function to handle sublink click

@@ -423,7 +423,7 @@ const Campaign = () => {
                                             setDonationAmount(e.target.value);
                                             }
                                         }}
-                                        placeholder="رجاء إدخال مبلغ التبرع"
+                                        placeholder="رجاء ادخال المبلغ المدفوع"
                                         className="w-full pl-9 sm:pl-10 pr-3 py-3 border-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium border-[#979797] bg-transparent"
                                         />
 
@@ -452,7 +452,7 @@ const Campaign = () => {
                                         }`}
                                     >
                                         <img src={money} alt="donate icon" />
-                                        تبرع الان
+                                        ادفع الان
                                     </motion.button>
                                 </div>
                             </motion.div>

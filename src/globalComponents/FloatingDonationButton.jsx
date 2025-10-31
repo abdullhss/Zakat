@@ -13,7 +13,7 @@ const FloatingDonationButton = () => {
   const handleDonationClick = () => {
         dispatch(
           openPopup({
-            title: "التبرع السريع",
+            title: "الدفع السريع",
             component: <FastDonation />,
           })
         );
@@ -29,7 +29,7 @@ const FloatingDonationButton = () => {
                 <span
                   className="font-bold whitespace-nowrap bg-gradient-to-b from-[#24645E] via-[#18383D] to-[#17343B] bg-clip-text text-transparent"
                 >
-                  التبرع السريع
+                  الدفع السريع
                 </span>
               </button>
   );

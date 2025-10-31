@@ -194,7 +194,7 @@ const FastDonation = () => {
     <>
       <div className='flex flex-col gap-4 min-h-[85vh]'>
         <div className='flex flex-col gap-4'>
-          <span className='font-bold text-lg'>اختر نوع التبرع السريع</span>
+          <span className='font-bold text-lg'>اختر نوع الدفع السريع</span>
           <div className='flex items-center gap-8'>
             <button 
               className={`flex-1 w-full py-3 font-medium rounded-md ${activeTab === 'الصدقات' 
@@ -279,7 +279,7 @@ const FastDonation = () => {
             value={donationAmount}
             onChange={handleAmountChange}
             placeholder={
-              selectedOffice ? "رجاء إدخال مبلغ التبرع" : "يرجى اختيار مكتب أولاً"
+              selectedOffice ? "رجاء ادخال المبلغ المدفوع" : "يرجى اختيار مكتب أولاً"
             }
             className={`w-full pl-10 pr-3 py-3 border-2 rounded-lg text-sm md:text-base
               focus:outline-none focus:ring-2 focus:ring-emerald-600

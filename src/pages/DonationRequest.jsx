@@ -6,8 +6,9 @@ import phone from "../public/SVGs/phone.svg"
 import { DoTransaction, executeProcedure } from '../services/apiServices'
 import { toast } from 'react-toastify'
 import { Link } from 'react-router-dom'
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet'
+import { MapContainer, Marker, Popup, TileLayer, useMapEvents , useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
+import PropTypes from "prop-types";
 
 // Fix for default markers in react-leaflet
 import L from 'leaflet';
@@ -41,10 +42,46 @@ const DonationRequest = () => {
     address: ''
   })
 
-  // Map state
-  const [position, setPosition] = useState([30.0444, 31.2357]) // Default to Cairo
-  const [markerPosition, setMarkerPosition] = useState([30.0444, 31.2357])
-  const [isMapReady, setIsMapReady] = useState(false)
+    // Map state
+    const [position, setPosition] = useState([30.0444, 31.2357]) // Default to Cairo
+    const [markerPosition, setMarkerPosition] = useState([30.0444, 31.2357])
+
+    useEffect(() => {
+      // Try to get user's current location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords
+            setPosition([latitude, longitude])
+            setMarkerPosition([latitude, longitude])
+
+            // Reverse geocode to get address
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+              .then((res) => res.json())
+              .then((data) => {
+                if (data && data.display_name) {
+                  setFormData(prev => ({
+                    ...prev,
+                    address: data.display_name
+                  }))
+                }
+              })
+              .catch(() => {
+                setFormData(prev => ({
+                  ...prev,
+                  address: `موقعك الحالي: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+                }))
+              })
+          },
+          (err) => {
+            console.warn("Error getting location:", err)
+            toast.warn("لم نتمكن من تحديد موقعك، تم استخدام موقع القاهرة الافتراضي.")
+          }
+        )
+      } else {
+        toast.error("المتصفح لا يدعم تحديد الموقع الجغرافي.")
+      }
+    }, [])
 
   // Fetch offices from API
   useEffect(() => {
@@ -144,7 +181,20 @@ const DonationRequest = () => {
     });
     return null;
   }
+  function FlyToUserLocation({ position }) {
+    const map = useMap();
 
+    useEffect(() => {
+      if (position) {
+        map.flyTo(position, 13, { duration: 1.5 });
+      }
+    }, [position, map]);
+
+    return null;
+  }
+  FlyToUserLocation.propTypes = {
+    position: PropTypes.arrayOf(PropTypes.number).isRequired,
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -366,7 +416,7 @@ const DonationRequest = () => {
                   className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 bg-white"
                   disabled={loading.filters}
                 >
-                  <option value="">اختر نوع التبرع</option>
+                  <option value="">اختر النوع</option>
                   {filters
                     .filter(filter => filter.Id !== 0)
                     .map(filter => (
@@ -427,13 +477,17 @@ const DonationRequest = () => {
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
+
                 <Marker position={markerPosition}>
                   <Popup>
                     موقع الطلب <br /> {formData.address || 'لم يتم تحديد العنوان بعد'}
                   </Popup>
                 </Marker>
+
                 <MapClickHandler />
+                <FlyToUserLocation position={position} />
               </MapContainer>
+
             </div>
           </div>
 

@@ -18,27 +18,33 @@ const signupSchema = z.object({
   name: z
     .string()
     .min(1, "الاسم مطلوب")
-    .min(2, "الاسم يجب أن يكون على الأقل حرفين"),
+    .refine((val) => {
+      const words = val.trim().split(/\s+/);
+      return words.length === 4 && words.every(word => word.length >= 2);
+    }, "الاسم يجب أن يتكون من 4 كلمات بمسافات بينها"),
   phone: z
     .string()
     .min(1, "رقم الهاتف مطلوب")
-    .regex(/^[0-9]+$/, "رقم الهاتف يجب أن يحتوي على أرقام فقط")
-    .min(10, "رقم الهاتف يجب أن يكون على الأقل 10 أرقام"),
+    .regex(/^09[0-9]{8}$/, "رقم الهاتف يجب أن يبدأ بـ 09 ويحتوي على 10 أرقام"),
   email: z
     .string()
-    .min(1, "البريد الإلكتروني مطلوب")
-    .email("البريد الإلكتروني غير صالح"),
+    .optional()
+    .or(z.literal(''))
+    .refine((val) => !val || z.string().email().safeParse(val).success, "البريد الإلكتروني غير صالح"),
   nationalId: z
     .string()
     .min(1, "الرقم الوطني مطلوب")
-    .min(10, "الرقم الوطني يجب أن يكون على الأقل 14 رقم"),
+    .regex(/^[12][0-9]{11}$/, "الرقم الوطني يجب أن يبدأ بـ 1 أو 2 ويحتوي على 12 رقم"),
   password: z
     .string()
     .min(1, "كلمة المرور مطلوبة")
     .min(6, "كلمة المرور يجب أن تكون 6 أحرف على الأقل"),
   confirmPassword: z
     .string()
-    .min(1, "تأكيد كلمة المرور مطلوب")
+    .min(1, "تأكيد كلمة المرور مطلوب"),
+  acceptTerms: z.literal(true, {
+    errorMap: () => ({ message: "يجب الموافقة على الشروط والأحكام" }),
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "كلمات المرور غير متطابقة",
   path: ["confirmPassword"],
@@ -51,22 +57,44 @@ const Signup = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [phoneValue, setPhoneValue] = useState("09");
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setValue,
+    watch,
   } = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
-      phone: "",
+      phone: "09",
       email: "",
       nationalId: "",
       password: "",
       confirmPassword: "",
+      acceptTerms: false,
     },
   });
+
+  // Handle phone input changes
+  const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    
+    // Ensure it starts with 09
+    if (!value.startsWith('09')) {
+      value = '09' + value.replace(/^09/, '');
+    }
+    
+    // Limit to 10 characters
+    if (value.length > 10) {
+      value = value.slice(0, 10);
+    }
+    
+    setPhoneValue(value);
+    setValue('phone', value, { shouldValidate: true });
+  };
 
   /**
    * Handle form submission for signup
@@ -76,13 +104,11 @@ const Signup = () => {
         const response = await RequireAuthentication("8d8VWC1xFIjp4ztA3Mny/g==","x9FJkPguBjCejvcgGD0tLw==",`${data.name}#${data.email}#${data.phone}#${data.nationalId}#${data.password}`,"Sms",data.phone)
         localStorage.setItem("TransToken",response.TransToken)
         
-        
         if(response.success == 200){
             navigate("/otp")
             toast.success("تم ارسال ال OTP بنجاح")
         }
         else{
-            
             toast.error(response.error)
         }
     } catch (error) {
@@ -101,6 +127,10 @@ const Signup = () => {
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleTermsClick = () => {
+    navigate("/tos");
   };
 
   // Animation variants
@@ -191,13 +221,13 @@ const Signup = () => {
                 {/* Name Input */}
                 <motion.div variants={itemVariants}>
                   <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
-                    الاسم <span className="text-red-500">*</span>
+                    الاسم الرباعي <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
                       {...register("name")}
                       type="text"
-                      placeholder="رجاء إدخال الاسم الكامل"
+                      placeholder="رجاء ادخال الاسم الرباعي"
                       className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base ${
                         errors.name ? "border-red-500" : "border-gray-300"
                       }`}
@@ -228,18 +258,12 @@ const Signup = () => {
                   </label>
                   <div className="relative">
                     <input
-                      {...register("phone", {
-                        pattern: {
-                          value: /^[0-9]+$/,
-                          message: "يُسمح بإدخال الأرقام فقط",
-                        },
-                      })}
+                      {...register("phone")}
+                      value={phoneValue}
+                      onChange={handlePhoneChange}
                       type="tel"
                       inputMode="numeric"
-                      placeholder="رجاء إدخال رقم الهاتف"
-                      onInput={(e) => {
-                        e.target.value = e.target.value.replace(/[^0-9]/g, "");
-                      }}
+                      placeholder="09xxxxxxxx"
                       className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base ${
                         errors.phone ? "border-red-500" : "border-gray-300"
                       }`}
@@ -270,13 +294,13 @@ const Signup = () => {
                 {/* Email Input */}
                 <motion.div variants={itemVariants}>
                   <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
-                    البريد الإلكتروني <span className="text-red-500">*</span>
+                    البريد الإلكتروني
                   </label>
                   <div className="relative">
                     <input
                       {...register("email")}
                       type="email"
-                      placeholder="رجاء إدخال البريد الإلكتروني"
+                      placeholder="اختياري - رجاء إدخال البريد الإلكتروني"
                       className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base ${
                         errors.email ? "border-red-500" : "border-gray-300"
                       }`}
@@ -300,25 +324,28 @@ const Signup = () => {
                   )}
                 </motion.div>
 
-                {/* National ID Input */}
+               {/* National ID Input */}
                 <motion.div variants={itemVariants}>
                   <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2 sm:mb-3">
                     الرقم الوطني <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <input
-                      {...register("nationalId", {
-                        pattern: {
-                          value: /^[0-9]+$/,
-                          message: "يُسمح بإدخال الأرقام فقط",
-                        }
-                      })}
+                      {...register("nationalId")}
                       type="text"
                       inputMode="numeric"
-                      maxLength={14}
-                      placeholder="رجاء إدخال الرقم الوطني"
+                      maxLength={12}
+                      placeholder="يبدأ بـ 1 أو 2 - 12 رقم"
                       onInput={(e) => {
-                        e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                        // إزالة أي أحرف غير رقمية
+                        let value = e.target.value.replace(/[^0-9]/g, "");
+
+                        // منع أي رقم أول لا يبدأ بـ 1 أو 2
+                        if (value.length === 1 && !["1", "2"].includes(value[0])) {
+                          value = ""; // امسح الإدخال
+                        }
+
+                        e.target.value = value;
                       }}
                       className={`w-full px-4 sm:px-6 py-3 pl-12 sm:pl-14 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-base ${
                         errors.nationalId ? "border-red-500" : "border-gray-300"
@@ -328,12 +355,13 @@ const Signup = () => {
                     <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2">
                       <FontAwesomeIcon
                         icon={faIdCard}
-                        className="text-gray-400 h-4 w-4 py-3sm:h-5 sm:w-5"
+                        className="text-gray-400 h-4 w-4 sm:h-5 sm:w-5"
                       />
                     </div>
                   </div>
+
                   {errors.nationalId && (
-                    <motion.p 
+                    <motion.p
                       className="mt-1 sm:mt-2 text-xs sm:text-base text-red-600 text-right"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -343,6 +371,7 @@ const Signup = () => {
                     </motion.p>
                   )}
                 </motion.div>
+
               </div>
 
               {/* Row 3: Password and Confirm Password */}
@@ -421,6 +450,37 @@ const Signup = () => {
                   )}
                 </motion.div>
               </div>
+
+              {/* Terms and Conditions Checkbox */}
+              <motion.div variants={itemVariants} className="flex items-center gap-3">
+                <input
+                  {...register("acceptTerms")}
+                  type="checkbox"
+                  id="acceptTerms"
+                  className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                />
+                <label htmlFor="acceptTerms" className="flex items-center text-sm text-gray-700">
+                  أوافق على{" "}
+                  <button
+                    type="button"
+                    onClick={handleTermsClick}
+                    className="text-emerald-600 hover:text-emerald-700 hover:underline mr-1"
+                  >
+                    الشروط والأحكام
+                  </button>
+                  <span className="text-red-500 mr-1">*</span>
+                </label>
+              </motion.div>
+              {errors.acceptTerms && (
+                <motion.p 
+                  className="text-xs sm:text-base text-red-600 text-right"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {errors.acceptTerms.message}
+                </motion.p>
+              )}
 
               {/* Submit Button */}
               <motion.button

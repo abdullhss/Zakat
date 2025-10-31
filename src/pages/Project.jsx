@@ -517,7 +517,7 @@ const Project = () => {
                                     max={projectData.RemainingAmount}
                                     value={donationAmount}
                                     onChange={handleAmountChange}
-                                    placeholder="رجاء إدخال مبلغ التبرع"
+                                    placeholder="رجاء ادخال المبلغ المدفوع"
                                     className="w-full pl-9 sm:pl-10 pr-3 py-3 border-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium border-[#979797] bg-transparent"
                                 />
                             </div>
@@ -531,7 +531,7 @@ const Project = () => {
                                     className="mb-6 p-4 rounded-xl border border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
                                 >
                                     <p className="text-base font-semibold text-gray-800 mb-4 text-right">
-                                    اختر نوع التبرع:
+                                    اختر النوع:
                                     </p>
 
                                     <div className="grid grid-cols-2 gap-4">
@@ -599,7 +599,7 @@ const Project = () => {
                                     }`}
                                 >
                                     <img src={money} alt="donate icon" />
-                                    تبرع الان
+                                    ادفع الان
                                 </motion.button>
                                 <motion.button 
                                     whileHover="hover"

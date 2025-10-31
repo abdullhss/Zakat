@@ -15,6 +15,7 @@ import logo from "../../../../../public/Logo.png";
 import { executeProcedure } from "../../../../services/apiServices";
 import { t } from "i18next";
 import { toast } from "react-toastify";
+import {setCartData} from "../../../CartSlice/CartSlice";
 
 // Validation schema using Zod
 const loginSchema = z.object({
@@ -61,6 +62,16 @@ const Login = () => {
       
       if(response.decrypted){
         localStorage.setItem("UserData",JSON.stringify(response.decrypted))
+        console.log(response.decrypted);
+        
+        const handleFetchCartData =   async () => {
+            const data = await executeProcedure(
+              "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+              response.decrypted.Id
+            );
+            dispatch(setCartData(data.decrypted));
+          } 
+          handleFetchCartData()
       }
       toast.success(`مرحبا ${response.decrypted.UserName}`);
       navigate("/");
