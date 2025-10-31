@@ -190,7 +190,7 @@ const DonationRequest = () => {
     
     const response = await DoTransaction(
       "g+a67fXnSBQre/3SDxT2uA==",
-      `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}#${formData.address}#${markerPosition[0]}#${markerPosition[1]}`
+      `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}#0#${formData.address}#${markerPosition[0]}#${markerPosition[1]}`
     )
     
     if(response.success == 200){
