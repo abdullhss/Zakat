@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setShowPopup, setPopupComponent , setPopupTitle ,openPopup} from "../features/PaySlice/PaySlice";
 import { motion, AnimatePresence } from 'framer-motion';
 import PayComponent from './PayComponent';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 const FastDonation = () => {
   const [offices, setOffices] = useState([]);
@@ -27,8 +28,14 @@ const FastDonation = () => {
   const [zakatPopUp, setZakatPopUp] = useState(false);
   
   const dispatch = useDispatch();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   
-  // Fetch offices data
+  // Check if we're on the office route and extract office data
+  const isOfficeRoute = location.pathname === "/office";
+  const officeDataFromRoute = isOfficeRoute ? searchParams.get("data") : null;
+
+  // Fetch offices data only if not on office route
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,9 +43,6 @@ const FastDonation = () => {
           "mdemtAbueh2oz+k6MjjaFaOfTRzNK4XQQy0TBhCaV0Y=",
           "0"
         );
-        
-        
-        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -69,8 +73,22 @@ const FastDonation = () => {
       }
     };
 
-    fetchData();
-  }, []);
+    // If on office route, set the office from URL parameters
+    if (isOfficeRoute && officeDataFromRoute) {
+      try {
+        const decodedData = JSON.parse(decodeURIComponent(officeDataFromRoute));
+        setSelectedOffice(decodedData.Id);
+        setLoading(prev => ({ ...prev, offices: false }));
+      } catch (error) {
+        console.error("Error parsing office data from URL:", error);
+        setError(prev => ({ ...prev, offices: "خطأ في تحميل بيانات المكتب" }));
+        setLoading(prev => ({ ...prev, offices: false }));
+      }
+    } else {
+      // Only fetch offices if not on office route
+      fetchData();
+    }
+  }, [isOfficeRoute, officeDataFromRoute]);
 
   // Fetch subvention types when office is selected
   useEffect(() => {
@@ -86,14 +104,10 @@ const FastDonation = () => {
         
         const params = `${selectedOffice}#0#z#1#100`;
         
-        
-        
         const response = await executeProcedure(
           "phjR2bFDp5o0FyA7euBbsp/Ict4BDd2zHhHDfPlrwnk=",
           params
         );
-        
-        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -164,13 +178,29 @@ const FastDonation = () => {
   };
 
   const setDonationValue = (value) => {
-    
+    // This function seems to be empty, keeping it for compatibility
   };
 
   const handlePayNow = () => {
     if (!selectedOffice || !donationAmount) {
-      alert("يرجى اختيار المكتب وإدخال مبلغ التبرع");
+      alert("يرجى إدخال مبلغ التبرع");
       return;
+    }
+    
+    // Get office name - try to get from URL data first, then from fetched offices
+    let officeName = '';
+    if (isOfficeRoute && officeDataFromRoute) {
+      try {
+        const decodedData = JSON.parse(decodeURIComponent(officeDataFromRoute));
+        officeName = decodedData.OfficeName || '';
+      } catch (error) {
+        console.error("Error getting office name from URL:", error);
+      }
+    }
+    
+    // If we don't have office name from URL, try to get from fetched offices
+    if (!officeName) {
+      officeName = offices.find(office => office.Id == selectedOffice)?.OfficeName || '';
     }
     
     dispatch(
@@ -179,7 +209,7 @@ const FastDonation = () => {
         component: (
           <PayComponent 
             officeId={selectedOffice}
-            officeName={offices.find(office => office.Id == selectedOffice)?.OfficeName || ''}
+            officeName={officeName}
             SubventionType_Id={selectedSubvention || '0'}
             totalAmount={donationAmount}
             Project_Id='0'
@@ -188,6 +218,19 @@ const FastDonation = () => {
         )
       })
     );
+  };
+
+  // Get office name for display when on office route
+  const getCurrentOfficeName = () => {
+    if (isOfficeRoute && officeDataFromRoute) {
+      try {
+        const decodedData = JSON.parse(decodeURIComponent(officeDataFromRoute));
+        return decodedData.OfficeName || "المكتب المحدد";
+      } catch (error) {
+        return "المكتب المحدد";
+      }
+    }
+    return offices.find(office => office.Id == selectedOffice)?.OfficeName || "";
   };
 
   return (
@@ -221,27 +264,43 @@ const FastDonation = () => {
           </div>
         </div>
 
-        <div className='flex flex-col gap-4'>
-          <span className='font-bold text-lg'>المكاتب</span>
-          {loading.offices ? (
-            <div className='py-3 border-1 text-center'>جاري تحميل المكاتب...</div>
-          ) : error.offices ? (
-            <div className='py-3 border-1 text-center text-red-500'>خطأ في تحميل المكاتب: {error.offices}</div>
-          ) : (
-            <select 
-              className='py-3 border-2 rounded-md border-[#B7B7B7]'
-              value={selectedOffice}
-              onChange={handleOfficeChange}
-            >
-              <option value="">اختر مكتب</option>
-              {offices.map((office) => (
-                <option key={office.Id} value={office.Id}>
-                  {office.OfficeName}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+        {/* Office Selection - Only show if not on office route */}
+        {!isOfficeRoute && (
+          <div className='flex flex-col gap-4'>
+            <span className='font-bold text-lg'>المكاتب</span>
+            {loading.offices ? (
+              <div className='py-3 border-1 text-center'>جاري تحميل المكاتب...</div>
+            ) : error.offices ? (
+              <div className='py-3 border-1 text-center text-red-500'>خطأ في تحميل المكاتب: {error.offices}</div>
+            ) : (
+              <select 
+                className='py-3 border-2 rounded-md border-[#B7B7B7]'
+                value={selectedOffice}
+                onChange={handleOfficeChange}
+              >
+                <option value="">اختر مكتب</option>
+                {offices.map((office) => (
+                  <option key={office.Id} value={office.Id}>
+                    {office.OfficeName}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
+
+        {/* Show current office info when on office route */}
+        {isOfficeRoute && selectedOffice && (
+          <div className='flex flex-col gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+            <span className='font-bold text-lg'>المكتب المحدد</span>
+            <div className='py-2 px-3 bg-white border border-gray-300 rounded-md'>
+              {getCurrentOfficeName()}
+            </div>
+            <p className='text-sm text-gray-600 text-right'>
+              تم تحديد هذا المكتب مسبقاً. يمكنك اختيار نوع الاعانة والمبلغ المراد التبرع به.
+            </p>
+          </div>
+        )}
 
         {/* Subvention Types Dropdown */}
         <div className='flex flex-col gap-4'>

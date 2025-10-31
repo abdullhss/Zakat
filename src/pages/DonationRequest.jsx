@@ -30,11 +30,13 @@ const DonationRequest = () => {
   const [loading, setLoading] = useState({ offices: true, filters: true })
   const [errors, setErrors] = useState({ offices: null, filters: null })
 
+  const userData = JSON.parse(localStorage.getItem("UserData"));
+
   // Form state
   const [formData, setFormData] = useState({
-    name: '',
+    name: userData.UserName,
     individualsCount: '',
-    phone: '',
+    phone: userData.MobileNum,
     amount: '',
     officeId: '',
     donationTypeId: '',
@@ -281,7 +283,7 @@ const DonationRequest = () => {
           </div>
           <Link
             to={"/DonationRequester"}
-            className='text-white px-6 py-2 rounded-lg font-normal shadow-lg w-[92%] sm:w-auto text-sm sm:text-base'
+            className='text-white text-center px-6 py-2 rounded-lg font-normal shadow-lg w-[92%] sm:w-auto text-sm sm:text-base'
             style={{background: "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)"}}
           >
             متابعة طلب سابق
