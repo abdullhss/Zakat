@@ -67,7 +67,7 @@ const Navbar = () => {
       links: [
         { name: "الحملات", path: "/services/campaigns", icon: speaker, isDiamond: false },
         { name: "الزكاة", path: "/zakat", icon: zakat, isDiamond: false },
-        { name: "الاضاحي", path: "/services/zakat", icon: sheep, isDiamond: false },
+        { name: "الاضاحي", path: "/sacrifice", icon: sheep, isDiamond: false },
         { name: "طلبات التبرع", path: "/DonationRequester", icon: DonateRequest, isDiamond: false },
       ],
     },

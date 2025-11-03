@@ -167,7 +167,7 @@ const Campaign = () => {
                 serviceTypeId={serviceTypeId}
                 SubventionType_Id={3} // Assuming a default value for campaigns, adjust as needed
                 totalAmount={parseFloat(donationAmount) || 0}
-                currency="ريال"
+                currency="دينار"
                 actionID={finalActionID}
                 Campaign_Id={campaignData.Id} // Using Campaign_Id instead of Project_Id
                 onSuccess={() => {

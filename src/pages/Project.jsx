@@ -201,7 +201,7 @@ const Project = () => {
                 serviceTypeId={serviceTypeId}
                 SubventionType_Id={projectData.SubventionType_Id}
                 totalAmount={parseFloat(donationAmount) || 0}
-                currency="ريال"
+                currency="دينار"
                 actionID={finalActionID} // Use the calculated finalActionID
                 Project_Id={projectData.Id}
                 onSuccess={() => {

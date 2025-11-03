@@ -460,7 +460,7 @@ const Sacrifice = () => {
                                   {item.name}
                                 </h3>
                                 <p className="text-gray-500 text-xs md:text-sm">
-                                  السعر: {item.price.toLocaleString()} ريال
+                                  السعر: {item.price.toLocaleString()} دينار
                                 </p>
                               </div>
 

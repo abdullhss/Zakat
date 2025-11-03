@@ -230,7 +230,7 @@ const KafaraAndNozor = () => {
         officeId={selectedOffice}
         serviceTypeId="1"
         totalAmount={parseFloat(amount) || 0}
-        currency="ريال"
+        currency="دينار"
         actionID={actionID}
         PaymentDesc={description}
       />

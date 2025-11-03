@@ -102,7 +102,7 @@ const PaySadaka = ({
         accountTypeId={selectedCategory} // Using category as account type
         serviceTypeId="1" // Default service type ID, adjust as needed
         totalAmount={parseFloat(donationAmount) || 0}
-        currency="ريال" // Or whatever currency you're using
+        currency="دينار" // Or whatever currency you're using
         actionID="2" //sadaka
         SubventionType_Id={selectedAid}
       />
