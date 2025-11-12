@@ -45,7 +45,7 @@ function Home() {
 
   return (
     <section>
-      <HeroBanner data={mainScreenData?.heroBanner} />
+      {/* <HeroBanner data={mainScreenData?.heroBanner} /> */}
       <div className="relative overflow-hidden">
         <div
           className="z-10 mx-auto px-4 flex flex-col gap-4"
