@@ -25,7 +25,18 @@ const Project = () => {
     const [donationError, setDonationError] = useState("");
     const [fetchError, setFetchError] = useState("");
     const [donationType, setDonationType] = useState(""); // "zakat" or "sadaqa"
+    const [oldcartData , setOldcartData] = useState() ; 
     const UserData = JSON.parse(localStorage.getItem("UserData"));
+    
+    useEffect(()=>{
+        const getOldCartData = async()=>{
+            const response = await executeProcedure("2ktPqnItdgYCI/pHmg+wmA==" ,UserData.Id)
+            setOldcartData(JSON.parse(response.decrypted.CartData))
+        }
+        getOldCartData()
+    },[]) 
+    console.log(oldcartData);
+    
     // Parse project data with error handling
     const parseProjectData = (data) => {
         try {
@@ -230,50 +241,58 @@ const Project = () => {
     };
 
     const handleAddToCart = async () => {
-    try {
-        if (!UserData) {
-        toast.error("برجاء تسجيل الدخول أولاً");
-        return;
-        }
-
-        const cart = cartData?.cartData ?? {};
-        const firstItemCount = Number(cart.CartFirstItemCount) || 0;
-        const firstItems = safeParseArray(cart.CartFirstItemData);
-        const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
-
-        const projectOfficeId = projectData?.Office_Id ?? null;
-        const projectId = projectData?.Id ?? 0;
-        const subventionId = projectData?.SubventionType_Id ?? 0;
-        const actionId = getFinalActionID();
-        const donation = donationAmount || 0;
-
-        if (!projectOfficeId) {
-        toast.error("حدث خطأ: بيانات المشروع غير مكتملة");
-        return;
-        }
-
-        if (firstItemCount == 0 || firstOfficeId == projectOfficeId) {
-        const payload = `0#${firstItems?.[0]?.Id || 0}#${UserData.Id}#${actionId}#${projectId}#${projectOfficeId}#${subventionId}#${donation}##false`;
-
-        const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
-
-        const handleFetchCartData = async () => {
-            const data = await executeProcedure(
-            "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
-            UserData.Id
+        const hasDuplicateProject = oldcartData.some((item, index) =>
+            oldcartData.findIndex(i => i.Project_Id === item.Project_Id) !== index
             );
-            dispatch(setCartData(data.decrypted));
-        };
 
-        await handleFetchCartData();
-        toast.success("تمت الإضافة إلى السلة بنجاح");
-        } else {
-        toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
+        if(hasDuplicateProject){
+            toast.error("لا يمكن إضافة نفس المشروع أكثر من مرة إلى السلة");
+            return ;
         }
-    } catch (error) {
-        console.error("handleAddToCart error:", error);
-        toast.error("حدث خطأ أثناء إضافة العنصر إلى السلة. حاول مرة أخرى.");
-    }
+        try {
+            if (!UserData) {
+            toast.error("برجاء تسجيل الدخول أولاً");
+            return;
+            }
+
+            const cart = cartData?.cartData ?? {};
+            const firstItemCount = Number(cart.CartFirstItemCount) || 0;
+            const firstItems = safeParseArray(cart.CartFirstItemData);
+            const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
+
+            const projectOfficeId = projectData?.Office_Id ?? null;
+            const projectId = projectData?.Id ?? 0;
+            const subventionId = projectData?.SubventionType_Id ?? 0;
+            const actionId = getFinalActionID();
+            const donation = donationAmount || 0;
+
+            if (!projectOfficeId) {
+            toast.error("حدث خطأ: بيانات المشروع غير مكتملة");
+            return;
+            }
+
+            if (firstItemCount == 0 || firstOfficeId == projectOfficeId) {
+            const payload = `0#${firstItems?.[0]?.Id || 0}#${UserData.Id}#${actionId}#${projectId}#${projectOfficeId}#${subventionId}#${donation}##false`;
+
+            const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
+
+            const handleFetchCartData = async () => {
+                const data = await executeProcedure(
+                "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+                UserData.Id
+                );
+                dispatch(setCartData(data.decrypted));
+            };
+
+            await handleFetchCartData();
+            toast.success("تمت الإضافة إلى السلة بنجاح");
+            } else {
+            toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
+            }
+        } catch (error) {
+            console.error("handleAddToCart error:", error);
+            toast.error("حدث خطأ أثناء إضافة العنصر إلى السلة. حاول مرة أخرى.");
+        }
     };
 
 
