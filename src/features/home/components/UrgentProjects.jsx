@@ -100,7 +100,7 @@ const UrgentProjects = ({ data }) => {
           <div>
             <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
           </div>
-          المشاريع
+          المشاريع العاجلة
         </div>
 
         <Link to={"/opportunities/UrgentProjects"} className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
