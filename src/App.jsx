@@ -47,6 +47,7 @@ import NewsDetails from "./pages/NewsDetails.jsx";
 import AboutUs from "./pages/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 import TermsAndConditions from "./pages/TermsAndConditions.jsx";
+import UrgentProjects from "./pages/UrgentProjects.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -117,6 +118,7 @@ function App() {
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs/>} />
               <Route path="/tos" element={<TermsAndConditions/>} />
+              <Route path="/opportunities/UrgentProjects" element={<UrgentProjects/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />

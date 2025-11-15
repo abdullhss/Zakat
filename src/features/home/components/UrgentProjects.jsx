@@ -6,8 +6,10 @@ import DonationCard from "../../../components/DonationCard";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-const Donations = ({ data }) => {
+const UrgentProjects = ({ data }) => {
   const donations = JSON.parse(data);
+  console.log(donations);
+  
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -101,7 +103,7 @@ const Donations = ({ data }) => {
           المشاريع
         </div>
 
-        <Link to={"/opportunities/projects"} className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
+        <Link to={"/opportunities/UrgentProjects"} className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
           المزيد
         </Link>
       </div>
@@ -138,41 +140,39 @@ const Donations = ({ data }) => {
             msOverflowStyle: "none",
           }}
         >
-          {donations.map((item, index) => {
-           return(
-            <div
-              key={item.Id}
-              className="flex-shrink-0"
-            >
-              <DonationCard
-                image={`https://framework.md-license.com:8093/ZakatImages/${item.ProjectPhotoName}.jpg`}
-                title={item.ProjectName}
-                description={item.ProjectDesc}
-                collected={item.ProjectOpeningBalance}
-                goal={item.ProjectWantedAmount}
-                className="min-w-[320px]"
-                showBtn={item.AllowZakat}
-                payNowLink={`project?data=${encodeURIComponent(JSON.stringify({ 
-                  Id: item.Id,
-                  Name: item.ProjectName,
-                  Description: item.ProjectDesc,
-                  SubventionType_Id: item.SubventionType_Id,
-                  WantedAmount: item.ProjectWantedAmount,
-                  OpeningBalance: item.ProjectOpeningBalance,
-                  RemainingAmount: item.ProjectRemainingAmount,
-                  AllowZakat: item.AllowZakat,
-                  Importance_Id: item.Importance_Id,
-                  Office_Id: item.Office_Id,
-                  IsActive: item.IsActive,
-                  PhotoName: item.ProjectPhotoName,
-                  SubventionTypeName: item.SubventionTypeName,
-                  ImportanceName: item.ImportanceName,
-                  OfficeName: item.OfficeName,
-                  actionID: 0
-                }))}`}
-              />
-            </div>
-          )})}
+          {donations.map((item) => {
+            return (
+                <div key={item.Id} className="flex-shrink-0">
+                <DonationCard
+                    image={`https://framework.md-license.com:8093/ZakatImages/${item.PhotoName}.jpg`}
+                    title={item.Name}
+                    description={item.Description}
+                    collected={item.OpeningBalance}
+                    goal={item.WantedAmount}
+                    className="min-w-[320px]"
+                    showBtn={item.AllowZakat}
+                    payNowLink={`project?data=${encodeURIComponent(JSON.stringify({ 
+                    Id: item.Id,
+                    Name: item.Name,
+                    Description: item.Description,
+                    SubventionType_Id: item.SubventionType_Id,
+                    WantedAmount: item.WantedAmount,
+                    OpeningBalance: item.OpeningBalance,
+                    RemainingAmount: item.RemainingAmount,
+                    AllowZakat: item.AllowZakat,
+                    Importance_Id: item.Importance_Id,
+                    Office_Id: item.Office_Id,
+                    IsActive: item.IsActive,
+                    PhotoName: item.PhotoName,
+                    SubventionTypeName: item.SubventionTypeName,
+                    OfficeName: item.OfficeName,
+                    actionID: 0
+                    }))}`}
+                />
+                </div>
+            );
+            })}
+
         </div>
 
         {/* shadow overlay */}
@@ -183,8 +183,8 @@ const Donations = ({ data }) => {
   );
 };
 
-export default Donations;
+export default UrgentProjects;
 
-Donations.propTypes = {
+UrgentProjects.propTypes = {
   data: PropTypes.any,
 };

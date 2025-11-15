@@ -10,9 +10,11 @@ import DownloadApp from "./DownloadApp";
 import Footer from "../../../components/Footer";
 import { executeProcedure } from "../../../services/apiServices";
 import { useEffect, useState } from "react";
+import UrgentProjects from "./UrgentProjects";
 
 function Home() {
   const [mainScreenData, setMainScreenData] = useState(null);
+  const [mianScreeUrgentProjects, setMianScreeUrgentProjects] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,6 +36,29 @@ function Home() {
 
     fetchData();
   }, []);
+
+    useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await executeProcedure(
+          "CrMZywWqTb0VUtLdXz69bacgnJ8pXOFNe0DfELkeSoQ=",
+          "1#10"
+        );
+        console.log(JSON.parse(response.decrypted.ProjectsData));
+        
+        setMianScreeUrgentProjects(response.decrypted.ProjectsData);
+        
+        
+      } catch (error) {
+        console.error("Error fetching main screen data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 
   if (loading) {
     return (
@@ -57,6 +82,9 @@ function Home() {
         >
           <ZakatCategories />
           <HelpRequestComponent />
+          { mianScreeUrgentProjects && (
+            <UrgentProjects data={mianScreeUrgentProjects} />
+          )}
           {mainScreenData?.decrypted?.ProjectsData && (
             <Donations data={mainScreenData?.decrypted?.ProjectsData} />
           )}
