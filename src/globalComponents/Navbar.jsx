@@ -31,6 +31,10 @@ const Navbar = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+    const userdata = localStorage.getItem("UserData");
+    const userID = userdata ? JSON.parse(userdata)?.Id : null;
+    console.log(userID);
+    
   const toggleDropdown = (menu) => {
     setOpenDropdown(openDropdown === menu ? null : menu);
   };
@@ -70,6 +74,13 @@ const Navbar = () => {
         { name: "الاضاحي", path: "/sacrifice", icon: sheep, isDiamond: false },
         { name: "طلبات التبرع", path: "/DonationRequester", icon: DonateRequest, isDiamond: false },
       ],
+    },
+    { type: "dropdown", name: "الاستفسارات",
+      links:[
+        { name: " روابط خاصة ", path: "/FAQ/Links", icon: zakat, isDiamond: false },
+        { name: "أسئلة شائعة", path: "/FAQ", icon: zakat, isDiamond: false },
+        { name: " طلب استفسار", path: "/FAQ/ask", icon: zakat, isDiamond: false },
+      ]
     },
     { type: "main", name: "من نحن", path: "/about-us" },
     { type: "main", name: " اللوائح و القوانين", path: "/tos" },
@@ -182,9 +193,16 @@ const Navbar = () => {
                 {dropdown.links.map((link) => (
                   <Link
                     key={link.path}
-                    to={link.path}
+                    to={link.path === "/FAQ/ask" && !userID ? "#" : link.path}
+                    onClick={(e) => {
+                      if (link.path === "/FAQ/ask" && !userID) {
+                        e.preventDefault();
+                        toast.error("يجب تسجيل الدخول اولا");
+                        return;
+                      }
+                      setOpenDropdown(null);
+                    }}
                     className=" block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-md"
-                    onClick={() => setOpenDropdown(null)}
                   >
                     <div className="flex items-center gap-3">
                       {link.isDiamond ? (
@@ -237,10 +255,18 @@ const Navbar = () => {
                         {item.links.map((link) => (
                           <Link
                             key={link.path}
-                            to={link.path}
+                            to={link.path === "/FAQ/ask" && !userID ? "#" : link.path}
+                            onClick={(e) => {
+                              if (link.path === "/FAQ/ask" && !userID) {
+                                e.preventDefault();
+                                toast.error("يجب تسجيل الدخول اولا");
+                                return;
+                              }
+                              handleSublinkClick();
+                            }}
                             className="flex items-center gap-2 text-gray-600 hover:text-emerald-600"
-                            onClick={handleSublinkClick}
                           >
+
                             {link.isDiamond ? (
                               <Diamond imgUrl={link.icon} />
                             ) : (

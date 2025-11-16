@@ -48,6 +48,9 @@ import AboutUs from "./pages/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 import TermsAndConditions from "./pages/TermsAndConditions.jsx";
 import UrgentProjects from "./pages/UrgentProjects.jsx";
+import FAQ from "./pages/FAQ.jsx";
+import Links from "./pages/Links.jsx";
+import Ask from "./pages/Ask.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -119,6 +122,9 @@ function App() {
               <Route path="/contact" element={<ContactUs/>} />
               <Route path="/tos" element={<TermsAndConditions/>} />
               <Route path="/opportunities/UrgentProjects" element={<UrgentProjects/>} />
+              <Route path="/FAQ/Links" element={<Links/>} />
+              <Route path="/FAQ" element={<FAQ/>} />
+              <Route path="/FAQ/ask" element={<Ask/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />
