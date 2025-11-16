@@ -51,6 +51,7 @@ import UrgentProjects from "./pages/UrgentProjects.jsx";
 import FAQ from "./pages/FAQ.jsx";
 import Links from "./pages/Links.jsx";
 import Ask from "./pages/Ask.jsx";
+import DonateTo from "./pages/DonateTo.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -111,6 +112,7 @@ function App() {
               <Route path="/campaign" element={<Campaign/>} />
               <Route path="/project" element={<Project/>} />
               <Route path="/DonationRequester" element={<DonationRequester/>} />
+              <Route path="/DonateTo" element={<DonateTo/>} />
               <Route path="/services/donation-request" element={<DonationRequest/>} />
               <Route path="/offices" element={<Offices/>} />
               <Route path="/office" element={<OfficeDetailes/>} />
