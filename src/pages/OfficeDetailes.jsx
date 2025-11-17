@@ -72,6 +72,10 @@ const OfficeDetailes = () => {
       </div>
     );
   }
+  
+  const headerBackground = officeData?.HeaderPhotoName
+  ? `url("https://framework.md-license.com:8093/ZakatImages/${officeData.HeaderPhotoName}.jpg")`
+  : `url("/default-header.png")`; // خلي دي الصورة الديفولت عندك
 
   return (
     <motion.div 
@@ -94,6 +98,12 @@ const OfficeDetailes = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
+           style={{
+            backgroundImage: headerBackground,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
         >
           <div className='flex h-full w-full items-end px-4 md:px-12 py-6 relative z-[100]'>
             <div className='flex items-center gap-3 w-full h-fit'>
