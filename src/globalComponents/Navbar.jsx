@@ -15,6 +15,7 @@ import speaker from "../public/SVGs/Speaker.svg";
 import zakat from "../public/SVGs/zakat.svg";
 import sheep from "../../public/Sheep.svg";
 import DonateRequest from "../public/SVGs/DonateRequest.svg";
+import rememberIcon from "../../public/remember-1-svgrepo-com.svg" 
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -74,6 +75,7 @@ const Navbar = () => {
         { name: "الاضاحي", path: "/sacrifice", icon: sheep, isDiamond: false },
         { name: "طلبات التبرع", path: "/DonationRequester", icon: DonateRequest, isDiamond: false },
         { name: "تبرع لمن تحب", path: "/DonateTo", icon: DonateRequest, isDiamond: false },
+        { name: "ذكرني", path: "/remember", icon: rememberIcon, isDiamond: false },
       ],
     },
     { type: "dropdown", name: "الاستفسارات",
@@ -196,7 +198,7 @@ const Navbar = () => {
                     key={link.path}
                     to={link.path === "/FAQ/ask" && !userID ? "#" : link.path}
                     onClick={(e) => {
-                      if (link.path === "/FAQ/ask" && !userID) {
+                      if ( (link.path === "/FAQ/ask" && !userID) || (link.path === "/remember" && !userID)) {
                         e.preventDefault();
                         toast.error("يجب تسجيل الدخول اولا");
                         return;

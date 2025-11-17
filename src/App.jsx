@@ -52,6 +52,7 @@ import FAQ from "./pages/FAQ.jsx";
 import Links from "./pages/Links.jsx";
 import Ask from "./pages/Ask.jsx";
 import DonateTo from "./pages/DonateTo.jsx";
+import Remember from "./pages/Remember.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -127,6 +128,7 @@ function App() {
               <Route path="/FAQ/Links" element={<Links/>} />
               <Route path="/FAQ" element={<FAQ/>} />
               <Route path="/FAQ/ask" element={<Ask/>} />
+              <Route path="/remember" element={<Remember/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />

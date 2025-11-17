@@ -328,6 +328,12 @@ const PayComponent = ({
         {donationType === "international" && (
           <div className="mt-6 space-y-4">
             {/* Upload UI with Progress */}
+            <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-green-700 font-semibold">
+                يتم الدفع من خارج ليبيا على الحسابات المخصصة للدفع الدولي مع ارفاق صورة ايصال الدفع
+              </p>
+            </div>
+
             <div className="flex items-start gap-4">
               <div
                 onClick={handleUploadClick}
@@ -412,6 +418,9 @@ const PayComponent = ({
         {/* Local Donation */}
         {donationType === "local" && (
           <div className="mt-6 space-y-4">
+            <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-green-700 font-semibold">يتم الدفع من داخل ليبيا إما عن طريق طرق الدفع الالكتروني أو عن طريق حوالة بنكية على الحسابات المخصصة </p>
+            </div>
             <p className="text-lg font-semibold">طريقة الدفع</p>
             <div className="flex items-center gap-3">
               <label className="flex flex-1 items-center p-3 rounded-md font-medium border-2 border-[#B7B7B7] gap-2">
@@ -451,6 +460,11 @@ const PayComponent = ({
             {/* Bank Transfer */}
             {localMethod === "bank" && (
               <div className="mt-4 space-y-4">
+                <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <p className="text-green-700 font-semibold">
+                  يتم التحويل على احدى الحسابات المخصصة مع ارفاق صورة ايصال الدفع
+                  </p>
+                </div>
                 {/* Upload UI with Progress */}
                 <div className="flex items-start gap-4">
                   <div
@@ -535,9 +549,10 @@ const PayComponent = ({
 
             {/* Electronic Payment */}
             {localMethod === "electronic" && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-blue-700 font-semibold">سيتم توجيهك إلى بوابة الدفع الإلكتروني</p>
-                <p className="text-blue-600 text-sm mt-2">ستقوم بإتمام عملية الدفع عبر بوابة الدفع الآمنة</p>
+              <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-green-700 font-semibold">
+                  يتم الدفع عن طريق احدى طرق الدفع الالكتروني المحددة في التطبيق
+                </p>
               </div>
             )}
           </div>
