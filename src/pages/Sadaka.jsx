@@ -10,6 +10,7 @@ const Sadaka = () => {
   const [donations, setDonations] = useState([]);
   const [donationValue, setDonationValue] = useState();
   const [subventionTypes, setSubventionTypes] = useState([]);
+  const [sadakaType , setSadakaType] = useState("G") ;
   const [totalProjectsCount, setTotalProjectsCount] = useState(0);
   const [loading, setLoading] = useState({
     offices: true,
@@ -34,10 +35,7 @@ const Sadaka = () => {
           "mdemtAbueh2oz+k6MjjaFaOfTRzNK4XQQy0TBhCaV0Y=",
           "0"
         );
-        
-        
-        
-        
+
         if (response && response.decrypted) {
           const data = response.decrypted;
           
@@ -91,14 +89,6 @@ const Sadaka = () => {
   // Fetch donations data when selections change
   useEffect(() => {
     const fetchDonations = async () => {
-      // Only fetch if office is selected AND category is "الفقراء والمساكين" (ID: 1)
-      if (!selectedOffice || selectedCategory !== "1") {
-        setDonations([]);
-        setSubventionTypes([]);
-        setTotalProjectsCount(0);
-        return;
-      }
-
       try {
         setLoading(prev => ({ ...prev, donations: true }));
         
@@ -106,9 +96,14 @@ const Sadaka = () => {
         const startNum = (currentPage - 1) * 6; // Calculate start number based on current page
         const params = `${selectedOffice}#${selectedAid || "0"}#s#${startNum+1}#9`;
         
-        
+        const GetSadkaSubventionTypesDataParams = `${sadakaType}#1#100`
         
         const response = await executeProcedure(
+          "0sKUt2E7SOiZ8WrjfyQIaIY5nL3Uh97WgmX3uf/9t74=",
+          GetSadkaSubventionTypesDataParams
+        );
+
+        const ProjectsResponse = await executeProcedure(
           "phjR2bFDp5o0FyA7euBbsp/Ict4BDd2zHhHDfPlrwnk=",
           params
         );
@@ -118,13 +113,14 @@ const Sadaka = () => {
         let subventionTypesData = [];
         let projectsCount = 0;
         
+        
         if (response && response.decrypted) {
           const data = response.decrypted;
-          
+          const projectsDataDecrypted = ProjectsResponse.decrypted
           // Parse ProjectsCount
-          if (data.ProjectsCount) {
+          if (projectsDataDecrypted.ProjectsCount) {
             try {
-              projectsCount = parseInt(data.ProjectsCount) || 0;
+              projectsCount = parseInt(projectsDataDecrypted.ProjectsCount) || 0;
               
             } catch (parseError) {
               console.error("Error parsing ProjectsCount:", parseError);
@@ -133,11 +129,11 @@ const Sadaka = () => {
           }
           
           // Parse ProjectsData
-          if (data.ProjectsData) {
+          if (projectsDataDecrypted.ProjectsData) {
             try {
-              const projectsData = typeof data.ProjectsData === 'string' 
-                ? JSON.parse(data.ProjectsData) 
-                : data.ProjectsData;
+              const projectsData = typeof projectsDataDecrypted.ProjectsData === 'string' 
+                ? JSON.parse(projectsDataDecrypted.ProjectsData) 
+                : projectsDataDecrypted.ProjectsData;
               
               donationsData = Array.isArray(projectsData) ? projectsData : [];
               
@@ -148,11 +144,11 @@ const Sadaka = () => {
           }
           
           // Parse SubventionTypes (this is the correct field name)
-          if (data.SubventionTypes) {
+          if (data.SubventionTypesData) {
             try {
-              const parsedSubventionTypes = typeof data.SubventionTypes === 'string'
-                ? JSON.parse(data.SubventionTypes)
-                : data.SubventionTypes;
+              const parsedSubventionTypes = typeof data.SubventionTypesData === 'string'
+                ? JSON.parse(data.SubventionTypesData)
+                : data.SubventionTypesData;
               
               subventionTypesData = Array.isArray(parsedSubventionTypes) ? parsedSubventionTypes : [];
               
@@ -179,7 +175,7 @@ const Sadaka = () => {
     };
 
     fetchDonations();
-  }, [selectedOffice, selectedAid, selectedCategory, currentPage]);
+  }, [selectedOffice, selectedAid, selectedCategory, currentPage , sadakaType]);
 
   // Handler functions to update state
   const handleOfficeChange = (officeId) => {
@@ -231,6 +227,7 @@ const Sadaka = () => {
             onAidChange={handleAidChange}
             onCategoryChange={handleCategoryChange}
             setDonationValue={setDonationValue}
+            setSadakaType={setSadakaType}
           />
             <Opportunities 
               donations={donations}

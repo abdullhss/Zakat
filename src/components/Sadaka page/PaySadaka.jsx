@@ -26,7 +26,8 @@ const PaySadaka = ({
   onOfficeChange,
   onAidChange,
   onCategoryChange,
-  setDonationValue
+  setDonationValue,
+  setSadakaType
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
   const {showPayPopup,  popupComponent} = useSelector((state) => state.pay);
@@ -224,7 +225,35 @@ const PaySadaka = ({
               {renderOfficeOptions()}
             </select>
           </div>
-
+          <div className="flex-1 flex flex-col">
+            <label className="block mb-2 text-gray-700 font-medium">
+              نوع الصدقة
+            </label>
+            <div className="flex items-center mt-4 justify-between font-semibold">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="sadaqaType"
+                  value="G"
+                  defaultChecked={true}
+                  className="cursor-pointer"
+                  onChange={(e)=>{setSadakaType(e.target.value)}}
+                />
+                <span>صدقة عامة</span>
+              </label>
+              
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="sadaqaType"
+                  value="R"
+                  className="cursor-pointer"
+                  onChange={(e)=>{setSadakaType(e.target.value)}}
+                />
+                <span>صدقة جارية</span>
+              </label>
+            </div>
+          </div>
           <div className="flex-1">
             <label className="block mb-2 text-gray-700 font-medium">
               الإعانة
@@ -339,7 +368,8 @@ PaySadaka.propTypes = {
   onOfficeChange: PropTypes.func,
   onAidChange: PropTypes.func,
   onCategoryChange: PropTypes.func,
-  setDonationValue:PropTypes.func
+  setDonationValue:PropTypes.func,
+  setSadakaType:PropTypes.func
 };
 
 PaySadaka.defaultProps = {
@@ -354,6 +384,7 @@ PaySadaka.defaultProps = {
   onOfficeChange: () => {},
   onAidChange: () => {},
   onCategoryChange: () => {},
+  setSadakaType:()=>{}
 };
 
 export default PaySadaka;
