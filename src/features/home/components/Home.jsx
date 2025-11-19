@@ -11,6 +11,7 @@ import Footer from "../../../components/Footer";
 import { executeProcedure } from "../../../services/apiServices";
 import { useEffect, useState } from "react";
 import UrgentProjects from "./UrgentProjects";
+import Zema from "./Zema";
 
 function Home() {
   const [mainScreenData, setMainScreenData] = useState(null);
@@ -91,6 +92,7 @@ function Home() {
           {mainScreenData?.decrypted?.OfficesData && (
             <Librarys data={mainScreenData.decrypted.OfficesData} />
           )}
+          <Zema />
           {mainScreenData?.decrypted?.NewsData && (
             <LastNews data={mainScreenData.decrypted.NewsData} />
           )}

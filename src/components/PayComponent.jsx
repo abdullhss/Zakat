@@ -267,8 +267,20 @@ const PayComponent = ({
       }
     };
 
-    if (officeId && serviceTypeId && paymentMethodId) {
+    if (officeId && serviceTypeId && paymentMethodId && actionID!=12) {
       fetchData();
+    }
+    else{
+        console.log("d5l");
+        const fetchZemaAccounts = async ()=>{
+          const params = `0`;
+            const response = await executeProcedure(
+              "NJ4Pn13/Fmu75bylIUDbD5FLwUl6QiMGGZ0Okh5MPas=",
+              params
+            );
+            setLocalBankAccountsData(JSON.parse(response.decrypted.EbraBankAccountsData));
+        }
+        fetchZemaAccounts() ;
     }
   }, [officeId, serviceTypeId, paymentMethodId]);
 
