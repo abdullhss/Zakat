@@ -8,6 +8,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 const LastNews = ({ data }) => {
   const news = JSON.parse(data);
+  console.log(news);
+  
   const scrollContainerRef = useRef(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { amount: 0.2, once: false }); // replay animation
@@ -139,6 +141,7 @@ const LastNews = ({ data }) => {
                 title={item.NewsMainTitle}
                 descirption={item.NewsSubTitle}
                 className="w-[320px] transition-transform duration-300 hover:scale-105"
+                officeName = {item.OfficeName}
               />
             </div>
           ))}

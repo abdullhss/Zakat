@@ -94,17 +94,19 @@ export const executeProcedure = async (ProcedureName, procedureValues) => {
     };
   }
 };
-export const DoTransaction = async (tableName, ColumnsValues , WantedAction=0 ,) => {
+export const DoTransaction = async (tableName, ColumnsValues , WantedAction=0 ,ColumnsNames=null) => {
   try {
     // Data to encrypt
-    const dataToEncrypt = {
+    var dataToEncrypt = {
       TableName: tableName,
       ColumnsValues: ColumnsValues,
       WantedAction:WantedAction,
       DataToken: "Zakat",
       PointId:0
     };
-
+    if(ColumnsNames != null){
+      dataToEncrypt={...dataToEncrypt , ColumnsNames : ColumnsNames}
+    }
     console.log("Data to encrypt:", dataToEncrypt);
 
     // Encrypt using public key

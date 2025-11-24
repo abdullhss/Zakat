@@ -7,19 +7,60 @@ import { executeProcedure } from "../services/apiServices"
 
 const UrgentProjects = () => {
   const [donationCards, setDonationCards] = useState([])
+  const [offices, setOffices] = useState([])
+  const [selectedOfficeId, setSelectedOfficeId] = useState(0) // Default to 0 for "الكل"
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalProjectsCount, setTotalProjectsCount] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [loadingOffices, setLoadingOffices] = useState(false)
   const itemsPerPage = 12
 
-  // Fetch donation cards when page changes
+  // Fetch offices on component mount
+  useEffect(() => {
+    const fetchOffices = async () => {
+      setLoadingOffices(true)
+      try {
+        const response = await executeProcedure(
+          "mdemtAbueh2oz+k6MjjaFaOfTRzNK4XQQy0TBhCaV0Y=",
+          "0"
+        )
+        
+        if (response && response.decrypted) {
+          const data = response.decrypted
+          
+          // Check if OfficesData exists and parse it
+          if (data.OfficesData) {
+            try {
+              const officesData = typeof data.OfficesData === 'string' 
+                ? JSON.parse(data.OfficesData) 
+                : data.OfficesData
+              
+              setOffices(Array.isArray(officesData) ? officesData : [])
+            } catch (parseError) {
+              console.error("Error parsing OfficesData:", parseError)
+              setOffices([])
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching offices:", error)
+        setOffices([])
+      } finally {
+        setLoadingOffices(false)
+      }
+    }
+
+    fetchOffices()
+  }, [])
+
+  // Fetch donation cards when page or office filter changes
   useEffect(() => {
     const fetchDonationCards = async () => {
       setLoading(true)
       try {
         const startNum = (currentPage - 1) * itemsPerPage + 1
-        const params = `${startNum}#${itemsPerPage}`
+        const params = `${selectedOfficeId}#${startNum}#${itemsPerPage}`
         
         const response = await executeProcedure(
           "VhHmn+1EDh7y7eor+QB6x6Sr9C8GNNtWwSOKT9ErVP4=",
@@ -49,7 +90,13 @@ const UrgentProjects = () => {
     }
 
     fetchDonationCards()
-  }, [currentPage, itemsPerPage])
+  }, [currentPage, itemsPerPage, selectedOfficeId])
+
+  const handleOfficeChange = (e) => {
+    const officeId = parseInt(e.target.value)
+    setSelectedOfficeId(officeId)
+    setCurrentPage(1) // Reset to first page when filter changes
+  }
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -69,31 +116,49 @@ const UrgentProjects = () => {
 
   return (
     <div className="relative overflow-hidden"
-    style={{
-            backgroundImage: "url('/background pattern.png')",
-            backgroundRepeat: "repeat",
-            backgroundSize: "auto",
-          }}
+      style={{
+        backgroundImage: "url('/background pattern.png')",
+        backgroundRepeat: "repeat",
+        backgroundSize: "auto",
+      }}
     >
-      <div 
-          className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28"
-      >
-          <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
-              <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
-              فرص التبرع
-          </div>
+      <div className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28">
+        <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
+          <Diamond className="absolute -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
+          المشاريع
+        </div>
       </div>
 
-      {/* Search bar - Only keeping search functionality */}
+      {/* Search and Filter Section */}
       <div className='px-8 mt-8 border-b border-[#878787] pb-4'>
-        <div className="w-full flex flex-1 items-center gap-2 bg-[#E5E9EA] border border-gray-300 rounded-lg px-3 py-2">
-          <Search className="w-5 h-5" />
-          <input
-            type="text"
-            placeholder="ابحث هنا ..."
-            className="flex-1 placeholder:text-black placeholder:font-bold bg-transparent outline-none text-gray-700 placeholder-gray-400"
-          />
-          <img src={filter} alt="بحث" className="w-5 h-5" />
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          {/* Office Filter Dropdown */}
+          <div className="w-full md:w-auto">
+            <select
+              value={selectedOfficeId}
+              onChange={handleOfficeChange}
+              className="w-full md:w-48 bg-[#E5E9EA] border border-gray-300 rounded-lg px-3 py-2 text-gray-700 outline-none"
+              disabled={loadingOffices}
+            >
+              <option value={0}>الكل</option>
+              {offices.map((office) => (
+                <option key={office.Id} value={office.Id}>
+                  {office.OfficeName || office.Name || `المكتب ${office.Id}`}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Search Bar */}
+          <div className="w-full flex flex-1 items-center gap-2 bg-[#E5E9EA] border border-gray-300 rounded-lg px-3 py-2">
+            <Search className="w-5 h-5" />
+            <input
+              type="text"
+              placeholder="ابحث هنا ..."
+              className="flex-1 placeholder:text-black placeholder:font-bold bg-transparent outline-none text-gray-700 placeholder-gray-400"
+            />
+            <img src={filter} alt="بحث" className="w-5 h-5" />
+          </div>
         </div>
       </div>
 
@@ -178,7 +243,6 @@ const UrgentProjects = () => {
           )}
         </>
       )}
-      
 
       <div className="rightBow"></div>
       <div className="leftBow"></div>

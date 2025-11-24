@@ -118,7 +118,7 @@ const Campaign = () => {
                 }
             } catch (error) {
                 console.error("Error fetching donation cards:", error);
-                setFetchError("حدث خطأ أثناء تحميل فرص التبرع المماثلة");
+                setFetchError("حدث خطأ أثناء تحميل المشاريع المماثلة");
             } finally {
                 setLoading(false);
             }
@@ -557,7 +557,7 @@ const Campaign = () => {
                     {loading ? (
                         <div className="flex justify-center items-center py-12">
                             <div className="text-center text-gray-600 text-lg">
-                                جاري تحميل فرص التبرع المماثلة...
+                                جاري تحميل المشاريع المماثلة...
                             </div>
                         </div>
                     ) : (

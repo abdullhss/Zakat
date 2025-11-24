@@ -307,10 +307,10 @@ const Sacrifice = () => {
                       </div>
                       <div className="text-left">
                         <p className="font-semibold text-[#16343A]">
-                          {item.total.toLocaleString()} ر.س
+                          {item.total.toLocaleString()} د.ل
                         </p>
                         <p className="text-xs text-gray-500">
-                          {item.price.toLocaleString()} ر.س لكل واحد
+                          {item.price.toLocaleString()} د.ل لكل واحد
                         </p>
                       </div>
                     </div>
@@ -329,7 +329,7 @@ const Sacrifice = () => {
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-lg">الإجمالي:</span>
                   <span className="font-bold text-lg text-[#16343A]">
-                    {totalPrice.toLocaleString()} ر.س
+                    {totalPrice.toLocaleString()} د.ل
                   </span>
                 </div>
               </div>
@@ -440,7 +440,7 @@ const Sacrifice = () => {
                               </span>
                             )}
                             <span className="text-[#16343A] text-base md:text-lg font-bold mx-2">
-                              {accordionTotal.toLocaleString()} ر.س
+                              {accordionTotal.toLocaleString()} د.ل
                             </span>
                           </div>
                         </div>
@@ -506,7 +506,7 @@ const Sacrifice = () => {
               
               <div className='flex items-center justify-between font-bold text-base md:text-lg'>
                 <span>إجمالي المبلغ</span>
-                <span>{totalPrice.toLocaleString()} ر.س</span>
+                <span>{totalPrice.toLocaleString()} د.ل</span>
               </div>
 
               <hr className='border-[1.5px] border-[#18383D] my-2' />

@@ -3,13 +3,15 @@ import Diamond from '../components/Diamond'
 import Salla from "../public/SVGs/Salla.svg"
 import { Search } from 'lucide-react'
 import filter from "../public/SVGs/fillter.svg"
-import { executeProcedure } from '../services/apiServices'
+import { DoTransaction, executeProcedure } from '../services/apiServices'
 import SallaCard from '../components/SallaCard'
 import money from "../../public/coins.webp";
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PaySlice/PaySlice";
 import PayComponent from '../components/PayComponent'
+import { toast } from 'react-toastify'
+import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
 
 const Cart = () => {
   const [cartData, setCartData] = useState(null);
@@ -25,6 +27,7 @@ const Cart = () => {
   const fetchData = async () => {
     try {
       const response = await executeProcedure("5wqtvajPizixFRBAU+AEElAsxJWj3ghjcdWQmhzmZpg=", userid);
+      console.log(response);
       
       
       if (response.decrypted) {
@@ -41,21 +44,34 @@ const Cart = () => {
   };
 
   const handleDeleteItem = async (itemId, isCharity = false) => {
-    // Implement delete functionality here
     
-    // You'll need to call an API to remove the item from cart
-    // Then refetch the data
-    // await deleteCartItem(itemId, isCharity);
-    // fetchData();
+    const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==" , itemId , 2 , "Id") ;
+    if(response.success == 200){
+      toast.success("تم حذف العنصر بنجاح")
+    }
+    const handleFetchCartData = async () => {
+        const data = await executeProcedure(
+        "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+        userid
+        );
+        console.log(data.decrypted);
+        
+        location.reload() ;
+        dispatch(setCartData(data.decrypted));
+    };
+
+    await handleFetchCartData();
+    fetchData();
   };
 
   const getCurrentData = () => {
     if (!cartData) return [];
     
     const data = activeTab === "charity" ? cartData.CartSadqaData : cartData.CartZakatData;
+    console.log(data );
     
     // Filter by search term
-    return data.filter(item => 
+    return data?.filter(item => 
       item.ProjectName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.OfficeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.SubventionTypeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,7 +81,7 @@ const Cart = () => {
 
   const getOfficeName = () => {
     const data = getCurrentData();
-    return data.length > 0 ? data[0].OfficeName : "لا يوجد مكاتب";
+    return data?.length > 0 ? data[0].OfficeName : "لا يوجد مكاتب";
   };
 
   const getSummaryData = () => {
@@ -211,9 +227,9 @@ const Cart = () => {
       {/* Content */}
       <div className="flex-1 px-4 lg:px-8 pb-8">
         {cartData ? (
-          currentData.length > 0 ? (
+          currentData?.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentData.map((item) => (
+              {currentData?.map((item) => (
                 <SallaCard
                   key={item.Id}
                   image={money}

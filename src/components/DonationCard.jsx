@@ -5,6 +5,7 @@ import money from "../public/SVGs/money.svg";
 import cardWave from "../public/SVGs/cardWave.svg";
 import handWithMoney from "../public/SVGs/handWithMoney.svg";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const DonationCard = ({
   image,
@@ -16,6 +17,7 @@ const DonationCard = ({
   payNowLink,
   cantPay,
   className,
+  OfficeName
 }) => {
   const remaining = goal - collected;
   const percentage = Math.min(Math.round((collected / goal) * 100), 100);
@@ -55,12 +57,19 @@ const DonationCard = ({
               )}
               <h2 className="text-lg font-bold">{title}</h2>
               <span className="text text-gray-500">{description}</span>
+              
             </div>
           </div>
-          <img src={Navigate} width={25} />
+          <img src={Navigate} onClick={()=>{
+            navigator.clipboard.writeText(`${window.location.origin}${payNowLink}`).then(()=>{
+              toast.success("تم نسخ رابط المشروع")
+            })
+          }
+          } width={25} />
         </div>
 
         <hr className="h-[2px] w-full bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E] border-0 rounded-full" />
+        {OfficeName&&<span className="text text-gray-500">{OfficeName}</span>}
 
         {/* Progress Section */}
         <div className="flex flex-col gap-3">
@@ -109,6 +118,7 @@ DonationCard.propTypes = {
   payNowLink: PropTypes.string,
   cantPay: PropTypes.bool,
   className: PropTypes.string,
+  OfficeName:PropTypes.string
 };
 
 export default DonationCard;

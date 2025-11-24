@@ -195,7 +195,7 @@ const OpportunitiesTab = ({Officeid}) => {
                             : ''
                     }}
                 >
-                    فرص التبرعات الحالية
+                    المشاريعات الحالية
                 </button>
                 <button 
                     onClick={() => handleTabChange('completed')}
@@ -210,7 +210,7 @@ const OpportunitiesTab = ({Officeid}) => {
                             : ''
                     }}
                 >
-                    فرص التبرعات المكتملة
+                    المشاريعات المكتملة
                 </button>
             </div>
 

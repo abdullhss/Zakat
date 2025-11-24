@@ -11,6 +11,7 @@ const SallaCard = ({
   goal,
   className,
   price,
+  onDelete
 }) => {
   const remaining = goal - collected;
   const percentage = Math.min(Math.round((collected / goal) * 100), 100);
@@ -18,7 +19,7 @@ const SallaCard = ({
   return (
     <div
     className={`relative flex flex-col justify-between gap-5 pl-8 pr-5 py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden ${className}`}
-    style={{ minHeight: "370px" }}
+    style={{ minHeight: "200px" }}
     >
         {/* waves */}
         <img src={cardWave} className="absolute left-0 top-0" />
@@ -39,13 +40,13 @@ const SallaCard = ({
                 <span className="text text-gray-500">{description}</span>
                 </div>
             </div>
-            <Trash2 className="w-6 h-6 text-red-500 cursor-pointer transition-colors" />
+            <Trash2 onClick={onDelete} className="w-6 h-6 text-red-500 cursor-pointer transition-colors" />
             </div>
 
             <hr className="h-[2px] w-full bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E] border-0 rounded-full" />
 
             {/* Progress Section */}
-            <div className="flex flex-col gap-3">
+            {/* <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between text-base font-bold text-[#16343A]">
                 <span>تم جمع {collected}$</span>
                 <span>المتبقي {remaining}$</span>
@@ -59,7 +60,7 @@ const SallaCard = ({
             <span className="text-[#16343ACC]">
                 تم الوصول الى الهدف بنسبة {percentage}%
             </span>
-            </div>
+            </div> */}
 
             {/* Spacer علشان الزر يفضل في الآخر */}
             <div className="flex-1"></div>
@@ -81,6 +82,7 @@ SallaCard.propTypes = {
   collected: PropTypes.number.isRequired,
   goal: PropTypes.number.isRequired,
   price: PropTypes.number.isRequired,
+  onDelete:PropTypes.any , 
   className: PropTypes.string,
 };
 

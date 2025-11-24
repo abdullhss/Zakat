@@ -25,13 +25,14 @@ const Project = () => {
     const [donationError, setDonationError] = useState("");
     const [fetchError, setFetchError] = useState("");
     const [donationType, setDonationType] = useState(""); // "zakat" or "sadaqa"
-    const [oldcartData , setOldcartData] = useState() ; 
+    const [oldcartData , setOldcartData] = useState([]) ; 
     const UserData = JSON.parse(localStorage.getItem("UserData"));
     
     useEffect(()=>{
         const getOldCartData = async()=>{
             const response = await executeProcedure("2ktPqnItdgYCI/pHmg+wmA==" ,UserData.Id)
-            setOldcartData(JSON.parse(response.decrypted.CartData))
+            setOldcartData(JSON.parse(response.decrypted.CartCount >0 ? response.decrypted.CartData : []))
+            
         }
         getOldCartData()
     },[]) 
@@ -164,7 +165,7 @@ const Project = () => {
                 }
             } catch (error) {
                 console.error("Error fetching donation cards:", error);
-                setFetchError("حدث خطأ أثناء تحميل فرص التبرع المماثلة");
+                setFetchError("حدث خطأ أثناء تحميل المشاريع المماثلة");
             } finally {
                 setLoading(false);
             }
@@ -723,7 +724,7 @@ const Project = () => {
                 {loading ? (
                     <div className="flex justify-center items-center py-12">
                         <div className="text-center text-gray-600 text-lg">
-                            جاري تحميل فرص التبرع المماثلة...
+                            جاري تحميل المشاريع المماثلة...
                         </div>
                     </div>
                 ) : filteredDonationCards.length > 0 ? (

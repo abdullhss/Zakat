@@ -100,7 +100,7 @@ const UrgentProjects = ({ data }) => {
           <div>
             <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
           </div>
-          المشاريع العاجلة
+          المشاريع المستعجلة
         </div>
 
         <Link to={"/opportunities/UrgentProjects"} className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
@@ -145,6 +145,7 @@ const UrgentProjects = ({ data }) => {
                 <div key={item.Id} className="flex-shrink-0">
                 <DonationCard
                     image={`https://framework.md-license.com:8093/ZakatImages/${item.PhotoName}.jpg`}
+                    OfficeName={item.OfficeName}
                     title={item.Name}
                     description={item.Description}
                     collected={item.OpeningBalance}

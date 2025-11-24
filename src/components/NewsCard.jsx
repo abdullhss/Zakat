@@ -9,7 +9,8 @@ const NewsCard = ({
   detailClick, 
   newsPageOnly = false, 
   className, 
-  newsItem 
+  newsItem ,
+  officeName
 }) => {
   return (
     <div className={`flex flex-col gap-5 p-3 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden ${className}`}>
@@ -22,6 +23,9 @@ const NewsCard = ({
       <div className='flex flex-col gap-1.5'>
         <h1 className='text-2xl font-bold'>{title}</h1>
         {newsPageOnly && canBeBig && newsItem && <h2 className='text-lg font-medium'>{newsItem.NewsSubTitle}</h2>}
+        <p className={`text-black ${canBeBig ? "text-lg " : "text-sm line-clamp-3"}`}>
+          {officeName}
+        </p>
         <p className={`text-[#3C3C43] ${canBeBig ? "text-lg " : "text-sm line-clamp-3"}`}>
           {descirption}
         </p>
@@ -58,6 +62,7 @@ NewsCard.propTypes = {
   newsPageOnly: PropTypes.bool,
   className: PropTypes.string,
   newsItem: PropTypes.object,
+  officeName:PropTypes.string
 };
 
 export default NewsCard;

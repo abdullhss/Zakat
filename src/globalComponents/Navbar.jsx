@@ -74,7 +74,7 @@ const Navbar = () => {
         { name: "الحملات", path: "/services/campaigns", icon: speaker, isDiamond: false },
         { name: "الزكاة", path: "/zakat", icon: zakat, isDiamond: false },
         { name: "الاضاحي", path: "/sacrifice", icon: sheep, isDiamond: false },
-        { name: "طلبات التبرع", path: "/DonationRequester", icon: DonateRequest, isDiamond: false },
+        { name: "طلبات الاعانة", path: "/DonationRequester", icon: DonateRequest, isDiamond: false },
         { name: "تبرع لمن تحب", path: "/DonateTo", icon: DonateRequest, isDiamond: false },
         { name: "زكاة الفطر ", path: "/fitrZakat", icon: food, isDiamond: false },
         { name: "ذكرني", path: "/remember", icon: rememberIcon, isDiamond: false },
