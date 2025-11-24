@@ -160,7 +160,7 @@ const FitrZakat = () => {
   if (!isAllowed) {
     return (
       <div className="text-red-600 text-center text-2xl font-bold mt-10">
-        أنت خارج المعاد المحدد للزكاة
+        هذا ليس الوقت المحدد لاخراج الزكاة
       </div>
     );
   }

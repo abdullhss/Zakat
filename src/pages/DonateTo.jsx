@@ -22,7 +22,7 @@ const DonateTo = () => {
   const [selectedSubvention, setSelectedSubvention] = useState("");
   const [donationAmount, setDonationAmount] = useState("");
   const [donorName, setDonorName] = useState("");
-  const [donorPhone, setDonorPhone] = useState("");
+  const [donorPhone, setDonorPhone] = useState("09");
   
   const dispatch = useDispatch();
   const location = useLocation();
@@ -170,12 +170,30 @@ const DonateTo = () => {
   };
 
   const handleDonorPhoneChange = (e) => {
-    const value = e.target.value;
-    // Only allow numbers
-    if (value === "" || /^\d+$/.test(value)) {
-      setDonorPhone(value);
+    let value = e.target.value;
+
+    // يسمح بالأرقام فقط
+    if (!/^\d*$/.test(value)) return;
+
+    // لو المستخدم بيمسح كل حاجة
+    if (value === "") {
+      setDonorPhone("");
+      return;
     }
+
+    // دايمًا يبدأ بـ 09
+    if (!value.startsWith("09")) {
+      value = "09";
+    }
+
+    // يمنع أكتر من 10 أرقام
+    if (value.length > 10) {
+      value = value.slice(0, 10);
+    }
+
+    setDonorPhone(value);
   };
+
 
   const handlePayNow = () => {
     if (!selectedOffice || !donationAmount || !donorName || !donorPhone) {
