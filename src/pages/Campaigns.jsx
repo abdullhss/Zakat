@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import DonationCard from '../components/DonationCard';
 import { executeProcedure } from '../services/apiServices';
 
+const pageSize = 6 ;
 const Campaigns = () => {
     const [activeTab, setActiveTab] = useState('donation');
     const dispatch = useDispatch();
@@ -46,7 +47,7 @@ useEffect(() => {
         try {
             const response = await executeProcedure(
                 "792hE7jGjfELBbjahPuEaeKSFknF+Bg3QdRnCfJ7ssk=",
-                `${donationCurrentPage}#6`
+                `${(donationCurrentPage - 1)*pageSize + 1}#${pageSize}`
             );
             
             
@@ -54,7 +55,7 @@ useEffect(() => {
             const campaignsData = JSON.parse(response.decrypted.CampaignsData);
             setDonationCampaigns(campaignsData);
             setDonationTotalCount(response.decrypted.CampaignsCount || 0);
-            setDonationTotalPages(Math.ceil((response.decrypted.CampaignsCount || 0) / 6));
+            setDonationTotalPages(Math.ceil((response.decrypted.CampaignsCount || 0) / pageSize));
         } catch (error) {
             console.error("Error fetching donation campaigns:", error);
             // Set to empty array on error to prevent map errors
@@ -75,15 +76,16 @@ useEffect(() => {
             
             const response = await executeProcedure(
                 "uIcc/W+fVBc3HevZNS9f4AzhqGV1bGCighxc8yfJRmk=",
-                `${UserData.Id}#${myCampaignsCurrentPage}#6`
+                `${UserData.Id}#${(myCampaignsCurrentPage - 1)*pageSize + 1}#${pageSize}`
             );
+                ``
             
             
             // Fix: Parse the JSON string to array and fix the count
             const myCampaignsData = JSON.parse(response.decrypted.CampaignsData);
             setMyCampaigns(myCampaignsData);
             setMyCampaignsTotalCount(response.decrypted.CampaignsCount || 0); // Fixed: should be UserCampaignsCount, not UserCampaignsData
-            setMyCampaignsTotalPages(Math.ceil((response.decrypted.CampaignsCount || 0) / 6));
+            setMyCampaignsTotalPages(Math.ceil((response.decrypted.CampaignsCount || 0) / pageSize));
         } catch (error) {
             console.error("Error fetching my campaigns:", error);
             // Set to empty array on error to prevent map errors

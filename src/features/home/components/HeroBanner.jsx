@@ -12,8 +12,9 @@ import salla from "../../../../public/Salla.svg";
 import donationRequest from "../../../../public/donationRequest.svg";
 import fastDonation from "../../../../public/fastDonation.svg";
 import shoppingCart from "../../../public/SVGs/ShoppingCart.svg";
+import PropTypes from "prop-types";
 
-const HeroBanner = () => {
+const HeroBanner = ({backgroundImage}) => {
   const UserData = localStorage.getItem("UserData");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -44,11 +45,12 @@ const HeroBanner = () => {
       })
     );
   };
-
+  console.log(backgroundImage);
+  
   return (
     <section
       className="relative w-full h-[400px] bg-[#18383D] overflow-hidden bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url('/herobg.svg')` }}
+      style={{ backgroundImage: backgroundImage?backgroundImage:`url(${'/herobg.svg'})` }}
     >
       {/* منصة وصل الليبية */}
       <img
@@ -128,3 +130,7 @@ const HeroBanner = () => {
 };
 
 export default HeroBanner;
+
+HeroBanner.propTypes = {
+  backgroundImage : PropTypes.any
+}

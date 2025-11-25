@@ -8,8 +8,12 @@ import { executeProcedure } from "./services/apiServices";
 
 const Layout = () => {
   const location = useLocation();
+  
   const isHomePage = location.pathname === "/";
+  const isOfficePage = location.pathname.startsWith("/office");
+
   const [mainScreenData, setMainScreenData] = useState(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -28,19 +32,18 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Fixed Navbar */}
       <Navbar />
+
+      {!isOfficePage && (
         <div className="mt-20">
           <HeroBanner data={mainScreenData?.heroBanner} />
         </div>
+      )}
 
-      {/* Floating Donation Button - يظهر في كل الصفحات ما عدا الصفحة الرئيسية */}
       {/* {!isHomePage && <FloatingDonationButton />} */}
 
       {/* Main Content */}
-      {/* <main className="pt-16 lg:pt-20"> */}
-        <Outlet />
-      {/* </main> */}
+      <Outlet />
     </div>
   );
 };

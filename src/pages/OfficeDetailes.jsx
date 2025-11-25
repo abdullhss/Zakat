@@ -8,6 +8,7 @@ import OpportunitiesTab from '../features/home/components/OfficeDetailes/Opportu
 import NewsTab from '../features/home/components/OfficeDetailes/NewsTab';
 import StatisticsTab from '../features/home/components/OfficeDetailes/StatisticsTab';
 import AboutTab from '../features/home/components/OfficeDetailes/AboutTab';
+import HeroBanner from '../features/home/components/HeroBanner';
 
 const OfficeDetailes = () => {
   const [activeTab, setActiveTab] = useState('opportunities');
@@ -73,9 +74,7 @@ const OfficeDetailes = () => {
     );
   }
   
-  const headerBackground = officeData?.HeaderPhotoName
-  ? `url("https://framework.md-license.com:8093/ZakatImages/${officeData.HeaderPhotoName}.jpg")`
-  : `url("/default-header.png")`; // خلي دي الصورة الديفولت عندك
+  const headerBackground = officeData?.HeaderPhotoName &&`url("https://framework.md-license.com:8093/ZakatImages/${officeData.HeaderPhotoName}.jpg")`
 
   return (
     <motion.div 
@@ -84,6 +83,9 @@ const OfficeDetailes = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
+      <div className='mt-20'>
+        <HeroBanner backgroundImage={headerBackground}/>
+      </div>
       <div
         className='min-h-screen'
         style={{
@@ -99,7 +101,7 @@ const OfficeDetailes = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
            style={{
-            backgroundImage: headerBackground,
+            // backgroundImage: headerBackground,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
