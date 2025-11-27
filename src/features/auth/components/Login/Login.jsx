@@ -283,6 +283,9 @@ const Login = () => {
               <span className="text-[#6E6E6E] font-normal" >ليس لديك حساب ؟ </span>
               <Link className="text-[#17343B] mx-2" to={"/signup"}> انشاء حساب </Link>
             </div>
+            <div className="w-full flex items-center justify-center mt-2 font-medium text-lg">
+              <Link className="text-[#17343B] mx-2" to={"/ForgetPassword"}> نسيت كلمة السر ؟ </Link>
+            </div>
             {/* Quranic Verse */}
             <motion.div 
               className="w-full flex items-center justify-center mt-6 sm:mt-8 lg:mt-12 text-center overflow-hidden"

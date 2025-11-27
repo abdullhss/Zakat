@@ -13,6 +13,8 @@ const Projects = () => {
   const [totalPages, setTotalPages] = useState(1)
   const [totalProjectsCount, setTotalProjectsCount] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [searchValue, setSearchValue] = useState("");
+
   const showLeftArrow =true
   const showRightArrow= true
 
@@ -82,46 +84,54 @@ const Projects = () => {
     const fetchDonationCards = async () => {
       if (activeFilter === null || activeFilter === undefined) return;
       
-      setLoading(true)
+      setLoading(true);
+
       try {
-        const startNum = (currentPage - 1) * itemsPerPage + 1
-        const params = `O#${activeFilter}#${startNum}#${itemsPerPage}`
+        const startNum = (currentPage - 1) * itemsPerPage + 1;
+
+        let params = `O#${activeFilter}#${startNum}#${itemsPerPage}`;
+
+        let procId = "";
         
-        
-        
-        const response = await executeProcedure(
-          "B0/KqqIyiS3j4lbxUKXJCw==",
-          params
-        )
-        
-        
+        if (searchValue.trim() !== "") {
+          procId = "OwBwBZyz7Wyd8C76lm99aOA6Lmymo9ZxZe1GvF6U6QA=";
+          params += `#${searchValue}`;
+        } 
+        else {
+          // الوضع الطبيعي بدون سيرش
+          procId = "B0/KqqIyiS3j4lbxUKXJCw==";
+        }
+
+        const response = await executeProcedure(procId, params);
+        console.log( params );
+        console.log( procId);
+        console.log(response);
         
         if (response && response.decrypted) {
-          const projectsDataString = response.decrypted.ProjectsData
-          let cardsData = []
-          let totalCount = 0
-          
-          if (projectsDataString) {
-            cardsData = JSON.parse(projectsDataString)
-            totalCount = response.decrypted.totalCount || cardsData.length || 0
-          }
-          
-          
-          
-          setDonationCards(Array.isArray(cardsData) ? cardsData : [])
-          setTotalProjectsCount(totalCount)
-          setTotalPages(Math.ceil(response.decrypted.ProjectsCount / itemsPerPage))
+          const projectsDataString = response.decrypted.ProjectsData || "[]";
+          const cardsData = JSON.parse(projectsDataString);
+
+          setDonationCards(Array.isArray(cardsData) ? cardsData : []);
+
+          // لو السيرش ليه count مختلف
+          const totalCount =
+            response.decrypted.totalCount ??
+            response.decrypted.ProjectsCount ??
+            cardsData.length;
+
+          setTotalProjectsCount(totalCount);
+          setTotalPages(Math.ceil(totalCount / itemsPerPage));
         }
       } catch (error) {
-        console.error("Error fetching donation cards:", error)
-        setDonationCards([])
+        console.error("Error fetching donation cards:", error);
+        setDonationCards([]);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchDonationCards()
-  }, [activeFilter, currentPage, itemsPerPage])
+    fetchDonationCards();
+  }, [activeFilter, currentPage, itemsPerPage, searchValue]);
 
   const handleFilterChange = (filterId) => {
     setActiveFilter(filterId)
@@ -221,8 +231,14 @@ const Projects = () => {
           <input
             type="text"
             placeholder="ابحث هنا ..."
+            value={searchValue}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+              setCurrentPage(1); // يرجّع للصفحة الأولى
+            }}
             className="flex-1 placeholder:text-black placeholder:font-bold bg-transparent outline-none text-gray-700 placeholder-gray-400"
           />
+
           <img src={filter} alt="بحث" className="w-5 h-5" />
         </div>
       </div>

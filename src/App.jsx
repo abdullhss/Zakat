@@ -54,6 +54,7 @@ import Ask from "./pages/Ask.jsx";
 import DonateTo from "./pages/DonateTo.jsx";
 import Remember from "./pages/Remember.jsx";
 import FitrZakat from "./pages/FitrZakat.jsx";
+import ForgetPassword from "./pages/ForgetPassword.jsx";
 
 // Main Pages (with navbar via Layout)
 
@@ -100,6 +101,7 @@ function App() {
             {/* Auth Routes - No Layout (Full Screen) */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/ForgetPassword" element={<ForgetPassword />} />
             <Route path="/OTP" element={<EnterOTP />} />
 
             {/* Main Routes - With Layout (Navbar + Content) */}

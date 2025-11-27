@@ -23,7 +23,8 @@ const DonateTo = () => {
   const [donationAmount, setDonationAmount] = useState("");
   const [donorName, setDonorName] = useState("");
   const [donorPhone, setDonorPhone] = useState("09");
-  
+  const [phoneError, setPhoneError] = useState("");
+
   const dispatch = useDispatch();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -175,9 +176,10 @@ const DonateTo = () => {
     // يسمح بالأرقام فقط
     if (!/^\d*$/.test(value)) return;
 
-    // لو المستخدم بيمسح كل حاجة
+    // ممنوع يكون فاضي
     if (value === "") {
       setDonorPhone("");
+      setPhoneError("رقم الهاتف مطلوب");
       return;
     }
 
@@ -192,6 +194,15 @@ const DonateTo = () => {
     }
 
     setDonorPhone(value);
+
+    // تحقق من بادئات ليبيانا والمدار
+    const validPrefixes = ["091", "092", "094", "095"];
+
+    if (value.length === 10 && !validPrefixes.some(p => value.startsWith(p))) {
+      setPhoneError("الرقم يجب أن يبدأ بـ 091 أو 092 أو 094 أو 095");
+    } else {
+      setPhoneError("");
+    }
   };
 
 
@@ -357,14 +368,23 @@ const DonateTo = () => {
         {/* Donor Phone Input */}
         <div className="flex flex-col gap-2">
           <span className='font-bold text-lg'>رقم المتبرع له</span>
+
           <input
             type="tel"
             value={donorPhone}
             onChange={handleDonorPhoneChange}
             placeholder="أدخل رقم المتبرع له"
-            className="w-full px-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600"
+            className={`w-full px-3 py-3 border-2 rounded-lg text-sm md:text-base 
+              focus:outline-none focus:ring-2 
+              ${phoneError ? "border-red-500 focus:ring-red-500" : "border-[#979797] focus:ring-emerald-600"}
+            `}
           />
+
+          {phoneError && (
+            <span className="text-red-600 text-sm">{phoneError}</span>
+          )}
         </div>
+
         
         <div className='flex-grow'></div>
         
@@ -374,7 +394,9 @@ const DonateTo = () => {
             !selectedOffice || !donationAmount || !donorName || !donorPhone ? "opacity-50 cursor-not-allowed" : ""
           }`}
           onClick={(e) => { e.preventDefault(); handlePayNow(); }}
-          disabled={!selectedOffice || !donationAmount || !donorName || !donorPhone}
+          disabled={
+            !selectedOffice || !donationAmount || !donorName || !donorPhone || phoneError
+          }
           style={{
             background: "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)",
           }}
