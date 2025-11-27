@@ -96,7 +96,7 @@ const OfficeDetailes = () => {
       >
         {/* Header Section */}
         <motion.section
-          className="bg-[#18383D] relative w-full h-[400px] overflow-hidden"
+          className="bg-transparent relative w-full h-[400px] overflow-hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
@@ -115,8 +115,8 @@ const OfficeDetailes = () => {
                 className='w-40 h-36 rounded-md object-cover' 
               />
               <div className='flex flex-col h-32 w-full justify-between font-bold'>
-                <span className='text-white text-lg'>{officeData.OfficeName}</span>
-                <div className='w-full flex items-center justify-between text-[#F2DCA5]'>
+                <span className='text-black text-lg'>{officeData.OfficeName}</span>
+                <div className='w-full flex items-center justify-between text-[#18383D]'>
                   <span>رقم الترخيص</span>
                   <span className='flex items-center gap-2'>
                     {officeData.PhoneNum} 
@@ -127,7 +127,7 @@ const OfficeDetailes = () => {
                     /> 
                   </span>
                 </div>
-                <div className='text-white text-sm mt-2'>
+                <div className='text-black text-sm mt-2'>
                   <div>المدينة: {officeData.CityName}</div>
                   <div>العنوان: {officeData.Address}</div>
                 </div>

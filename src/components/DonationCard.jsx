@@ -69,7 +69,7 @@ const DonationCard = ({
         </div>
 
         <hr className="h-[2px] w-full bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E] border-0 rounded-full" />
-        {OfficeName&&<span className="text text-gray-500">{OfficeName}</span>}
+        {OfficeName&&<span className="font-semibold">{OfficeName}</span>}
 
         {/* Progress Section */}
         <div className="flex flex-col gap-3">
