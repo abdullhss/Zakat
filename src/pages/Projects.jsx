@@ -14,6 +14,15 @@ const Projects = () => {
   const [totalProjectsCount, setTotalProjectsCount] = useState(0)
   const [loading, setLoading] = useState(false)
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchValue);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchValue]);
 
   const showLeftArrow =true
   const showRightArrow= true
@@ -93,10 +102,10 @@ const Projects = () => {
 
         let procId = "";
         
-        if (searchValue.trim() !== "") {
+        if (debouncedSearch.trim() !== "") {
           procId = "OwBwBZyz7Wyd8C76lm99aOA6Lmymo9ZxZe1GvF6U6QA=";
-          params += `#${searchValue}`;
-        } 
+          params = `O#${activeFilter}#${debouncedSearch}#${startNum}#${itemsPerPage}`;
+        }
         else {
           // الوضع الطبيعي بدون سيرش
           procId = "B0/KqqIyiS3j4lbxUKXJCw==";
@@ -131,7 +140,7 @@ const Projects = () => {
     };
 
     fetchDonationCards();
-  }, [activeFilter, currentPage, itemsPerPage, searchValue]);
+  }, [activeFilter, currentPage, itemsPerPage, debouncedSearch]);
 
   const handleFilterChange = (filterId) => {
     setActiveFilter(filterId)
