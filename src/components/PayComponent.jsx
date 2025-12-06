@@ -56,7 +56,7 @@ const PayComponent = ({
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [fileError, setFileError] = useState(""); // New state for file error
-  const [electronicPaymentSystemReference ,  setElectronicPaymentSystemReference] = useState() ; 
+  const [electronicPaymentSystemReference ,  setElectronicPaymentSystemReference] = useState("") ; 
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate() ;
@@ -159,7 +159,7 @@ const PayComponent = ({
       const params = [
         "0", // Id
         formattedDate, // PaymentDate
-        PaymentDesc, // PaymentDesc (فاضي)
+        PaymentDesc==""?electronicPaymentSystemReference:PaymentDesc, // PaymentDesc (فاضي)
         totalAmount.toString(), // PaymentValue
         actionID, // Action_Id (زكاة)
         paymentWayId, // PaymentWay_Id
@@ -317,7 +317,9 @@ var merchRef='test-demo';// this will be user as your reference to the transacti
       console.log('Merchant Reference:', data.MerchantReference);
       setElectronicPaymentSystemReference(data.SystemReference)
       
-      toast.success('Payment Successful!');
+      callPaymentProcedure();
+
+
     },
 
     errorCallback: function (data) {
@@ -353,7 +355,6 @@ var merchRef='test-demo';// this will be user as your reference to the transacti
     // For electronic payment without file upload
     if (donationType === "local" && localMethod === "electronic") {
       Do()
-      // callPaymentProcedure();
     } 
     // For bank transfers with file upload
     else if (uploadedFileId) {
