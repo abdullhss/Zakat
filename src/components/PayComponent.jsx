@@ -9,6 +9,25 @@ import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
 import { useNavigate } from "react-router-dom";
+import CryptoJS from "crypto-js";
+
+
+
+if (!Date.prototype.YYYYMMDDHHMMSS) {
+  Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
+    value: function() {
+      function pad2(n) { return (n < 10 ? '0' : '') + n; }
+      return this.getFullYear() +
+             pad2(this.getMonth() + 1) +
+             pad2(this.getDate()) +
+             pad2(this.getHours()) +
+             pad2(this.getMinutes()) +
+             pad2(this.getSeconds());
+    }
+  });
+}
+
+
 const PayComponent = ({
   officeName = "",
   officeId = "",
@@ -37,6 +56,7 @@ const PayComponent = ({
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [fileError, setFileError] = useState(""); // New state for file error
+  const [electronicPaymentSystemReference ,  setElectronicPaymentSystemReference] = useState() ; 
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate() ;
@@ -196,11 +216,144 @@ const PayComponent = ({
       setIsProcessing(false);
     }
   };
+  useEffect(() => {
+    // Bootstrap bundle
+    const bootstrapScript = document.createElement("script");
+    bootstrapScript.src = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.bundle.min.js.map";
+    bootstrapScript.async = true;
+    document.body.appendChild(bootstrapScript);
+
+    // CryptoJS
+    const cryptoScript = document.createElement("script");
+    cryptoScript.src = "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js";
+    cryptoScript.integrity = "sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==";
+    cryptoScript.crossOrigin = "anonymous";
+    cryptoScript.referrerPolicy = "no-referrer";
+    cryptoScript.async = true;
+    document.body.appendChild(cryptoScript);
+
+    // Lightbox
+    const lightboxScript = document.createElement("script");
+    lightboxScript.src = "https://tnpg.moamalat.net:6006/js/lightbox.js";
+    lightboxScript.async = true;
+    document.body.appendChild(lightboxScript);
+
+    // Cleanup
+    return () => {
+      document.body.removeChild(bootstrapScript);
+      document.body.removeChild(cryptoScript);
+      document.body.removeChild(lightboxScript);
+    };
+  }, []);
+  
+function Do(){
+    callLightbox(totalAmount);
+    //Lightbox.Checkout.showLightbox();
+}
+function formatAmount(amount) {
+  const str = String(amount);
+  if (!str.includes(".")) {
+    return str + "000";
+  }
+
+  let [intPart, decimalPart] = str.split(".");
+
+  decimalPart = (decimalPart + "000").slice(0, 3);
+
+  return intPart + decimalPart; // 122.333 → 122333
+}
+
+function callLightbox(amount) {
+
+var mID='10081014649';// use your merchant id here;
+var tID='99179395';// use your terminal id here;
+var merchantKey= '3a488a89b3f7993476c252f017c488bb';    // '39636630633731362D663963322D346362642D386531662D633963303432353936373431';//'36323537623434612D656631382D346436652D383930642D393465666365323732363037';// use your key here;
+var merchRef='test-demo';// this will be user as your reference to the transaction you can manage this string by any format
+
+  if (mID === '' || tID === '') {
+    return;
+  }
+
+  // ✓ التنسيق الصحيح حسب Documentation: yyyyMMddHHmm (12 حرف)
+  // مثال: "202009171418" = 2020-09-17 الساعة 14:18
+  var dt = new Date().YYYYMMDDHHMMSS().substring(0, 12);  // أول 12 حرف فقط (بدون الثواني)
+  // var dt = new Date().toGMTString();  // ✗ خطأ: تنسيق خاطئ
+
+  console.log('DateTime format:', dt);  // للتأكد من التنسيق
+
+  var hmacSHA256 = '';
+  
+  if(merchantKey)
+  {
+      // قراءة الـ merchantKey كـ Hex بدلاً من تحويله لـ ASCII
+      var keyHex = CryptoJS.enc.Hex.parse(merchantKey);
+      var strHashData = 'Amount='+amount+'000&DateTimeLocalTrxn='+dt+'&MerchantId='+mID+'&MerchantReference='+merchRef+'&TerminalId='+tID;
+      console.log(strHashData);
+      hmacSHA256 = CryptoJS.HmacSHA256(strHashData, keyHex).toString().toUpperCase();
+       
+      console.log(hmacSHA256);
+     
+ }
+
+ 
+  
+  window.Lightbox.Checkout.configure = {
+    MID: mID,
+    TID: tID,
+    AmountTrxn: formatAmount(amount),
+    MerchantReference: merchRef,
+    TrxDateTime: dt,
+    SecureHash: hmacSHA256,
+
+    completeCallback: function (data) {
+     
+      console.log('Transaction Date:', data.TxnDate);
+      console.log('System Reference:', data.SystemReference);
+      console.log('Network Reference:', data.NetworkReference);
+      console.log('Amount:', data.Amount);
+      console.log('Currency:', data.Currency);
+      console.log('Paid Through:', data.PaidThrough);
+      console.log('Payer Account:', data.PayerAccount);
+      console.log('Merchant Reference:', data.MerchantReference);
+      setElectronicPaymentSystemReference(data.SystemReference)
+      
+      toast.success('Payment Successful!');
+    },
+
+    errorCallback: function (data) {
+     
+      console.log('Error Message:', data.error);
+      console.log('DateTime:', data.DateTimeLocalTrxn);
+      console.log('Amount:', data.Amount);
+      console.log('Merchant Reference:', data.MerchantReference);
+      console.log('Secure Hash:', data.SecureHash);
+      toast.error('Payment Failed: ' + data.error);
+    },
+
+    cancelCallback: function () {
+    
+      toast.error('تم الالغاء');
+    }
+  };
+
+ 
+  console.log('Calling Lightbox.Checkout.showLightbox()...');
+  console.log('════════════════════════════════════════════════');
+
+  try {
+    window.Lightbox.Checkout.showLightbox();
+    console.log('✓ showLightbox() called successfully');
+  } catch (error) {
+    console.log('✗ Error calling showLightbox():');
+    console.log(error);
+  }
+}
 
   const handlePayNow = () => {
     // For electronic payment without file upload
     if (donationType === "local" && localMethod === "electronic") {
-      callPaymentProcedure();
+      Do()
+      // callPaymentProcedure();
     } 
     // For bank transfers with file upload
     else if (uploadedFileId) {
@@ -271,7 +424,6 @@ const PayComponent = ({
       fetchData();
     }
     else{
-        console.log("d5l");
         const fetchZemaAccounts = async ()=>{
           const params = `0`;
             const response = await executeProcedure(
