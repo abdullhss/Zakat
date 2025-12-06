@@ -101,7 +101,7 @@ const Signup = () => {
    */
   const onSubmit = async (data) => {
     try {
-        const response = await RequireAuthentication("8d8VWC1xFIjp4ztA3Mny/g==","x9FJkPguBjCejvcgGD0tLw==",`${data.name}#${data.email}#${data.phone}#${data.nationalId}#${data.password}`,"Sms",data.phone)
+        const response = await RequireAuthentication("8d8VWC1xFIjp4ztA3Mny/g==","x9FJkPguBjCejvcgGD0tLw==",`${data.name}#${data.email}#${data.phone}#${data.nationalId}#${data.password}##`,"Sms",data.phone)
         localStorage.setItem("TransToken",response.TransToken)
         
         if(response.success == 200){
