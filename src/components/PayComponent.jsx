@@ -32,7 +32,7 @@ const PayComponent = ({
   officeName = "",
   officeId = "",
   accountTypeId = "",
-  serviceTypeId = "",
+  serviceTypeId = "2",
   totalAmount = 0,
   currency = "$",
   actionID="1",
@@ -421,7 +421,7 @@ var merchRef='test-demo';// this will be user as your reference to the transacti
       }
     };
 
-    if (officeId && serviceTypeId && paymentMethodId && actionID!=12) {
+    if (officeId && actionID!=12) {
       fetchData();
     }
     else{

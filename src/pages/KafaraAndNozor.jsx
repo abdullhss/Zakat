@@ -228,7 +228,7 @@ const KafaraAndNozor = () => {
       <PayComponent
         officeName={officeName}
         officeId={selectedOffice}
-        serviceTypeId="1"
+        serviceTypeId="2"
         totalAmount={parseFloat(amount) || 0}
         currency="دينار"
         actionID={actionID}

@@ -2,6 +2,7 @@ import axios from "axios";
 import { AES256Encryption } from "../utils/encryption";
 
 //"https://client-frw.almedadsoft.com/emsserver.dll/ERPDatabaseWorkFunctions";
+//"https://framework.md-license.com:8093/emsserver.dll/ERPDatabaseWorkFunctions";
 
 const API_BASE_URL =
 "https://framework.md-license.com:8093/emsserver.dll/ERPDatabaseWorkFunctions";
