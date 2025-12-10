@@ -152,7 +152,7 @@ const UrgentProjects = ({ data }) => {
                     goal={item.WantedAmount}
                     className="w-[400px]"
                     showBtn={item.AllowZakat}
-                    payNowLink={`project?data=${encodeURIComponent(JSON.stringify({ 
+                    payNowLink={`/project?data=${encodeURIComponent(JSON.stringify({ 
                     Id: item.Id,
                     Name: item.Name,
                     Description: item.Description,

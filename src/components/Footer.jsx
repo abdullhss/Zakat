@@ -26,7 +26,7 @@ const Footer = () => {
 
           {/* Terms Section */}
           <div className='col-span-2'>
-            <h3 className="text-lg font-semibold mb-4">شروط وأحكام</h3>
+            <Link to={'/tos'} className="text-lg font-semibold mb-4">شروط وأحكام</Link>
           </div>
 
 
@@ -44,7 +44,7 @@ const Footer = () => {
           <div className='col-span-2'>
             <h3 className="text-lg font-semibold mb-4">الشركة</h3>
             <div className="flex flex-col gap-2 text-sm">
-              <p>الرئيسية</p>
+              <p onClick={()=>{window.location.href="/"}} className='cursor-pointer'>الرئيسية</p>
               <Link to={"/about-us"}>معلومات عنا</Link>
               <Link to={"/contact"}>اتصل بنا</Link>
             </div>
@@ -59,7 +59,7 @@ const Footer = () => {
         </div>
 
         {/* Social Media Icons */}
-        <div className="flex justify-center space-x-4 mt-8 mb-6">
+        {/* <div className="flex justify-center space-x-4 mt-8 mb-6">
           <div className="w-10 h-10 ml-4 bg-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
             <Twitter size={20} color='#383638'/>
           </div>
@@ -75,7 +75,7 @@ const Footer = () => {
           <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
             <Facebook size={20} color='#383638'/>
           </div>
-        </div>
+        </div> */}
 
         {/* Copyright */}
         <div className="border-t border-white/20 pt-4">

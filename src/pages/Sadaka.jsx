@@ -228,6 +228,7 @@ const Sadaka = () => {
             onCategoryChange={handleCategoryChange}
             setDonationValue={setDonationValue}
             setSadakaType={setSadakaType}
+            sadakaType={sadakaType}
           />
             <Opportunities 
               donations={donations}

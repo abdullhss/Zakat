@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faPhone, faEnvelope, faIdCard, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { motion } from "framer-motion";
+import { faUser, faPhone, faEnvelope, faIdCard, faEye, faEyeSlash, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { motion, AnimatePresence } from "framer-motion";
 import FloatingDonationButton from "../globalComponents/FloatingDonationButton";
 import aya from "../public/SVGs/Aya.svg";
 import logo from "../../public/Logo.png";
@@ -51,6 +51,67 @@ const signupSchema = z.object({
 });
 
 /**
+ * Terms Modal Component
+ */
+const TermsModal = ({ isOpen, onClose, termsText }) => {
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          transition={{ duration: 0.2 }}
+          className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[80vh] flex flex-col"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Modal Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-800">شروط الاستخدام</h2>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="إغلاق"
+            >
+              <FontAwesomeIcon icon={faXmark} className="text-gray-600 text-xl" />
+            </button>
+          </div>
+
+          {/* Modal Body */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {termsText ? (
+              <div className="prose prose-lg max-w-none text-gray-700 text-right">
+                <div 
+                  className="whitespace-pre-line leading-relaxed text-base sm:text-lg"
+                  dir="rtl"
+                >
+                  {termsText}
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
+                  <p className="mt-4 text-gray-600">جاري تحميل الشروط والأحكام...</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+/**
  * Signup component with multiple fields for user registration
  */
 const Signup = () => {
@@ -58,13 +119,14 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [phoneValue, setPhoneValue] = useState("09");
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [termsText, setTermsText] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue,
-    watch,
   } = useForm({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -129,8 +191,30 @@ const Signup = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const handleTermsClick = () => {
-    navigate("/tos");
+  const handleTermsClick = async () => {
+    try {
+      setIsTermsModalOpen(true);
+      const response = await executeProcedure("Ey//Th+MOGZq8DGxl+GABA==" , "1");
+      
+      if (response.decrypted?.ProgramData) {
+        const parsedData = JSON.parse(response.decrypted.ProgramData);
+        if (parsedData[0]?.UseConditions) {
+          setTermsText(parsedData[0].UseConditions);
+        } else {
+          setTermsText("لا توجد شروط وأحكام متاحة حالياً.");
+        }
+      } else {
+        setTermsText("فشل في تحميل الشروط والأحكام. يرجى المحاولة لاحقاً.");
+      }
+    } catch (error) {
+      console.error("Error fetching terms:", error);
+      setTermsText("حدث خطأ في تحميل الشروط والأحكام.");
+    }
+  };
+
+  const closeTermsModal = () => {
+    setIsTermsModalOpen(false);
+    setTermsText(""); // Reset terms text when closing modal
   };
 
   // Animation variants
@@ -166,6 +250,13 @@ const Signup = () => {
     <>
       {/* Floating Donation Button */}
       <FloatingDonationButton />
+
+      {/* Terms Modal */}
+      <TermsModal 
+        isOpen={isTermsModalOpen} 
+        onClose={closeTermsModal} 
+        termsText={termsText} 
+      />
 
       <motion.div 
         className="min-h-screen flex flex-col lg:flex-row" 
@@ -466,7 +557,7 @@ const Signup = () => {
                     onClick={handleTermsClick}
                     className="text-emerald-600 hover:text-emerald-700 hover:underline mr-1"
                   >
-                    الشروط والأحكام
+شروط الاستخدام                    
                   </button>
                   <span className="text-red-500 mr-1">*</span>
                 </label>

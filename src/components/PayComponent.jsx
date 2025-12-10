@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
 import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
+import { useCallback } from "react";
 
 
 
@@ -57,6 +58,7 @@ const PayComponent = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [fileError, setFileError] = useState(""); // New state for file error
   const [electronicPaymentSystemReference ,  setElectronicPaymentSystemReference] = useState("") ; 
+  const [isOpeningGateway, setIsOpeningGateway] = useState(false);
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate() ;
@@ -247,6 +249,7 @@ const PayComponent = ({
   }, []);
   
 function Do(){
+    setIsOpeningGateway(true);
     callLightbox(totalAmount);
     //Lightbox.Checkout.showLightbox();
 }
@@ -263,93 +266,70 @@ function formatAmount(amount) {
   return intPart + decimalPart; // 122.333 → 122333
 }
 
-function callLightbox(amount) {
+  const callLightbox = useCallback((amount) => {
+    var mID='10081014649';
+    var tID='99179395';
+    var merchantKey= '3a488a89b3f7993476c252f017c488bb';
+    var merchRef='test-demo';
 
-var mID='10081014649';// use your merchant id here;
-var tID='99179395';// use your terminal id here;
-var merchantKey= '3a488a89b3f7993476c252f017c488bb';    // '39636630633731362D663963322D346362642D386531662D633963303432353936373431';//'36323537623434612D656631382D346436652D383930642D393465666365323732363037';// use your key here;
-var merchRef='test-demo';// this will be user as your reference to the transaction you can manage this string by any format
+    if (mID === '' || tID === '') {
+      return;
+    }
 
-  if (mID === '' || tID === '') {
-    return;
-  }
-
-  // ✓ التنسيق الصحيح حسب Documentation: yyyyMMddHHmm (12 حرف)
-  // مثال: "202009171418" = 2020-09-17 الساعة 14:18
-  var dt = new Date().YYYYMMDDHHMMSS().substring(0, 12);  // أول 12 حرف فقط (بدون الثواني)
-  // var dt = new Date().toGMTString();  // ✗ خطأ: تنسيق خاطئ
-
-  console.log('DateTime format:', dt);  // للتأكد من التنسيق
-
-  var hmacSHA256 = '';
-  
-  if(merchantKey)
-  {
-      // قراءة الـ merchantKey كـ Hex بدلاً من تحويله لـ ASCII
+    var dt = new Date().YYYYMMDDHHMMSS().substring(0, 12);
+    
+    var hmacSHA256 = '';
+    
+    if(merchantKey) {
       var keyHex = CryptoJS.enc.Hex.parse(merchantKey);
       var strHashData = 'Amount='+amount+'000&DateTimeLocalTrxn='+dt+'&MerchantId='+mID+'&MerchantReference='+merchRef+'&TerminalId='+tID;
-      console.log(strHashData);
       hmacSHA256 = CryptoJS.HmacSHA256(strHashData, keyHex).toString().toUpperCase();
-       
-      console.log(hmacSHA256);
-     
- }
-
- 
-  
-  window.Lightbox.Checkout.configure = {
-    MID: mID,
-    TID: tID,
-    AmountTrxn: formatAmount(amount),
-    MerchantReference: merchRef,
-    TrxDateTime: dt,
-    SecureHash: hmacSHA256,
-
-    completeCallback: function (data) {
-     
-      console.log('Transaction Date:', data.TxnDate);
-      console.log('System Reference:', data.SystemReference);
-      console.log('Network Reference:', data.NetworkReference);
-      console.log('Amount:', data.Amount);
-      console.log('Currency:', data.Currency);
-      console.log('Paid Through:', data.PaidThrough);
-      console.log('Payer Account:', data.PayerAccount);
-      console.log('Merchant Reference:', data.MerchantReference);
-      setElectronicPaymentSystemReference(data.SystemReference)
-      
-      callPaymentProcedure();
-
-
-    },
-
-    errorCallback: function (data) {
-     
-      console.log('Error Message:', data.error);
-      console.log('DateTime:', data.DateTimeLocalTrxn);
-      console.log('Amount:', data.Amount);
-      console.log('Merchant Reference:', data.MerchantReference);
-      console.log('Secure Hash:', data.SecureHash);
-      toast.error('Payment Failed: ' + data.error);
-    },
-
-    cancelCallback: function () {
-    
-      toast.error('تم الالغاء');
     }
-  };
 
- 
-  console.log('Calling Lightbox.Checkout.showLightbox()...');
-  console.log('════════════════════════════════════════════════');
+    // Clear any existing toasts with the same ID
+    toast.dismiss('cancel-payment');
+    toast.dismiss('payment-error');
 
-  try {
-    window.Lightbox.Checkout.showLightbox();
-    console.log('✓ showLightbox() called successfully');
-  } catch (error) {
-    console.log('✗ Error calling showLightbox():');
-    console.log(error);
-  }
-}
+    window.Lightbox.Checkout.configure = {
+      MID: mID,
+      TID: tID,
+      AmountTrxn: formatAmount(amount),
+      MerchantReference: merchRef,
+      TrxDateTime: dt,
+      SecureHash: hmacSHA256,
+
+      completeCallback: function (data) {
+        setIsOpeningGateway(false);
+        setElectronicPaymentSystemReference(data.SystemReference);
+        callPaymentProcedure();
+      },
+
+      errorCallback: function (data) {
+        setIsOpeningGateway(false);
+        // Use a unique toastId to prevent duplicates
+        toast.error('Payment Failed: ' + data.error, { 
+          toastId: 'payment-error',
+          autoClose: 3000 
+        });
+      },
+
+      cancelCallback: function () {
+        setIsOpeningGateway(false);
+        // Use a unique toastId to prevent duplicates
+        toast.error('تم الالغاء', { 
+          toastId: 'cancel-payment',
+          autoClose: 3000 
+        });
+      }
+    };
+
+    try {
+      window.Lightbox.Checkout.showLightbox();
+    } catch (error) {
+      setIsOpeningGateway(false);
+      console.error('Error calling showLightbox:', error);
+    }
+  }, [totalAmount]); // Add dependencies if needed
 
   const handlePayNow = () => {
     // For electronic payment without file upload
@@ -368,7 +348,7 @@ var merchRef='test-demo';// this will be user as your reference to the transacti
 
   // Check if pay button should be enabled
   const isPayButtonEnabled = () => {
-    if (isUploading || isProcessing || !donationType) return false;
+    if (isUploading || isProcessing || isOpeningGateway || !donationType) return false;
 
     if (donationType === "international") {
       return selectedInternationalAccount && uploadedFileId;
@@ -436,12 +416,6 @@ var merchRef='test-demo';// this will be user as your reference to the transacti
         fetchZemaAccounts() ;
     }
   }, [officeId, serviceTypeId, paymentMethodId]);
-
-  const formatAccountNumber = (accountNum) => {
-    if (!accountNum) return "";
-    if (accountNum.length <= 8) return accountNum;
-    return `****${accountNum.slice(-4)}`;
-  };
 
   return (
     <div className="flex flex-col h-full">
@@ -746,7 +720,12 @@ var merchRef='test-demo';// this will be user as your reference to the transacti
           onClick={handlePayNow}
           disabled={!isPayButtonEnabled()}
         >
-          {isProcessing ? (
+          {isOpeningGateway ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              جاري فتح بوابة الدفع...
+            </>
+          ) : isProcessing ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
               جاري المعالجة...

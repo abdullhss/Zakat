@@ -21,6 +21,8 @@ const DonationCard = ({
 }) => {
   const remaining = goal - collected;
   const percentage = Math.min(Math.round((collected / goal) * 100), 100);
+  const [showShareModal, setShowShareModal] = React.useState(false);
+  const projectLink = `${window.location.origin}${payNowLink}`;
 
   return (
     <div
@@ -60,12 +62,12 @@ const DonationCard = ({
               
             </div>
           </div>
-          <img src={Navigate} onClick={()=>{
-            navigator.clipboard.writeText(`${window.location.origin}${payNowLink}`).then(()=>{
-              toast.success("تم نسخ رابط المشروع")
-            })
-          }
-          } width={25} />
+          <img
+            src={Navigate}
+            onClick={() => setShowShareModal(true)}
+            width={25}
+          />
+
         </div>
 
         <hr className="h-[2px] w-full bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E] border-0 rounded-full" />
@@ -104,6 +106,74 @@ const DonationCard = ({
           {cantPay ? "تم الوصول للهدف" : "ادفع الان"}
         </Link>
       </div>
+      {showShareModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999] backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white w-[90%] max-w-md rounded-xl shadow-xl p-6 animate-slideUp">
+
+            <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">
+              مشاركة المشروع
+            </h2>
+
+            <p className="text-gray-600 text-center mb-3">
+              يمكنك نسخ رابط المشروع لمشاركته مع الآخرين
+            </p>
+
+            {/* Input + Copy Button */}
+            <div className="flex gap-2 mt-4">
+              <input
+                type="text"
+                value={projectLink}
+                readOnly
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-gray-700 bg-gray-100"
+              />
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(projectLink);
+                  toast.success("تم نسخ الرابط!");
+                }}
+                className="bg-[#18383D] text-white px-4 py-2 rounded-lg hover:bg-[#24645E] transition"
+              >
+                نسخ
+              </button>
+            </div>
+
+            <div className="flex items-center justify-center gap-4 mt-3 mb-4">
+              {/* Facebook */}
+                <img
+                onClick={() => {
+                  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                    "تقدر تشوف مشروع التبرع من هنا:"
+                  )}&url=${encodeURIComponent(projectLink)}`;
+                  window.open(twitterShareUrl, "_blank");
+                }}
+                src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"
+                className="w-8 h-8 cursor-pointer hover:scale-110 transition"
+                width={20} />
+              {/* WhatsApp */}
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+                className="w-10 h-10 cursor-pointer hover:scale-110 transition"
+                onClick={() => window.open(
+                  `https://wa.me/?text=${encodeURIComponent("أشاركك هذا المشروع: " + projectLink)}`,
+                  "_blank"
+                )}
+                alt="WhatsApp Share"
+              />
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowShareModal(false)}
+              className="mt-2 w-full py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-800 font-semibold"
+            >
+              إغلاق
+            </button>
+
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

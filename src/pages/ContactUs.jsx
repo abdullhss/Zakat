@@ -48,6 +48,19 @@ const ContactUs = () => {
       </div>
     );
   }
+  const normalizeUrl = (url) => {
+    if (!url) return "";
+
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+
+    if (url.startsWith("www.")) {
+      return "https://" + url;
+    }
+
+    return "https://" + url;
+  };
 
   return (
     <div className="min-h-screen bg-white text-gray-800 px-6 sm:px-12 py-20 flex flex-col">
@@ -101,7 +114,14 @@ const ContactUs = () => {
           <Instagram className="text-emerald-600 mt-1 flex-shrink-0" />
           <div>
             <strong className="block text-emerald-700 mb-2 text-lg">إنستغرام:</strong>
-            <p className="text-gray-700 text-base">{contactData.Instegram}</p>
+            <a
+              href={normalizeUrl(contactData.Instegram)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-emerald-600 hover:text-emerald-500 underline text-base"
+            >
+              {contactData.Instegram}
+            </a>
           </div>
         </div>
 
@@ -109,7 +129,15 @@ const ContactUs = () => {
           <Facebook className="text-emerald-600 mt-1 flex-shrink-0" />
           <div>
             <strong className="block text-emerald-700 mb-2 text-lg">فيسبوك:</strong>
-            <p className="text-gray-700 text-base">{contactData.FaceBook}</p>
+            <a
+              href={normalizeUrl(contactData.FaceBook)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-emerald-600 hover:text-emerald-500 underline text-base"
+            >
+              {contactData.FaceBook}
+            </a>
+
           </div>
         </div>
       </motion.div>

@@ -9,6 +9,7 @@ import NewsTab from '../features/home/components/OfficeDetailes/NewsTab';
 import StatisticsTab from '../features/home/components/OfficeDetailes/StatisticsTab';
 import AboutTab from '../features/home/components/OfficeDetailes/AboutTab';
 import HeroBanner from '../features/home/components/HeroBanner';
+import { toast } from 'react-toastify';
 
 const OfficeDetailes = () => {
   const [activeTab, setActiveTab] = useState('opportunities');
@@ -96,7 +97,7 @@ const OfficeDetailes = () => {
       >
         {/* Header Section */}
         <motion.section
-          className="bg-transparent relative w-full h-[400px] overflow-hidden"
+          className="bg-transparent relative w-full overflow-hidden bgpy-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
@@ -116,13 +117,13 @@ const OfficeDetailes = () => {
               />
               <div className='flex flex-col h-32 w-full justify-between font-bold'>
                 <span className='text-black text-lg'>{officeData.OfficeName}</span>
-                <div className='w-full flex items-center justify-between text-[#18383D]'>
-                  <span>رقم الترخيص</span>
+                <div className='w-full flex items-center gap-4 text-[#18383D]'>
+                  <span>رقم الهاتف</span>
                   <span className='flex items-center gap-2'>
                     {officeData.PhoneNum} 
                     <Copy 
                       className="cursor-pointer" 
-                      onClick={() => navigator.clipboard.writeText(officeData.PhoneNum)}
+                      onClick={() => {navigator.clipboard.writeText(officeData.PhoneNum) ; toast.success('تم نسخ رقم الهاتف بنجاح')}}
                       size={16} 
                     /> 
                   </span>

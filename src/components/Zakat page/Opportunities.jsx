@@ -45,43 +45,27 @@ const Opportunities = ({
 
   // Render donation cards or loading/error state
   const renderDonationCards = () => {
-    if (loading) {
-      return (
-        <div className="col-span-3 text-center py-8">
-          <div className="text-gray-500">جاري تحميل المشاريع...</div>
-        </div>
-      );
-    }
+    if (loading) return [];
 
-    if (error) {
-      return (
-        <div className="col-span-3 text-center py-8">
-          <div className="text-red-500">خطأ في تحميل البيانات: {error}</div>
-        </div>
-      );
-    }
+      // عرض المشاريع لو موجودة
+      return currentDonations.map((project) => (
+        <DonationCard
+          key={project.Id}
+          image={`https://framework.md-license.com:8093/ZakatImages/${project.PhotoName}.jpg`}
+          title={project.Name}
+          description={project.Description}
+          collected={project.OpeningBalance}
+          goal={project.WantedAmount}
+          className="bg-white"
+          payNowLink={`/project?data=${JSON.stringify({
+            ...project,
+            actionID: actionID,
+            donationValue: donationValue
+          })}`}
+          showBtn={project.AllowZakat}
+        />
+      ));
 
-    if (!Array.isArray(donations) || donations.length === 0) {
-      return (
-        <div className="col-span-3 text-center py-8">
-          <div className="text-gray-500">لا توجد فرص تبرع متاحة حالياً</div>
-        </div>
-      );
-    }
-
-    return currentDonations.map((project) => (
-      <DonationCard
-        key={project.Id}
-        image={`https://framework.md-license.com:8093/ZakatImages/${project.PhotoName}.jpg`}
-        title={project.Name}
-        description={project.Description}
-        collected={project.OpeningBalance}
-        goal={project.WantedAmount}
-        className="bg-white"
-        payNowLink={`/project?data=${JSON.stringify({ ...project, actionID: actionID , donationValue:donationValue })}`}
-        showBtn={project.AllowZakat}
-      />
-    ));
   };
 
   return (

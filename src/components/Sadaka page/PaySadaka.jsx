@@ -27,7 +27,8 @@ const PaySadaka = ({
   onAidChange,
   onCategoryChange,
   setDonationValue,
-  setSadakaType
+  setSadakaType,
+  sadakaType
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
   const {showPayPopup,  popupComponent} = useSelector((state) => state.pay);
@@ -226,34 +227,61 @@ const PaySadaka = ({
             </select>
           </div>
           <div className="flex-1 flex flex-col">
-            <label className="block mb-2 text-gray-700 font-medium">
-              نوع الصدقة
-            </label>
-            <div className="flex items-center mt-4 justify-between font-semibold">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sadaqaType"
-                  value="G"
-                  defaultChecked={true}
-                  className="cursor-pointer"
-                  onChange={(e)=>{setSadakaType(e.target.value)}}
-                />
-                <span>صدقة عامة</span>
-              </label>
-              
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="sadaqaType"
-                  value="R"
-                  className="cursor-pointer"
-                  onChange={(e)=>{setSadakaType(e.target.value)}}
-                />
-                <span>صدقة جارية</span>
-              </label>
-            </div>
-          </div>
+  <label className="block mb-2 text-gray-700 font-medium">نوع الصدقة</label>
+
+  <div className="flex mt-2 gap-4 justify-around font-semibold">
+    {/* زرار صدقة عامة */}
+    <label
+      className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
+        ${sadakaType === "G" 
+          ? "text-white border-transparent" 
+          : "text-gray-700 border-gray-300"
+        }`}
+      style={{
+        background:
+          sadakaType === "G"
+            ? "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)"
+            : "white",
+      }}
+    >
+      <input
+        type="radio"
+        name="sadaqaType"
+        value="G"
+        checked={sadakaType === "G"}
+        onChange={(e) => setSadakaType(e.target.value)}
+        className="hidden"
+      />
+      <span>صدقة عامة</span>
+    </label>
+
+    {/* زرار صدقة جارية */}
+    <label
+      className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
+        ${sadakaType === "R" 
+          ? "text-white border-transparent" 
+          : "text-gray-700 border-gray-300"
+        }`}
+      style={{
+        background:
+          sadakaType === "R"
+            ? "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)"
+            : "white",
+      }}
+    >
+      <input
+        type="radio"
+        name="sadaqaType"
+        value="R"
+        checked={sadakaType === "R"}
+        onChange={(e) => setSadakaType(e.target.value)}
+        className="hidden"
+      />
+      <span>صدقة جارية</span>
+    </label>
+  </div>
+</div>
+
           <div className="flex-1">
             <label className="block mb-2 text-gray-700 font-medium">
               الإعانة
@@ -270,7 +298,7 @@ const PaySadaka = ({
                   : !isAidEnabled 
                     ? "غير متاح لهذا النوع من الزكاة" 
                     : aids.length === 0 
-                      ? "جاري تحميل أنواع الإعانات..."
+                      ? "لا توجد إعانات"
                       : "اختر إعانة"}
               </option>
               {aids.map((aid) => (
@@ -292,7 +320,7 @@ const PaySadaka = ({
         <div className="w-full flex flex-col gap-4">
             <div className="flex items-center justify-between font-medium text-lg my-4">
                 <span>الاجمالي</span>
-                <span>${donationAmount}</span>
+                <span>د.ل{donationAmount}</span>
             </div>
             <div className="relative w-full">
               <img
@@ -369,7 +397,8 @@ PaySadaka.propTypes = {
   onAidChange: PropTypes.func,
   onCategoryChange: PropTypes.func,
   setDonationValue:PropTypes.func,
-  setSadakaType:PropTypes.func
+  setSadakaType:PropTypes.func,
+  sadakaType:PropTypes.string
 };
 
 PaySadaka.defaultProps = {
@@ -384,7 +413,8 @@ PaySadaka.defaultProps = {
   onOfficeChange: () => {},
   onAidChange: () => {},
   onCategoryChange: () => {},
-  setSadakaType:()=>{}
+  setSadakaType:()=>{},
+  sadakaType:"G"
 };
 
 export default PaySadaka;

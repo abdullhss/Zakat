@@ -45,8 +45,8 @@ const DonationRequest = () => {
   })
 
     // Map state
-    const [position, setPosition] = useState([30.0444, 31.2357]) // Default to Cairo
-    const [markerPosition, setMarkerPosition] = useState([30.0444, 31.2357])
+  const [position, setPosition] = useState([32.8872, 13.1913]);
+  const [markerPosition, setMarkerPosition] = useState([32.8872, 13.1913]);
 
     useEffect(() => {
       // Try to get user's current location
@@ -77,7 +77,6 @@ const DonationRequest = () => {
           },
           (err) => {
             console.warn("Error getting location:", err)
-            toast.warn("لم نتمكن من تحديد موقعك، تم استخدام موقع القاهرة الافتراضي.")
           }
         )
       } else {
@@ -378,7 +377,7 @@ const DonationRequest = () => {
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             <div className="flex-1">
               <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-                المكاتب
+                المكاتب<span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <select 
@@ -387,6 +386,7 @@ const DonationRequest = () => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 bg-white"
                   disabled={loading.offices}
+                  required
                 >
                   <option value="">اختر المكتب</option>
                   {offices.map(office => (

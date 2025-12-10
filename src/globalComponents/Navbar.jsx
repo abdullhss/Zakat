@@ -28,6 +28,7 @@ const Navbar = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const cartData = useSelector((state) => state.cart);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -48,6 +49,7 @@ const Navbar = () => {
   const handleLogOutClick = () => {
     localStorage.removeItem("UserData");
     dispatch(setCartData(null))
+    toast.success("تم تسجيل الخروج بنجاح");
   };
 
   // Function to handle sublink click
@@ -156,11 +158,12 @@ const Navbar = () => {
             {
               localStorage.getItem("UserData")?(
                 <button
-                  onClick={handleLogOutClick}
+                  onClick={() => setShowLogoutModal(true)}
                   className="bg-transparent hover:bg-red-600 hover:text-white transition-all text-red-600 border-2 border-red-600 px-4 py-1 lg:px-10 lg:py-2.5 rounded-lg font-medium text-sm lg:text-base"
                 >
                   تسجيل الخروج
                 </button>
+
               ):(
                 <button
                   onClick={handleLoginClick}
@@ -292,6 +295,36 @@ const Navbar = () => {
             </div>
           </div>
         )}
+        {showLogoutModal && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[20000]">
+            <div className="bg-white px-6 py-5 rounded-lg shadow-lg w-[90%] max-w-sm text-center">
+
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                هل أنت متأكد من تسجيل الخروج؟
+              </h3>
+
+              <div className="flex gap-4 justify-center mt-4">
+                <button
+                  onClick={() => {
+                    handleLogOutClick();
+                    setShowLogoutModal(false);
+                  }}
+                  className="bg-red-600 text-white px-5 py-2 rounded-md font-medium hover:bg-red-700"
+                >
+                  نعم
+                </button>
+
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  className="bg-gray-300 text-gray-800 px-5 py-2 rounded-md font-medium hover:bg-gray-400"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </nav>
     </header>
   );

@@ -32,7 +32,7 @@ const Charity = () => {
           <div>
             <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
           </div>
-          احسانكم لعام 2025
+          احسانكم
         </div>
       </div>
 
@@ -50,7 +50,7 @@ const Charity = () => {
       </div>
 
       {/* Button */}
-      <div className="w-full flex items-center justify-center bg-[#18383D] py-4">
+      {/* <div className="w-full flex items-center justify-center bg-[#18383D] py-4">
         <button
           className="text-white px-6 py-3 rounded-md flex items-center gap-2"
           style={{
@@ -61,7 +61,7 @@ const Charity = () => {
           <img src={chartArrowUP} alt="Chart Arrow" />
           عرض الاحصائيات
         </button>
-      </div>
+      </div> */}
     </motion.div>
   );
 };
