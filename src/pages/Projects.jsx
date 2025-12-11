@@ -98,7 +98,7 @@ const Projects = () => {
       try {
         const startNum = (currentPage - 1) * itemsPerPage + 1;
 
-        let params = `O#${activeFilter}#${startNum}#${itemsPerPage}`;
+        let params = `O#${activeFilter}#${debouncedSearch}#${startNum}#${itemsPerPage}`;
 
         let procId = "";
         

@@ -10,13 +10,14 @@ import StatisticsTab from '../features/home/components/OfficeDetailes/Statistics
 import AboutTab from '../features/home/components/OfficeDetailes/AboutTab';
 import HeroBanner from '../features/home/components/HeroBanner';
 import { toast } from 'react-toastify';
+import { executeProcedure } from '../services/apiServices';
 
 const OfficeDetailes = () => {
   const [activeTab, setActiveTab] = useState('opportunities');
   const [currentView, setCurrentView] = useState({ type: 'main', data: null });
   const [officeData, setOfficeData] = useState(null);
   const location = useLocation();
-
+  const [statisticalData , setStatisticalData] = useState(null);
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const dataParam = urlParams.get('data');
@@ -32,6 +33,15 @@ const OfficeDetailes = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const fetchStatisticalData = async () => {
+      const response = await executeProcedure("Pnl2I5yvrTFeVH96QlzAsUDfACCXKoNvDpsIS2YJ77E=" , `${officeData.Id}#0`)
+      console.log(response);
+      setStatisticalData(response.decrypted) ;
+    };
+    fetchStatisticalData() ;
+  }, [officeData])
+
   const handleOpenOpportunityDetail = (opportunityId) => {
     setCurrentView({ type: 'opportunityDetail', data: opportunityId });
   };
@@ -45,7 +55,7 @@ const OfficeDetailes = () => {
       case 'news':
         return <NewsTab Officeid={officeData.Id} />;
       case 'statistics':
-        return <StatisticsTab officeData={officeData} />;
+        return <StatisticsTab statisticalData={statisticalData} />;
       case 'about':
         return <AboutTab officeData={officeData} />;
       default:

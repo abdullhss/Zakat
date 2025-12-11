@@ -29,7 +29,7 @@ const DonationRequest = () => {
   const [activeFilter, setActiveFilter] = useState(0)
   const [loading, setLoading] = useState({ offices: true, filters: true })
   const [errors, setErrors] = useState({ offices: null, filters: null })
-
+  const [canSendRequest , setCanSendRequest] = useState(false)
   const userData = JSON.parse(localStorage.getItem("UserData"));
 
   // Form state
@@ -47,8 +47,17 @@ const DonationRequest = () => {
     // Map state
   const [position, setPosition] = useState([32.8872, 13.1913]);
   const [markerPosition, setMarkerPosition] = useState([32.8872, 13.1913]);
-
+  const CheckPrevAssistance = async()=>{
+    const response = await executeProcedure("ad/2ZM2fs/e3YjR6tghLEILauQgFqTpHsnFNAfPpFcQ=" , userData.Id);
+    if(JSON.parse(response.decrypted.CheckData)[0].PrevCount > 0){
+      setCanSendRequest(false);
+    }
+    else{
+      setCanSendRequest(true)
+    }
+  }
     useEffect(() => {
+      CheckPrevAssistance() ;
       // Try to get user's current location
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -227,37 +236,42 @@ const DonationRequest = () => {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    // Validate required fields including address
-    if (!formData.address.trim()) {
-      toast.error("الرجاء إدخال العنوان أو تحديده على الخريطة");
-      return;
+    if(!canSendRequest){
+      e.preventDefault()
+      toast.info("لا يمكنك تقديم طلب جديد قبل انتهاء الطلب السابق.")
     }
+    else{
+      e.preventDefault()
+      // Validate required fields including address
+      if (!formData.address.trim()) {
+        toast.error("الرجاء إدخال العنوان أو تحديده على الخريطة");
+        return;
+      }
 
-    const currentDate = new Date();
-    const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
-    const userid = JSON.parse(localStorage.getItem('UserData'))?.Id || 0
-    
-    const response = await DoTransaction(
-      "g+a67fXnSBQre/3SDxT2uA==",
-      `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}#0#${formData.address}#${markerPosition[0]}#${markerPosition[1]}`
-    )
-    
-    if(response.success == 200){
-      setFormData({
-        name: '',
-        individualsCount: '',
-        phone: '',
-        amount: '',
-        officeId: '',
-        donationTypeId: '',
-        description: '',
-        address: ''
-      })
-      setMarkerPosition([30.0444, 31.2357])
-      setPosition([30.0444, 31.2357])
-      toast.success("تم انشاء الطلب بنجاح")
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
+      const userid = JSON.parse(localStorage.getItem('UserData'))?.Id || 0
+      
+      const response = await DoTransaction(
+        "g+a67fXnSBQre/3SDxT2uA==",
+        `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}#0#${formData.address}#${markerPosition[0]}#${markerPosition[1]}`
+      )
+      
+      if(response.success == 200){
+        setFormData({
+          name: '',
+          individualsCount: '',
+          phone: '',
+          amount: '',
+          officeId: '',
+          donationTypeId: '',
+          description: '',
+          address: ''
+        })
+        setMarkerPosition([30.0444, 31.2357])
+        setPosition([30.0444, 31.2357])
+        toast.success("تم انشاء الطلب بنجاح")
+      }
     }
   }
 

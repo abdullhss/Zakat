@@ -24,6 +24,8 @@ const Zakat = () => {
   const [selectedAid, setSelectedAid] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [zakatSearch, setZakatSearch] = useState("");
+  const [debouncedZakatSearch, setDebouncedZakatSearch] = useState("");
 
   // Fetch offices and zakat types data
   useEffect(() => {
@@ -87,6 +89,18 @@ const Zakat = () => {
     fetchData();
   }, []);
 
+  // Debounce search input - updates after 500ms of inactivity
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedZakatSearch(zakatSearch);
+    }, 500);
+
+    // Cleanup function to clear the timeout
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [zakatSearch]);
+
   // Fetch donations data when selections change
   useEffect(() => {
     const fetchDonations = async () => {
@@ -103,7 +117,7 @@ const Zakat = () => {
         
         // Build the parameters string
         const startNum = (currentPage - 1) * 6; // Calculate start number based on current page
-        const params = `${selectedOffice}#${selectedAid || "0"}#z#${startNum+1}#6`;
+        const params = `${selectedOffice}#${selectedAid || "0"}#z#${debouncedZakatSearch}#${startNum+1}#6`;
         
         
         
@@ -178,7 +192,7 @@ const Zakat = () => {
     };
 
     fetchDonations();
-  }, [selectedOffice, selectedAid, selectedCategory, currentPage]);
+  }, [selectedOffice, selectedAid, selectedCategory, currentPage, debouncedZakatSearch]);
 
   // Handler functions to update state
   const handleOfficeChange = (officeId) => {
@@ -201,6 +215,12 @@ const Zakat = () => {
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  // Handler for search input with immediate update
+  const handleSearchChange = (searchTerm) => {
+    setZakatSearch(searchTerm);
+    setCurrentPage(1); // Reset to first page when search changes
   };
 
   // Check if we should show donations section (only for category ID 1)
@@ -242,6 +262,8 @@ const Zakat = () => {
               totalProjectsCount={totalProjectsCount}
               onPageChange={handlePageChange}
               donationValue={donationValue}
+              setZakatSearch={handleSearchChange}
+              zakatSearch={zakatSearch}
             />
           )}
         </div>

@@ -1,13 +1,14 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import Diamond from "../../../components/Diamond";
 import CharityCard from "../../../components/CharityCard";
 import chartArrowUP from "../../../public/SVGs/ChartArrowUp.svg";
+import { executeProcedure } from "../../../services/apiServices";
 
 const Charity = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.2, once: false });
-
+  const [statisticalData , setStatisticalData] = useState(null);
   // Simple fade up animation
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -17,7 +18,14 @@ const Charity = () => {
       transition: { duration: 0.5, ease: "easeOut" }
     }
   };
-
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await executeProcedure("Pnl2I5yvrTFeVH96QlzAsUDfACCXKoNvDpsIS2YJ77E=" , "0#0");
+      console.log(response);
+      setStatisticalData(response.decrypted)
+    }
+    fetchData();
+  }, []);
   return (
     <motion.div
       ref={ref}
@@ -38,15 +46,42 @@ const Charity = () => {
 
       {/* Cards Container */}
       <div className="mt-6 flex flex-col md:flex-row items-center justify-around gap-6 md:pr-8 overflow-hidden bg-[#18383D] px-6 py-12">
-        {[1, 2, 3].map((index) => (
-          <div key={index}>
+          <div>
             <CharityCard
-              title={"عدد المستفدين"}
-              description={"213.7 ألف مستفيد"}
+              title="المبلغ المتبرع به"
+              description={
+                statisticalData?.PaidAmount !== undefined
+                  ? `${statisticalData.PaidAmount} د.ل`
+                  : "جاري التحميل..."
+              }
               className="py-8 w-96 h-40"
             />
           </div>
-        ))}
+
+          <div>
+            <CharityCard
+              title="عدد المشاريع"
+              description={
+                statisticalData?.ProjectsCount !== undefined
+                  ? `${statisticalData.ProjectsCount} مشروع`
+                  : "جاري التحميل..."
+              }
+              className="py-8 w-96 h-40"
+            />
+          </div>
+
+          <div>
+            <CharityCard
+              title="عدد المستفيدين"
+              description={
+                statisticalData?.beneficiariesCount !== undefined
+                  ? `${statisticalData.beneficiariesCount} مستفيد`
+                  : "جاري التحميل..."
+              }
+              className="py-8 w-96 h-40"
+            />
+          </div>
+
       </div>
 
       {/* Button */}

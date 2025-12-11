@@ -15,7 +15,9 @@ const Opportunities = ({
   currentPage = 1,
   totalProjectsCount = 0,
   onPageChange,
-  donationValue=0
+  donationValue=0,
+  setZakatSearch ,
+  zakatSearch
 }) => {
 
   const location = useLocation();
@@ -83,6 +85,8 @@ const Opportunities = ({
                     <div className="flex flex-1 items-center gap-2 bg-[#E5E9EA] border border-gray-300 rounded-lg px-3 py-2 w-72">
                         <Search className="w-5 h-5" />
                         <input
+                        value={zakatSearch}
+                        onChange={(e)=>{setZakatSearch(e.target.value)}}
                         type="text"
                         placeholder="ابحث هنا ..."
                         className="flex-1 placeholder:text-black placeholder:font-bold bg-transparent outline-none text-gray-700 placeholder-gray-400"
@@ -90,7 +94,7 @@ const Opportunities = ({
                         <img src={filter} alt="بحث" className="w-5 h-5" />
                     </div>
 
-                    <button
+                    {/* <button
                         className="flex items-center gap-2 text-white font-semibold py-2 px-5 rounded-lg shadow-md"
                         style={{
                         background:
@@ -99,7 +103,7 @@ const Opportunities = ({
                     >
                         <span>الفرص المكتملة</span>
                         <img src={checklist} alt="قائمة" className="w-5 h-5" />
-                    </button>
+                    </button> */}
                 </div>
                 <div>
                     {/* DonationCard grid - max 6 cards (3 per row) */}
@@ -159,6 +163,8 @@ Opportunities.propTypes = {
   totalProjectsCount: PropTypes.number,
   onPageChange: PropTypes.func,
   donationValue:PropTypes.number,
+  setZakatSearch : PropTypes.func,
+  zakatSearch:PropTypes.string
 };
 
 Opportunities.defaultProps = {
@@ -169,6 +175,8 @@ Opportunities.defaultProps = {
   totalProjectsCount: 0,
   donationValue:0,
   onPageChange: () => {},
+  setZakatSearch : ()=>{},
+  zakatSearch:""
 };
 
 export default Opportunities;

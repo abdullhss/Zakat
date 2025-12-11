@@ -72,7 +72,9 @@ const OpportunitiesTab = ({Officeid}) => {
 
             const response = await executeProcedure(
                 STORED_PROCEDURES[activeTab],
-                `${Officeid}#${SubventionTypeId}#${'S'}#${StartNum}#${countPerPage}`
+                activeTab === 'current'
+                    ? `${Officeid}#${SubventionTypeId}#${'S'}##${StartNum}#${countPerPage}` :
+                    `${Officeid}#${SubventionTypeId}#${'S'}#${StartNum}#${countPerPage}`
             );
             
             

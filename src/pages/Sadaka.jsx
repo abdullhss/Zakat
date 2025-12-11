@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import PayZakat from '../components/Zakat page/PayZakat'
 import Opportunities from '../components/Zakat page/Opportunities'
 import { executeProcedure } from "../services/apiServices";
@@ -10,7 +10,7 @@ const Sadaka = () => {
   const [donations, setDonations] = useState([]);
   const [donationValue, setDonationValue] = useState();
   const [subventionTypes, setSubventionTypes] = useState([]);
-  const [sadakaType , setSadakaType] = useState("G") ;
+  const [sadakaType, setSadakaType] = useState("G");
   const [totalProjectsCount, setTotalProjectsCount] = useState(0);
   const [loading, setLoading] = useState({
     offices: true,
@@ -26,6 +26,8 @@ const Sadaka = () => {
   const [selectedAid, setSelectedAid] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sadakaSearch, setSadakaSearch] = useState("");
+  const [debouncedSadakaSearch, setDebouncedSadakaSearch] = useState("");
 
   // Fetch offices and zakat types data
   useEffect(() => {
@@ -86,6 +88,18 @@ const Sadaka = () => {
     fetchData();
   }, []);
 
+  // Debounce search input - updates after 500ms of inactivity
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSadakaSearch(sadakaSearch);
+    }, 500);
+
+    // Cleanup function to clear the timeout
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [sadakaSearch]);
+
   // Fetch donations data when selections change
   useEffect(() => {
     const fetchDonations = async () => {
@@ -94,9 +108,9 @@ const Sadaka = () => {
         
         // Build the parameters string
         const startNum = (currentPage - 1) * 6; // Calculate start number based on current page
-        const params = `${selectedOffice}#${selectedAid || "0"}#s#${startNum+1}#9`;
+        const params = `${selectedOffice}#${selectedAid || "0"}#s#${debouncedSadakaSearch}#${startNum + 1}#9`;
         
-        const GetSadkaSubventionTypesDataParams = `${sadakaType}#1#100`
+        const GetSadkaSubventionTypesDataParams = `${sadakaType}#1#100`;
         
         const response = await executeProcedure(
           "0sKUt2E7SOiZ8WrjfyQIaIY5nL3Uh97WgmX3uf/9t74=",
@@ -116,7 +130,8 @@ const Sadaka = () => {
         
         if (response && response.decrypted) {
           const data = response.decrypted;
-          const projectsDataDecrypted = ProjectsResponse.decrypted
+          const projectsDataDecrypted = ProjectsResponse.decrypted;
+          
           // Parse ProjectsCount
           if (projectsDataDecrypted.ProjectsCount) {
             try {
@@ -175,7 +190,7 @@ const Sadaka = () => {
     };
 
     fetchDonations();
-  }, [selectedOffice, selectedAid, selectedCategory, currentPage , sadakaType]);
+  }, [selectedOffice, selectedAid, selectedCategory, currentPage, sadakaType, debouncedSadakaSearch]);
 
   // Handler functions to update state
   const handleOfficeChange = (officeId) => {
@@ -200,8 +215,24 @@ const Sadaka = () => {
     setCurrentPage(pageNumber);
   };
 
-  // Check if we should show donations section (only for category ID 1)
-  const showDonationsSection = selectedCategory === "1";
+  // Handler for search input with immediate update
+  const handleSearchChange = (searchTerm) => {
+    setSadakaSearch(searchTerm);
+    setCurrentPage(1); // Reset to first page when search changes
+  };
+
+  // Optional: Create a debounce function for reuse
+  const debounce = (func, delay) => {
+    let timerId;
+    return function(...args) {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+      timerId = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  };
 
   return (
     <section>
@@ -230,15 +261,17 @@ const Sadaka = () => {
             setSadakaType={setSadakaType}
             sadakaType={sadakaType}
           />
-            <Opportunities 
-              donations={donations}
-              loading={loading.donations}
-              error={errors.donations}
-              currentPage={currentPage}
-              totalProjectsCount={totalProjectsCount}
-              onPageChange={handlePageChange}
-              donationValue={donationValue}
-            />
+          <Opportunities 
+            donations={donations}
+            loading={loading.donations}
+            error={errors.donations}
+            currentPage={currentPage}
+            totalProjectsCount={totalProjectsCount}
+            onPageChange={handlePageChange}
+            donationValue={donationValue}
+            setZakatSearch={handleSearchChange}
+            zakatSearch={sadakaSearch}
+          />
         </div>
 
         <div className="rightBow"></div>

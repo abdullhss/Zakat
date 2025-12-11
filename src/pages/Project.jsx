@@ -26,6 +26,7 @@ const Project = () => {
     const [fetchError, setFetchError] = useState("");
     const [donationType, setDonationType] = useState(""); // "zakat" or "sadaqa"
     const [oldcartData , setOldcartData] = useState([]) ; 
+    const [statisticalData , setStatisticalData] = useState(null);
     const UserData = JSON.parse(localStorage.getItem("UserData"));
     
     useEffect(()=>{
@@ -51,7 +52,15 @@ const Project = () => {
     };
 
     const [projectData, setProjectData] = useState(() => parseProjectData(rawData));
-    
+
+    useEffect(() => {
+        const fetchsomeData = async () => {
+            const response = await executeProcedure("Pnl2I5yvrTFeVH96QlzAsUDfACCXKoNvDpsIS2YJ77E=", `${0}#${projectData.Id}`);
+            console.log(response);
+            setStatisticalData(response.decrypted)
+        }
+        fetchsomeData();
+    }, [projectData]);
     // Calculate progress values with safety checks
     const collected = projectData ? (projectData.WantedAmount - projectData.RemainingAmount) || 0 : 0;
     const remaining = projectData ? (projectData.RemainingAmount || 0) : 0;
@@ -143,7 +152,7 @@ const Project = () => {
             setFetchError("");
             
             try {
-                const params = `O#${projectData.SubventionType_Id}#1#4`;
+                const params = `O#${projectData.SubventionType_Id}#""#1#4`;
                 const response = await executeProcedure("B0/KqqIyiS3j4lbxUKXJCw==", params);
 
                 if (response && response.decrypted) {
@@ -642,36 +651,22 @@ const Project = () => {
                             whileHover="hover"
                             className="px-6 sm:pl-8 sm:pr-5 py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
                         >
-                            {/* Top Statistics Section */}
-                            <div className="grid grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
-                                {/* Visits */}
-                                <motion.div 
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.6 }}
-                                    className="text-right"
-                                >
-                                    <div className="text-[#8E6D4C] text-base sm:text-lg mb-2 font-medium text-center">الزيارات</div>
-                                    <div className="flex items-baseline justify-center gap-2">
-                                        <span className="font-bold text-gray-800 text-lg sm:text-xl">197.1</span>
-                                        <span className="text-[#7B7B7B] font-medium text-sm sm:text-base">زيارة</span>
-                                    </div>
-                                </motion.div>
 
                                 {/* Donation Operations */}
                                 <motion.div 
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.7 }}
-                                    className="border-r-2 border-[#17343B] pr-6 sm:pr-8 text-center"
+                                    className="pb-8 border-[#17343B] pr-6 sm:pr-8 text-center"
                                 >
-                                    <div className="text-[#8E6D4C] text-base sm:text-lg mb-2 font-medium">عمليات التبرع</div>
+                                    <div className="text-[#8E6D4C] text-base sm:text-lg mb-2 font-medium">اجمالي التبرع</div>
                                     <div className="flex items-baseline justify-center gap-2">
-                                        <span className="font-bold text-gray-800 text-lg sm:text-xl">91.9</span>
-                                        <span className="text-[#7B7B7B] text-sm sm:text-base">عملية</span>
+                                    <span className="font-bold text-gray-800 text-lg sm:text-xl">
+                                    {statisticalData?.PaidAmount ?? "جاري التحميل..."}
+                                    </span>
+                                        <span className="text-[#7B7B7B] text-sm sm:text-base">د.ل</span>
                                     </div>
                                 </motion.div>
-                            </div>
 
                             {/* Divider */}
                             <motion.div 
@@ -690,7 +685,9 @@ const Project = () => {
                                 dir="rtl"
                             >
                                 <div className="text-amber-700 text-lg sm:text-xl mb-2 sm:mb-3 font-semibold">عدد المستفيدين</div>
-                                <div className="text-lg sm:text-xl font-bold text-gray-800">100</div>
+                                <div className="text-lg sm:text-xl font-bold text-gray-800">
+                                {statisticalData?.beneficiariesCount ?? "جاري التحميل..."}
+                                </div>
                             </motion.div>
                         </motion.div>
                     </div>
