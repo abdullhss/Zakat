@@ -318,6 +318,14 @@ const Project = () => {
             setFetchError("خطأ في تحميل بيانات المشروع");
         }
     };
+    const getButtonClass = (value) =>
+    `mb-6 p-4 rounded-xl border w-full transition-all
+    ${
+        donationAmount === value
+        ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
+        : "border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
+    }`;
+
 
     // Animation variants
     const containerVariants = {
@@ -531,8 +539,31 @@ const Project = () => {
                         <motion.div 
                             variants={itemVariants}
                             whileHover="hover"
-                            className="px-6 sm:pl-8 sm:pr-5 py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
+                            className="px-6 sm:pl-8 sm:pr-5 font-medium py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
                         >
+                            <div className="flex items-center justify-between gap-4">
+                                <button
+                                    className={getButtonClass(5)}
+                                    onClick={() => setDonationAmount(5)}
+                                >
+                                    5
+                                </button>
+
+                                <button
+                                    className={getButtonClass(10)}
+                                    onClick={() => setDonationAmount(10)}
+                                >
+                                    10
+                                </button>
+
+                                <button
+                                    className={getButtonClass(20)}
+                                    onClick={() => setDonationAmount(20)}
+                                >
+                                    20
+                                </button>
+                            </div>
+
                             <div className="relative w-full mb-4">
                                 <img
                                     className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"

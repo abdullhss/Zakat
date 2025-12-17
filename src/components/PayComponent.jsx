@@ -35,7 +35,7 @@ const PayComponent = ({
   accountTypeId = "",
   serviceTypeId = "2",
   totalAmount = 0,
-  currency = "$",
+  currency = "د.ل",
   actionID="1",
   SubventionType_Id="0",
   Project_Id="0",
@@ -713,7 +713,7 @@ function formatAmount(amount) {
       <div className="p-4 border-t">
         <div className="flex items-center justify-between gap-2 text-xl font-semibold mb-6">
           <p>الإجمالي</p>
-          <p className="">{totalAmount} {currency}</p>
+          <p className="">{Number(totalAmount).toLocaleString()} {currency}</p>
         </div>
         <button 
           className="w-full flex items-center gap-2 justify-center bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white py-3 rounded-lg font-medium hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

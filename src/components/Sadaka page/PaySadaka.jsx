@@ -320,7 +320,7 @@ const PaySadaka = ({
         <div className="w-full flex flex-col gap-4">
             <div className="flex items-center justify-between font-medium text-lg my-4">
                 <span>الاجمالي</span>
-                <span>د.ل{donationAmount}</span>
+                <span>{Number(donationAmount).toLocaleString()} د.ل</span>
             </div>
             <div className="relative w-full">
               <img

@@ -76,8 +76,8 @@ const DonationCard = ({
         {/* Progress Section */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between text-base font-bold text-[#16343A]">
-            <span>تم جمع {collected}$</span>
-            <span>المتبقي {remaining}$</span>
+            <span>تم جمع {Number(collected).toLocaleString()} د.ل</span>
+            <span>المتبقي {Number(remaining).toLocaleString()} د.ل</span>
           </div>
           <div className="w-full h-[9px] bg-gray-200 rounded-full overflow-hidden">
             <div
