@@ -11,6 +11,9 @@ import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
 import { useNavigate } from "react-router-dom";
 import CryptoJS from "crypto-js";
 import { useCallback } from "react";
+import { toArabicWord } from 'number-to-arabic-words/dist/index-node.js';
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@headlessui/react";
 
 
 
@@ -59,6 +62,7 @@ const PayComponent = ({
   const [fileError, setFileError] = useState(""); // New state for file error
   const [electronicPaymentSystemReference ,  setElectronicPaymentSystemReference] = useState("") ; 
   const [isOpeningGateway, setIsOpeningGateway] = useState(false);
+  const [rememberBobUp , setRememberBobUp] = useState(false);
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate() ;
@@ -209,7 +213,41 @@ const PayComponent = ({
             handleFetchCartData();
             navigate("/")
         }
-          
+        console.log(actionID);
+        
+        if(actionID == 1 || actionID==2){
+          toast.info(
+            <div className="flex flex-col gap-3">
+              <span className="font-semibold">
+                تريد انشاء تذكير ؟
+              </span>
+
+              <div className="flex gap-2">
+                <button
+                  className="px-3 py-1 bg-emerald-600 text-white rounded-md"
+                  onClick={() => {
+                    toast.dismiss();
+                    navigate("/remember");
+                  }}
+                >
+                  ذهاب
+                </button>
+
+                <button
+                  className="px-3 py-1 border rounded-md"
+                  onClick={() => toast.dismiss()}
+                >
+                  إلغاء
+                </button>
+              </div>
+            </div>,
+            {
+              autoClose: false,
+              closeOnClick: false,
+            }
+          );
+
+        }
       }
 
     } catch (error) {
@@ -714,6 +752,10 @@ function formatAmount(amount) {
         <div className="flex items-center justify-between gap-2 text-xl font-semibold mb-6">
           <p>الإجمالي</p>
           <p className="">{Number(totalAmount).toLocaleString()} {currency}</p>
+        </div>
+        <div className="flex items-center justify-between gap-2 text-xl font-semibold mb-6">
+          <p></p>
+          <p className=""> {toArabicWord(totalAmount)} {currency}</p>
         </div>
         <button 
           className="w-full flex items-center gap-2 justify-center bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white py-3 rounded-lg font-medium hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

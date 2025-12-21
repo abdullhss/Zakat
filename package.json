@@ -30,6 +30,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.544.0",
     "npm": "^11.3.0",
+    "number-to-arabic-words": "^1.5.3",
     "react": "^19.0.0-rc.1",
     "react-dom": "^19.0.0-rc.1",
     "react-hook-form": "^7.56.3",

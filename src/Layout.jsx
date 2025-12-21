@@ -11,8 +11,26 @@ const Layout = () => {
   
   const isHomePage = location.pathname === "/";
   const isOfficePage = location.pathname.startsWith("/office");
+const [showFloatingBtn, setShowFloatingBtn] = useState(false);
 
   const [mainScreenData, setMainScreenData] = useState(null);
+useEffect(() => {
+  const handleScroll = () => {
+    const triggerPoint = window.innerHeight * 0.4;
+
+    if (window.scrollY >= triggerPoint) {
+      setShowFloatingBtn(true);
+    } else {
+      setShowFloatingBtn(false);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+  };
+}, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,7 +58,7 @@ const Layout = () => {
         </div>
       )}
 
-      {/* {!isHomePage && <FloatingDonationButton />} */}
+    {showFloatingBtn && <FloatingDonationButton />}
 
       {/* Main Content */}
       <Outlet />

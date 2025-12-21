@@ -198,7 +198,6 @@ const Zakat = () => {
   const handleOfficeChange = (officeId) => {
     setSelectedOffice(officeId);
     setSelectedAid("");
-    setSelectedCategory("");
     setCurrentPage(1); // Reset to first page when office changes
   };
 

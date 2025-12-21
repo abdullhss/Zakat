@@ -12,7 +12,7 @@ import { executeProcedure } from "../../../services/apiServices";
 import { useEffect, useState } from "react";
 import UrgentProjects from "./UrgentProjects";
 import Zema from "./Zema";
-
+import DonateForLover from "../components/DonateForLover"
 function Home() {
   const [mainScreenData, setMainScreenData] = useState(null);
   const [mianScreeUrgentProjects, setMianScreeUrgentProjects] = useState(null);
@@ -89,10 +89,11 @@ function Home() {
           {mainScreenData?.decrypted?.ProjectsData && (
             <Donations data={mainScreenData?.decrypted?.ProjectsData} />
           )}
+          <DonateForLover/>
+          <Zema />
           {mainScreenData?.decrypted?.OfficesData && (
             <Librarys data={mainScreenData.decrypted.OfficesData} />
           )}
-          <Zema />
           {mainScreenData?.decrypted?.NewsData && (
             <LastNews data={mainScreenData.decrypted.NewsData} />
           )}

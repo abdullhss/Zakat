@@ -45,7 +45,8 @@ const PayZakat = ({
   const categories = zakatTypes.length > 0 
     ? zakatTypes.map(type => ({
         id: type.Id,
-        name: type.ZakatTypeName?.replace(/\\r/g, '').trim()
+        name: type.ZakatTypeName?.replace(/\\r/g, '').trim(),
+        isActive : type.IsActive
       }))
     : [];
 
@@ -83,13 +84,7 @@ const PayZakat = ({
       onAidChange("");
     }
   };
-  
-  useEffect(() => {
-    if (selectedOffice && categories.length > 0 && !selectedCategory) {
-      onCategoryChange(categories[0].id.toString());
-    }
-  }, [selectedOffice, categories, selectedCategory, onCategoryChange]);
-  
+
   // Handle donation amount change
   const handleAmountChange = (e) => {
     const value = e.target.value;
@@ -278,7 +273,7 @@ const PayZakat = ({
                 selectedCategory === category.id.toString()
                   ? "border-emerald-600 bg-emerald-50"
                   : "border-[#B7B7B7]"
-              } ${!selectedOffice ? "opacity-50 cursor-not-allowed" : ""}`}
+              } ${!selectedOffice ? "opacity-50 cursor-not-allowed" : ""} ${!category.isActive ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <input
                 type="radio"
@@ -287,7 +282,7 @@ const PayZakat = ({
                 checked={selectedCategory === category.id.toString()}
                 onChange={handleCategoryChange}
                 className="text-emerald-600 focus:ring-emerald-600"
-                disabled={!selectedOffice}
+                disabled={!selectedOffice || !category.isActive}
               />
               {category.name}
             </label>
