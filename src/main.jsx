@@ -4,9 +4,12 @@ import App from "./App.jsx";
 import { Provider } from "react-redux";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { store } from "./application/store/store.js";
+import { HelmetProvider } from "react-helmet-async";
 
 createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <App />
-  </Provider>
+  <HelmetProvider>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </HelmetProvider>
 );

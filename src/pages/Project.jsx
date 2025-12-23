@@ -14,6 +14,7 @@ import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PayS
 import PayComponent from "../components/PayComponent";
 import { toast } from "react-toastify";
 import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
+import { Helmet } from "react-helmet-async";
 
 const Project = () => {
     const location = useLocation();
@@ -409,386 +410,407 @@ const Project = () => {
             </motion.div>
         );
     }
-
+    const getProjectLink = ()=>{
+        return(window.location.href);
+        
+    }
+    getProjectLink()
     return (
-        <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="relative overflow-hidden min-h-screen"
-            style={{
-                backgroundImage: "url('/background pattern.png')",
-                backgroundRepeat: "repeat",
-                backgroundSize: "auto",
-            }}
-        >
-            {/* Header Section */}
+        <>
+            <Helmet>
+                {/* Open Graph */}
+                <meta property="og:title" content={projectData.Name} />
+                <meta property="og:description" content={projectData.Description} />
+                <meta property="og:image" content={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`} />
+                <meta property="og:url" content={getProjectLink()} />
+                <meta property="og:type" content="website" />
+
+                {/* Optional (Twitter / X) */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={projectData.Name} />
+                <meta name="twitter:description" content={projectData.Description} />
+                <meta name="twitter:image" content={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`} />
+            </Helmet>
             <motion.div 
-                variants={itemVariants}
-                className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28"
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+                className="relative overflow-hidden min-h-screen"
+                style={{
+                    backgroundImage: "url('/background pattern.png')",
+                    backgroundRepeat: "repeat",
+                    backgroundSize: "auto",
+                }}
             >
-                <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
-                    <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
-                    التفاصيل
-                </div>
-            </motion.div>
-
-            {/* Main Content */}
-            <div className="flex justify-center w-full px-4 sm:px-6">
+                {/* Header Section */}
                 <motion.div 
-                    variants={containerVariants}
-                    className="w-full max-w-5xl flex flex-col lg:flex-row items-start justify-around gap-6 sm:gap-8 lg:gap-12 p-4 sm:p-6"
+                    variants={itemVariants}
+                    className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28"
                 >
-                    {/* Project Details Card */}
+                    <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
+                        <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
+                        التفاصيل
+                    </div>
+                </motion.div>
+
+                {/* Main Content */}
+                <div className="flex justify-center w-full px-4 sm:px-6">
                     <motion.div 
-                        variants={itemVariants}
-                        whileHover="hover"
-                        className="relative flex flex-col gap-4 sm:gap-5 px-6 sm:pl-8 sm:pr-5 py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden flex-1 w-full"
+                        variants={containerVariants}
+                        className="w-full max-w-5xl flex flex-col lg:flex-row items-start justify-around gap-6 sm:gap-8 lg:gap-12 p-4 sm:p-6"
                     >
-                        <img src={cardWave} className="absolute left-0" alt="wave background" />
-                        
-                        {/* Project Image */}
-                        <motion.img 
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.5, delay: 0.2 }}
-                            src={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`} 
-                            alt={projectData.Name} 
-                            className="w-full h-40 sm:h-48 object-cover rounded-lg"
-                            onError={(e) => {
-                                e.target.src = '/placeholder-image.jpg'; // Fallback image
-                                e.target.alt = 'صورة المشروع غير متوفرة';
-                            }}
-                        />
-                        
-                        <div className="flex justify-between items-start gap-4">
-                            <div className="flex flex-col justify-between flex-1">
-                                <motion.p 
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.3 }}
-                                    className="font-medium text-base sm:text-lg"
-                                >
-                                    {projectData.Name || "اسم المشروع غير متوفر"}
-                                </motion.p>
-                                <motion.p 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.4 }}
-                                    className="text-[#4C4C4C] mt-2 text-sm sm:text-base"
-                                >
-                                    {projectData.Description || "لا يوجد وصف للمشروع"}
-                                </motion.p>
-                            </div>
-                            <div className="flex-shrink-0">
-                                <img src={Navigate} width={20} className="sm:w-6" alt="navigation" />
-                            </div>
-                        </div>
-                        
-                        {/* Progress Section */}
+                        {/* Project Details Card */}
                         <motion.div 
                             variants={itemVariants}
-                            className="flex flex-col gap-3 relative z-10"
+                            whileHover="hover"
+                            className="relative flex flex-col gap-4 sm:gap-5 px-6 sm:pl-8 sm:pr-5 py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden flex-1 w-full"
                         >
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm sm:text-base font-bold text-[#16343A] gap-2">
-                                <span>تم جمع {collected.toLocaleString()}$</span>
-                                <span>المتبقي {remaining.toLocaleString()}$</span>
+                            <img src={cardWave} className="absolute left-0" alt="wave background" />
+                            
+                            {/* Project Image */}
+                            <motion.img 
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                                src={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`} 
+                                alt={projectData.Name} 
+                                className="w-full h-40 sm:h-48 object-cover rounded-lg"
+                                onError={(e) => {
+                                    e.target.src = '/placeholder-image.jpg'; // Fallback image
+                                    e.target.alt = 'صورة المشروع غير متوفرة';
+                                }}
+                            />
+                            
+                            <div className="flex justify-between items-start gap-4">
+                                <div className="flex flex-col justify-between flex-1">
+                                    <motion.p 
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.3 }}
+                                        className="font-medium text-base sm:text-lg"
+                                    >
+                                        {projectData.Name || "اسم المشروع غير متوفر"}
+                                    </motion.p>
+                                    <motion.p 
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.4 }}
+                                        className="text-[#4C4C4C] mt-2 text-sm sm:text-base"
+                                    >
+                                        {projectData.Description || "لا يوجد وصف للمشروع"}
+                                    </motion.p>
+                                </div>
+                                <div className="flex-shrink-0">
+                                    <img src={Navigate} width={20} className="sm:w-6" alt="navigation" />
+                                </div>
                             </div>
-                            <div className="w-full h-2 sm:h-[9px] bg-gray-200 rounded-full overflow-hidden">
-                                <motion.div
-                                    variants={progressVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    className="h-full bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E]"
-                                ></motion.div>
-                            </div>
-                            <span className="text-[#16343ACC] text-xs sm:text-sm">
-                                تم الوصول الى الهدف بنسبة {percentage}%
-                            </span>
-                        </motion.div>
+                            
+                            {/* Progress Section */}
+                            <motion.div 
+                                variants={itemVariants}
+                                className="flex flex-col gap-3 relative z-10"
+                            >
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm sm:text-base font-bold text-[#16343A] gap-2">
+                                    <span>تم جمع {collected.toLocaleString()}$</span>
+                                    <span>المتبقي {remaining.toLocaleString()}$</span>
+                                </div>
+                                <div className="w-full h-2 sm:h-[9px] bg-gray-200 rounded-full overflow-hidden">
+                                    <motion.div
+                                        variants={progressVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        className="h-full bg-gradient-to-r from-[#17343B] via-[#18383D] to-[#24645E]"
+                                    ></motion.div>
+                                </div>
+                                <span className="text-[#16343ACC] text-xs sm:text-sm">
+                                    تم الوصول الى الهدف بنسبة {percentage}%
+                                </span>
+                            </motion.div>
 
-                        <motion.div 
-                            variants={itemVariants}
-                            className="flex flex-col gap-2"
-                        >
-                            <p className="text-base sm:text-lg font-medium">المكتب</p>
-                            <p className="w-full rounded-xl text-base sm:text-lg font-medium bg-white p-2 sm:p-3">
-                                {projectData.OfficeName || "غير محدد"}
-                            </p>
-                        </motion.div>
-
-                        {/* Show current donation type if not showing radio buttons */}
-                        {!showDonationTypeRadio && (
                             <motion.div 
                                 variants={itemVariants}
                                 className="flex flex-col gap-2"
                             >
-                                <p className="text-base sm:text-lg font-medium">نوع التبرع</p>
+                                <p className="text-base sm:text-lg font-medium">المكتب</p>
                                 <p className="w-full rounded-xl text-base sm:text-lg font-medium bg-white p-2 sm:p-3">
-                                    {projectData.AllowZakat ? 
-                                        (projectData.actionID === 1 ? "زكاة" : "صدقة") 
-                                        : "صدقة"}
+                                    {projectData.OfficeName || "غير محدد"}
                                 </p>
                             </motion.div>
-                        )}
-                    </motion.div>
-                    
-                    {/* Sidebar */}
-                    <div className="flex flex-col gap-4 sm:gap-6 w-full lg:w-96">
-                        {/* Donation Section */}
-                        <motion.div 
-                            variants={itemVariants}
-                            whileHover="hover"
-                            className="px-6 sm:pl-8 sm:pr-5 font-medium py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
-                        >
-                            <div className="flex items-center justify-between gap-4">
-                                <button
-                                    className={getButtonClass(5)}
-                                    onClick={() => setDonationAmount(5)}
-                                >
-                                    5
-                                </button>
 
-                                <button
-                                    className={getButtonClass(10)}
-                                    onClick={() => setDonationAmount(10)}
-                                >
-                                    10
-                                </button>
-
-                                <button
-                                    className={getButtonClass(20)}
-                                    onClick={() => setDonationAmount(20)}
-                                >
-                                    20
-                                </button>
-                            </div>
-
-                            <div className="relative w-full mb-4">
-                                <img
-                                    className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
-                                    src={moneyGreen}
-                                    alt="Money"
-                                />
-                                <input
-                                    type="number"
-                                    min="1"
-                                    step="0.01"
-                                    max={projectData.RemainingAmount}
-                                    value={donationAmount}
-                                    onChange={handleAmountChange}
-                                    placeholder="رجاء ادخال المبلغ المدفوع"
-                                    className="w-full pl-9 sm:pl-10 pr-3 py-3 border-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium border-[#979797] bg-transparent"
-                                />
-                            </div>
-                            
-                            {/* Donation Type Radio Buttons - Conditionally Rendered */}
-                            {showDonationTypeRadio && (
-                                <motion.div
-                                    variants={radioVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    className="mb-6 p-4 rounded-xl border border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
-                                >
-                                    <p className="text-base font-semibold text-gray-800 mb-4 text-right">
-                                    اختر النوع:
-                                    </p>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                    {[
-                                        { label: "زكاة", value: "zakat",},
-                                        { label: "صدقة", value: "sadaqa",},
-                                    ].map(({ label, value, icon }) => (
-                                        <motion.label
-                                        key={value}
-                                        whileHover={{ scale: 1.03 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        className={`flex items-center cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${
-                                            donationType === value
-                                            ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
-                                            : "border-gray-300 bg-white hover:border-[#17433b]"
-                                        }`}
-                                        >
-                                        <div
-                                            className={`w-4 h-4 rounded-full border-2 ${
-                                            donationType === value
-                                                ? "border-[#17433b] bg-[#17433b]"
-                                                : "border-gray-400"
-                                            }`}
-                                        ></div>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-lg">{icon}</span>
-                                            <span className="text-sm md:text-base font-medium">{label}</span>
-                                        </div>
-                                        <input
-                                            type="radio"
-                                            name="donationType"
-                                            value={value}
-                                            checked={donationType === value}
-                                            onChange={() => handleDonationTypeChange(value)}
-                                            className="hidden"
-                                        />
-                                        </motion.label>
-                                    ))}
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            
-
-                            {/* Donation Error Message */}
-                            {donationError && (
+                            {/* Show current donation type if not showing radio buttons */}
+                            {!showDonationTypeRadio && (
                                 <motion.div 
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm text-center"
+                                    variants={itemVariants}
+                                    className="flex flex-col gap-2"
                                 >
-                                    {donationError}
+                                    <p className="text-base sm:text-lg font-medium">نوع التبرع</p>
+                                    <p className="w-full rounded-xl text-base sm:text-lg font-medium bg-white p-2 sm:p-3">
+                                        {projectData.AllowZakat ? 
+                                            (projectData.actionID === 1 ? "زكاة" : "صدقة") 
+                                            : "صدقة"}
+                                    </p>
                                 </motion.div>
                             )}
-                            
-                            <div className="flex items-center gap-4 sm:gap-6">
-                                <motion.button 
-                                    whileHover="hover"
-                                    whileTap="tap"
-                                    onClick={handleDonateNow}
-                                    disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
-                                    variants={buttonHoverVariants}
-                                    className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] transition-opacity text-sm sm:text-base ${
-                                        !donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
-                                    }`}
-                                >
-                                    <img src={money} alt="donate icon" />
-                                    ادفع الان
-                                </motion.button>
-                                <motion.button 
-                                    whileHover="hover"
-                                    whileTap="tap"
-                                    onClick={handleAddToCart}
-                                    disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
-                                    variants={buttonHoverVariants}
-                                    className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors
-                                                                                ${!donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
-                                                }`}
-                                >
-                                    <img src={shoppingCart} width={24} className="sm:w-8" alt="shopping cart" />
-                                </motion.button>
-                            </div>
                         </motion.div>
                         
-                        {/* Statistics Section */}
-                        <motion.div 
-                            variants={itemVariants}
-                            whileHover="hover"
-                            className="px-6 sm:pl-8 sm:pr-5 py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
-                        >
+                        {/* Sidebar */}
+                        <div className="flex flex-col gap-4 sm:gap-6 w-full lg:w-96">
+                            {/* Donation Section */}
+                            <motion.div 
+                                variants={itemVariants}
+                                whileHover="hover"
+                                className="px-6 sm:pl-8 sm:pr-5 font-medium py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
+                            >
+                                <div className="flex items-center justify-between gap-4">
+                                    <button
+                                        className={getButtonClass(5)}
+                                        onClick={() => setDonationAmount(5)}
+                                    >
+                                        5
+                                    </button>
 
-                                {/* Donation Operations */}
+                                    <button
+                                        className={getButtonClass(10)}
+                                        onClick={() => setDonationAmount(10)}
+                                    >
+                                        10
+                                    </button>
+
+                                    <button
+                                        className={getButtonClass(20)}
+                                        onClick={() => setDonationAmount(20)}
+                                    >
+                                        20
+                                    </button>
+                                </div>
+
+                                <div className="relative w-full mb-4">
+                                    <img
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
+                                        src={moneyGreen}
+                                        alt="Money"
+                                    />
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        step="0.01"
+                                        max={projectData.RemainingAmount}
+                                        value={donationAmount}
+                                        onChange={handleAmountChange}
+                                        placeholder="رجاء ادخال المبلغ المدفوع"
+                                        className="w-full pl-9 sm:pl-10 pr-3 py-3 border-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium border-[#979797] bg-transparent"
+                                    />
+                                </div>
+                                
+                                {/* Donation Type Radio Buttons - Conditionally Rendered */}
+                                {showDonationTypeRadio && (
+                                    <motion.div
+                                        variants={radioVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        className="mb-6 p-4 rounded-xl border border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
+                                    >
+                                        <p className="text-base font-semibold text-gray-800 mb-4 text-right">
+                                        اختر النوع:
+                                        </p>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                        {[
+                                            { label: "زكاة", value: "zakat",},
+                                            { label: "صدقة", value: "sadaqa",},
+                                        ].map(({ label, value, icon }) => (
+                                            <motion.label
+                                            key={value}
+                                            whileHover={{ scale: 1.03 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            className={`flex items-center cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${
+                                                donationType === value
+                                                ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
+                                                : "border-gray-300 bg-white hover:border-[#17433b]"
+                                            }`}
+                                            >
+                                            <div
+                                                className={`w-4 h-4 rounded-full border-2 ${
+                                                donationType === value
+                                                    ? "border-[#17433b] bg-[#17433b]"
+                                                    : "border-gray-400"
+                                                }`}
+                                            ></div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-lg">{icon}</span>
+                                                <span className="text-sm md:text-base font-medium">{label}</span>
+                                            </div>
+                                            <input
+                                                type="radio"
+                                                name="donationType"
+                                                value={value}
+                                                checked={donationType === value}
+                                                onChange={() => handleDonationTypeChange(value)}
+                                                className="hidden"
+                                            />
+                                            </motion.label>
+                                        ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                
+
+                                {/* Donation Error Message */}
+                                {donationError && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm text-center"
+                                    >
+                                        {donationError}
+                                    </motion.div>
+                                )}
+                                
+                                <div className="flex items-center gap-4 sm:gap-6">
+                                    <motion.button 
+                                        whileHover="hover"
+                                        whileTap="tap"
+                                        onClick={handleDonateNow}
+                                        disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
+                                        variants={buttonHoverVariants}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] transition-opacity text-sm sm:text-base ${
+                                            !donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                                        }`}
+                                    >
+                                        <img src={money} alt="donate icon" />
+                                        ادفع الان
+                                    </motion.button>
+                                    <motion.button 
+                                        whileHover="hover"
+                                        whileTap="tap"
+                                        onClick={handleAddToCart}
+                                        disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
+                                        variants={buttonHoverVariants}
+                                        className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors
+                                                                                    ${!donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                                                    }`}
+                                    >
+                                        <img src={shoppingCart} width={24} className="sm:w-8" alt="shopping cart" />
+                                    </motion.button>
+                                </div>
+                            </motion.div>
+                            
+                            {/* Statistics Section */}
+                            <motion.div 
+                                variants={itemVariants}
+                                whileHover="hover"
+                                className="px-6 sm:pl-8 sm:pr-5 py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
+                            >
+
+                                    {/* Donation Operations */}
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 0.7 }}
+                                        className="pb-8 border-[#17343B] pr-6 sm:pr-8 text-center"
+                                    >
+                                        <div className="text-[#8E6D4C] text-base sm:text-lg mb-2 font-medium">اجمالي التبرع</div>
+                                        <div className="flex items-baseline justify-center gap-2">
+                                        <span className="font-bold text-gray-800 text-lg sm:text-xl">
+                                        {statisticalData?.PaidAmount ?? "جاري التحميل..."}
+                                        </span>
+                                            <span className="text-[#7B7B7B] text-sm sm:text-base">د.ل</span>
+                                        </div>
+                                    </motion.div>
+
+                                {/* Divider */}
+                                <motion.div 
+                                    initial={{ scaleX: 0 }}
+                                    animate={{ scaleX: 1 }}
+                                    transition={{ delay: 0.8 }}
+                                    className="h-px bg-gradient-to-r from-transparent via-gray-400 to-transparent mb-6 sm:mb-8"
+                                />
+
+                                {/* Bottom Statistics Section */}
                                 <motion.div 
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.7 }}
-                                    className="pb-8 border-[#17343B] pr-6 sm:pr-8 text-center"
+                                    transition={{ delay: 0.9 }}
+                                    className="text-center" 
+                                    dir="rtl"
                                 >
-                                    <div className="text-[#8E6D4C] text-base sm:text-lg mb-2 font-medium">اجمالي التبرع</div>
-                                    <div className="flex items-baseline justify-center gap-2">
-                                    <span className="font-bold text-gray-800 text-lg sm:text-xl">
-                                    {statisticalData?.PaidAmount ?? "جاري التحميل..."}
-                                    </span>
-                                        <span className="text-[#7B7B7B] text-sm sm:text-base">د.ل</span>
+                                    <div className="text-amber-700 text-lg sm:text-xl mb-2 sm:mb-3 font-semibold">عدد المستفيدين</div>
+                                    <div className="text-lg sm:text-xl font-bold text-gray-800">
+                                    {statisticalData?.beneficiariesCount ?? "جاري التحميل..."}
                                     </div>
                                 </motion.div>
-
-                            {/* Divider */}
-                            <motion.div 
-                                initial={{ scaleX: 0 }}
-                                animate={{ scaleX: 1 }}
-                                transition={{ delay: 0.8 }}
-                                className="h-px bg-gradient-to-r from-transparent via-gray-400 to-transparent mb-6 sm:mb-8"
-                            />
-
-                            {/* Bottom Statistics Section */}
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.9 }}
-                                className="text-center" 
-                                dir="rtl"
-                            >
-                                <div className="text-amber-700 text-lg sm:text-xl mb-2 sm:mb-3 font-semibold">عدد المستفيدين</div>
-                                <div className="text-lg sm:text-xl font-bold text-gray-800">
-                                {statisticalData?.beneficiariesCount ?? "جاري التحميل..."}
-                                </div>
                             </motion.div>
-                        </motion.div>
-                    </div>
-                </motion.div>
-            </div>
-
-            {/* Similar Donations Section */}
-            <motion.div 
-                variants={itemVariants}
-                className="flex flex-col gap-8 px-4 "
-            >
-                <div className="flex items-center justify-between">
-                    <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
-                        <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
-                        فرص تبرع مماثلة
-                    </div>
+                        </div>
+                    </motion.div>
                 </div>
 
-                {/* Error Message for Donation Cards */}
-                {fetchError && (
-                    <motion.div 
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center"
-                    >
-                        <p className="text-yellow-700">{fetchError}</p>
-                    </motion.div>
-                )}
-
-                {/* Donation Cards */}
-                {loading ? (
-                    <div className="flex justify-center items-center py-12">
-                        <div className="text-center text-gray-600 text-lg">
-                            جاري تحميل المشاريع المماثلة...
+                {/* Similar Donations Section */}
+                <motion.div 
+                    variants={itemVariants}
+                    className="flex flex-col gap-8 px-4 "
+                >
+                    <div className="flex items-center justify-between">
+                        <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
+                            <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
+                            فرص تبرع مماثلة
                         </div>
                     </div>
-                ) : filteredDonationCards.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4 px-4 md:px-12">
-                        {filteredDonationCards.map((item) => (
-                            <div
-                                key={item.Id}
-                                className="flex-shrink-0"
-                            >
-                                <DonationCard
-                                    image={`https://framework.md-license.com:8093/ZakatImages/${item.PhotoName}.jpg`}
-                                    title={item.Name}
-                                    description={item.Description}
-                                    collected={item.WantedAmount - item.RemainingAmount}
-                                    goal={item.WantedAmount}
-                                    className="min-w-[320px]"
-                                    payNowLink={`/project?data=${encodeURIComponent(JSON.stringify({ ...item, actionID: projectData.actionID }))}`}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    !fetchError && (
+
+                    {/* Error Message for Donation Cards */}
+                    {fetchError && (
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center"
+                        >
+                            <p className="text-yellow-700">{fetchError}</p>
+                        </motion.div>
+                    )}
+
+                    {/* Donation Cards */}
+                    {loading ? (
                         <div className="flex justify-center items-center py-12">
                             <div className="text-center text-gray-600 text-lg">
-                                لا توجد فرص تبرع مماثلة حالياً
+                                جاري تحميل المشاريع المماثلة...
                             </div>
                         </div>
-                    )
-                )}
-            </motion.div>
-            
+                    ) : filteredDonationCards.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4 px-4 md:px-12">
+                            {filteredDonationCards.map((item) => (
+                                <div
+                                    key={item.Id}
+                                    className="flex-shrink-0"
+                                >
+                                    <DonationCard
+                                        image={`https://framework.md-license.com:8093/ZakatImages/${item.PhotoName}.jpg`}
+                                        title={item.Name}
+                                        description={item.Description}
+                                        collected={item.WantedAmount - item.RemainingAmount}
+                                        goal={item.WantedAmount}
+                                        className="min-w-[320px]"
+                                        payNowLink={`/project?data=${encodeURIComponent(JSON.stringify({ ...item, actionID: projectData.actionID }))}`}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        !fetchError && (
+                            <div className="flex justify-center items-center py-12">
+                                <div className="text-center text-gray-600 text-lg">
+                                    لا توجد فرص تبرع مماثلة حالياً
+                                </div>
+                            </div>
+                        )
+                    )}
+                </motion.div>
+                
 
-        <div className="rightBow"></div>
-        <div className="leftBow"></div> 
-        </motion.div>
+            <div className="rightBow"></div>
+            <div className="leftBow"></div> 
+            </motion.div>
+        </>
+
     );
 };
 
