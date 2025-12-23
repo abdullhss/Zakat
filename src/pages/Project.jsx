@@ -417,7 +417,7 @@ const Project = () => {
     getProjectLink()
     return (
         <>
-            <Helmet> 
+            <Helmet>
                 {/* Open Graph */}
                 <meta property="og:title" content={projectData.Name} />
                 <meta property="og:description" content={projectData.Description} />
