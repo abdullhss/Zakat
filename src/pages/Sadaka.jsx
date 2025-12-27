@@ -3,7 +3,8 @@ import PayZakat from '../components/Zakat page/PayZakat'
 import Opportunities from '../components/Zakat page/Opportunities'
 import { executeProcedure } from "../services/apiServices";
 import PaySadaka from '../components/Sadaka page/PaySadaka';
-
+import NewHeader from '../features/home/components/NewHeader'
+import headerBackground from "../../public/header backgrounds/Sadaka.png"
 const Sadaka = () => {
   const [offices, setOffices] = useState([]);
   const [zakatTypes, setZakatTypes] = useState([]);
@@ -245,6 +246,10 @@ const Sadaka = () => {
             backgroundSize: "auto",
           }}
         >
+          <div className='mt-20'>
+            <NewHeader backgroundImage={headerBackground}/>
+          </div>
+
           <PaySadaka
             offices={offices}
             zakatTypes={zakatTypes}

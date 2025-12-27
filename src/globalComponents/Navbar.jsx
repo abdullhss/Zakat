@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import {setCartData} from "../features/CartSlice/CartSlice";
+import projectsIcon from "../../public/icons/projects icon.png"
 
 const Navbar = () => {
   const dispatch = useDispatch() ;
@@ -65,7 +66,7 @@ const Navbar = () => {
       name: "الفرص",
       key: "opportunities",
       links: [
-        { name: "مشاريع", path: "/opportunities/projects", icon: coins, isDiamond: true },
+        { name: "مشاريع", path: "/opportunities/projects", icon: projectsIcon, isDiamond: false },
       ],
     },
     {

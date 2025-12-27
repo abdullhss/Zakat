@@ -11,6 +11,9 @@ const Layout = () => {
   
   const isHomePage = location.pathname === "/";
   const isOfficePage = location.pathname.startsWith("/office");
+  const isSadakaPage = location.pathname.startsWith("/services/sadaka");
+  const isKaffaraPage = location.pathname.startsWith("/services/karfaraAndNozor");
+  const isProjectsPage = location.pathname.startsWith("/opportunities/projects");
 const [showFloatingBtn, setShowFloatingBtn] = useState(false);
 
   const [mainScreenData, setMainScreenData] = useState(null);
@@ -52,7 +55,7 @@ useEffect(() => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      {!isOfficePage && (
+      {(!isOfficePage && !isSadakaPage && !isKaffaraPage && !isProjectsPage) && (
         <div className="mt-20">
           <HeroBanner data={mainScreenData?.heroBanner} />
         </div>

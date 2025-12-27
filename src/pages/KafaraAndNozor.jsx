@@ -6,7 +6,8 @@ import money from "../public/SVGs/money.svg"
 import { useDispatch } from "react-redux";
 import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
-
+import NewHeader from '../features/home/components/NewHeader.jsx'
+import headerBackground from "../../public/header backgrounds/Kafara.png"
 const KafaraAndNozor = () => {
   const [activeTab, setActiveTab] = useState('kafara'); // 'kafara', 'nothor', or 'fedya'
   const [offices, setOffices] = useState([]);
@@ -261,6 +262,10 @@ const KafaraAndNozor = () => {
         backgroundSize: "auto",
       }}
     >
+      <div className='mt-20'>
+        <NewHeader backgroundImage={headerBackground}/>
+      </div>
+
       <div className="flex items-center justify-between pl-12 mt-28">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
           <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />

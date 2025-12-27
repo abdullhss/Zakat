@@ -3,7 +3,12 @@ import { motion } from "framer-motion";
 import Diamond from "../../../components/Diamond";
 import coins from "../../../../public/coins.webp";
 import { Link } from "react-router-dom";
-import aya from "../../../public/SVGs/Aya.svg"
+import aya from "../../../public/SVGs/Aya.svg";
+import zakatIcon from "../../../../public/icons/zakat icon.png"
+import sadaqatIcon from "../../../../public/icons/sadaqat icon.png"
+import kafaratIcon from "../../../../public/icons/kafarat icon.png"
+import projectsIcon from "../../../../public/icons/projects icon.png"
+
 const ZakatCategories = () => {
   const [isInView, setIsInView] = useState(false);
   
@@ -17,24 +22,28 @@ const ZakatCategories = () => {
       title: "أخرج زكاتك",
       link:"/services/zakat",
       bgColor: "bg-gray-200",
+      icon:zakatIcon
     },
     {
       id: 3,
       title: "الصدقات",
       link:"/services/sadaka",
       bgColor: "bg-gray-200",
+      icon:sadaqatIcon
     },
     {
       id: 2,
       title: "الكفارات والفدية والنذور",
       link:"/services/karfaraAndNozor",
       bgColor: "bg-gray-200",
+      icon:kafaratIcon
     },
     {
       id: 4,
       title: "المشاريع",
       link:"/opportunities/projects",
       bgColor: "bg-gray-200",
+      icon:projectsIcon
     },
   ];
 
@@ -207,7 +216,8 @@ const ZakatCategories = () => {
               >
                 <div
                 >
-                  <Diamond width={80} height={80} imgUrl={coins} />
+                  <img width={100} height={100} src={category.icon}></img>
+                  {/* <Diamond width={80} height={80} imgUrl={category.icon} /> */}
                 </div>
               </div>
 

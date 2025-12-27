@@ -4,6 +4,8 @@ import filter from "../public/SVGs/fillter.svg"
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import DonationCard from '../components/DonationCard'
 import { executeProcedure } from "../services/apiServices"
+import headerBackground from "../../public/header backgrounds/projects.png"
+import NewHeader from '../features/home/components/NewHeader.jsx'
 
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState(0)
@@ -171,6 +173,9 @@ const Projects = () => {
             backgroundSize: "auto",
           }}
     >
+            <div className='mt-20'>
+              <NewHeader backgroundImage={headerBackground}/>
+            </div>
       <div 
           className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28"
       >
