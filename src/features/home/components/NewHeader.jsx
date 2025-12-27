@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { openPopup } from "../../../features/PaySlice/PaySlice";
@@ -9,10 +9,12 @@ import fastDonation from "../../../../public/fastDonation.svg";
 import shoppingCart from "../../../public/SVGs/ShoppingCart.svg";
 import PropTypes from "prop-types";
 
-const NewHeader = ({backgroundImage}) => {
+const NewHeader = ({backgroundImage , officeName}) => {
   const UserData = localStorage.getItem("UserData");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation() ;
+  const isOfficePage = location.pathname.startsWith("/office");
 
   const cartData = useSelector((state) => state.cart);
 
@@ -47,6 +49,13 @@ const NewHeader = ({backgroundImage}) => {
       className="relative w-full h-[400px] overflow-hidden bg-[length:100%_100%] bg-no-repeat bg-center"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
+      {
+        isOfficePage && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2">
+            <h1 className="text-white text-4xl font-bold">{officeName}</h1>
+          </div>
+        )
+      }
 
       {/* طلب التبرع */}
       <img
@@ -92,5 +101,6 @@ const NewHeader = ({backgroundImage}) => {
 export default NewHeader;
 
 NewHeader.propTypes = {
-  backgroundImage : PropTypes.any
+  backgroundImage : PropTypes.any , 
+  officeName : PropTypes.any
 }

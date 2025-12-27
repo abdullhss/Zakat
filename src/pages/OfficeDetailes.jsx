@@ -8,9 +8,11 @@ import OpportunitiesTab from '../features/home/components/OfficeDetailes/Opportu
 import NewsTab from '../features/home/components/OfficeDetailes/NewsTab';
 import StatisticsTab from '../features/home/components/OfficeDetailes/StatisticsTab';
 import AboutTab from '../features/home/components/OfficeDetailes/AboutTab';
-import HeroBanner from '../features/home/components/HeroBanner';
+import NewHeader from '../features/home/components/NewHeader';
 import { toast } from 'react-toastify';
 import { executeProcedure } from '../services/apiServices';
+import officeBanner from "../../public/header backgrounds/Maktab.png"
+
 
 const OfficeDetailes = () => {
   const [activeTab, setActiveTab] = useState('opportunities');
@@ -95,7 +97,7 @@ const OfficeDetailes = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
     >
       <div className='mt-20'>
-        <HeroBanner backgroundImage={headerBackground}/>
+        <NewHeader backgroundImage={officeBanner} officeName={officeData.OfficeName}/>
       </div>
       <div
         className='min-h-screen'
