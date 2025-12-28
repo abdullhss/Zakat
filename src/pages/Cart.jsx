@@ -169,13 +169,14 @@ const Cart = () => {
                   العدد: {summary.count}
                 </p>
                 <p className="font-bold text-[#16343A]">
-                  الإجمالي: {summary.total}$
+                  الإجمالي: {summary.total.toLocaleString()} د.ل
                 </p>
               </div>
             </div>
             <button
+                disabled={summary.count < 1}
                 onClick={handlePayCart}
-                className='bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white rounded-lg py-3'
+                className={`rounded-lg py-3 ${summary.count > 0 ? "text-white bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B]" : "bg-gray-400 text-black"}`}
             >
                 المتابعة للدفع
             </button>
@@ -232,13 +233,14 @@ const Cart = () => {
               {currentData?.map((item) => (
                 <SallaCard
                   key={item.Id}
-                  image={money}
+                  image={item.ProjectPhotoName ? `https://framework.md-license.com:8093/ZakatImages/${item.ProjectPhotoName}.jpg` : money}
                   title={item.ProjectName || item.SubventionTypeName || item.ItemDesc || "تبرع"}
                   description={item.OfficeName}
                   collected={item.PaymentValue}
                   goal={item.PaymentValue * 1.5} // Example goal calculation
                   price={item.PaymentValue}
                   onDelete={() => handleDeleteItem(item.Id, activeTab === "charity")}
+                  payNowLink={`/project?Id=${item.Project_Id}&actionID=${activeTab==="charity"?0:1}`}
                 />
               ))}
             </div>

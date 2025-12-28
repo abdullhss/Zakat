@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import Diamond from "../Diamond";
 import money from "../../public/SVGs/money.svg"
@@ -6,19 +6,24 @@ import moneyGreen from "../../public/SVGs/moneyGreen.svg"
 import ShoppingCart from "../../public/SVGs/ShoppingCart.svg"
 import { CalculatorIcon } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion"
 import { useDispatch, useSelector } from "react-redux";
-import { setShowPopup, setPopupComponent , setPopupTitle} from "../../features/PaySlice/PaySlice";
+import { setShowPopup, setPopupComponent, setPopupTitle } from "../../features/PaySlice/PaySlice";
 import PayComponent from "../PayComponent";
 import { DoTransaction, executeProcedure } from "../../services/apiServices";
 import { toast } from "react-toastify";
-import cartReducer , {setCartData} from "../../features/CartSlice/CartSlice";
+import cartReducer, { setCartData } from "../../features/CartSlice/CartSlice";
+import {
+  cleanAmount,
+  formatAmountAsTyping,
+  parseAmountToNumber
+} from "../../utils/amountUtils";
 
-const PaySadaka = ({ 
-  offices = [], 
-  zakatTypes = [], 
+const PaySadaka = ({
+  offices = [],
+  zakatTypes = [],
   subventionTypes = [],
-  loading = false, 
+  loading = false,
   error = null,
   selectedOffice,
   selectedAid,
@@ -31,23 +36,25 @@ const PaySadaka = ({
   sadakaType
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
-  const {showPayPopup,  popupComponent} = useSelector((state) => state.pay);
+  const [isAmountFocused, setIsAmountFocused] = useState(false);
+  const amountInputRef = useRef(null);
+  const { showPayPopup, popupComponent } = useSelector((state) => state.pay);
   const dispatch = useDispatch();
 
   // Use subventionTypes from API or fallback to static aids
-  const aids = subventionTypes.length > 0 
+  const aids = subventionTypes.length > 0
     ? subventionTypes.map(type => ({
-        id: type.Id,
-        name: type.SubventionTypeName
-      }))
+      id: type.Id,
+      name: type.SubventionTypeName
+    }))
     : [];
 
   // Use zakatTypes from API or fallback to static categories
-  const categories = zakatTypes.length > 0 
+  const categories = zakatTypes.length > 0
     ? zakatTypes.map(type => ({
-        id: type.Id,
-        name: type.ZakatTypeName?.replace(/\\r/g, '').trim()
-      }))
+      id: type.Id,
+      name: type.ZakatTypeName?.replace(/\\r/g, '').trim()
+    }))
     : [];
 
   // Check if the selected category is "الفقراء والمساكين" (ID: 1)
@@ -55,7 +62,8 @@ const PaySadaka = ({
 
   // Check if all required fields are filled
   const isFormValid = selectedOffice && selectedAid && selectedCategory && donationAmount;
-  const isPayNowValid = selectedCategory==1? selectedOffice && selectedAid && selectedCategory && donationAmount:selectedOffice && selectedCategory && donationAmount;
+  const isPayNowValid = selectedCategory == 1 ? selectedOffice && selectedAid && selectedCategory && donationAmount : selectedOffice && selectedCategory && donationAmount;
+
   // Get selected office name
   const getSelectedOfficeName = () => {
     if (!selectedOffice) return "";
@@ -81,14 +89,59 @@ const PaySadaka = ({
       onCategoryChange(categories[0].id.toString());
     }
   }, [selectedOffice, categories, selectedCategory, onCategoryChange]);
-  
+
   // Handle donation amount change
   const handleAmountChange = (e) => {
     const value = e.target.value;
-    if (value === "" || (Number(value) > 0 && !isNaN(value))) {
-      setDonationAmount(value);
-      setDonationValue(value) 
+    // Clean the input value
+    const cleanedValue = cleanAmount(value);
+    
+    // Update state with cleaned value
+    setDonationAmount(cleanedValue);
+    
+    // Send numeric value to parent (without commas)
+    setDonationValue(parseAmountToNumber(cleanedValue));
+  };
+
+  // Handle amount input focus
+  const handleAmountFocus = () => {
+    setIsAmountFocused(true);
+    // Select all text when focused for easy editing
+    setTimeout(() => {
+      if (amountInputRef.current) {
+        amountInputRef.current.select();
+      }
+    }, 0);
+  };
+
+  // Handle amount input blur
+  const handleAmountBlur = () => {
+    setIsAmountFocused(false);
+    // Format on blur
+    if (donationAmount) {
+      const cleanedValue = cleanAmount(donationAmount);
+      setDonationAmount(cleanedValue);
+      setDonationValue(parseAmountToNumber(cleanedValue));
     }
+  };
+
+  // Get formatted display value
+  const getDisplayValue = () => {
+    if (!donationAmount) return "";
+
+    if (isAmountFocused) {
+      // Show raw value while editing
+      return donationAmount;
+    }
+
+    // Show formatted value when not focused
+    return formatAmountAsTyping(donationAmount);
+  };
+
+  // Get formatted total display
+  const getFormattedTotal = () => {
+    if (!donationAmount) return "0";
+    return formatAmountAsTyping(donationAmount);
   };
 
   // Handle donate now
@@ -99,22 +152,18 @@ const PaySadaka = ({
     dispatch(setPopupComponent(
       <PayComponent
         officeName={officeName}
-        
         officeId={selectedOffice}
-        accountTypeId={selectedCategory} // Using category as account type
+        accountTypeId={selectedCategory}
         serviceTypeId="2"
-        totalAmount={parseFloat(donationAmount) || 0}
-        currency="دينار" // Or whatever currency you're using
-        actionID="2" //sadaka
+        totalAmount={parseAmountToNumber(donationAmount) || 0}
+        currency="دينار"
+        actionID="2"
         SubventionType_Id={selectedAid}
       />
     ));
-    
-    
   };
 
   // Handle add to cart
-  
   const cartData = useSelector((state) => state.cart);
   const userid = JSON.parse(localStorage.getItem("UserData"))?.Id;
 
@@ -128,46 +177,45 @@ const PaySadaka = ({
   };
 
   const handleAddToCart = async () => {
-    if(userid){
-          try {
-            const cart = cartData?.cartData ?? {};
-            const firstItemCount = Number(cart.CartFirstItemCount) || 0;
-            const firstItems = safeParseArray(cart.CartFirstItemData);
-            const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
+    if (userid) {
+      try {
+        const cart = cartData?.cartData ?? {};
+        const firstItemCount = Number(cart.CartFirstItemCount) || 0;
+        const firstItems = safeParseArray(cart.CartFirstItemData);
+        const firstOfficeId = firstItems?.[0]?.Office_Id ?? null;
 
-            if (firstItemCount == 0 || firstOfficeId == selectedOffice) {
-              const safeUserid = userid ?? 0;
-              const safeSelectedAid = isAidEnabled ? selectedAid : 0;
-              const safeDonation = donationAmount || 0;
-              const safeSelectedOffice = selectedOffice ?? 0;
+        if (firstItemCount == 0 || firstOfficeId == selectedOffice) {
+          const safeUserid = userid ?? 0;
+          const safeSelectedAid = isAidEnabled ? selectedAid : 0;
+          const safeDonation = parseAmountToNumber(donationAmount) || 0;
+          const safeSelectedOffice = selectedOffice ?? 0;
 
-              const payload = `0#${firstItems?.[0]?.Id || 0}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
+          const payload = `0#${firstItems?.[0]?.Id || 0}#${safeUserid}#2#0#${safeSelectedOffice}#${safeSelectedAid}#${safeDonation}##False`;
 
-              const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
+          const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
 
-              const handleFetchCartData = async () => {
-                const data = await executeProcedure(
-                  "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
-                  userid
-                );
-                dispatch(setCartData(data.decrypted));
-              };
+          const handleFetchCartData = async () => {
+            const data = await executeProcedure(
+              "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+              userid
+            );
+            dispatch(setCartData(data.decrypted));
+          };
 
-              await handleFetchCartData();
-              toast.success("تمت الإضافة إلى السلة بنجاح");
-            } else {
-              toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
-            }
-          } catch (error) {
-            console.error("handleAddToCart error:", error);
-            toast.error("حدث خطأ أثناء إضافة العنصر إلى السلة. حاول مرة أخرى.");
-          }
-    }else{
-            toast.error("برجاء تسجيل الدخول أولاً");
+          await handleFetchCartData();
+          toast.success("تمت الإضافة إلى السلة بنجاح");
+        } else {
+          toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
+        }
+      } catch (error) {
+        console.error("handleAddToCart error:", error);
+        toast.error("حدث خطأ أثناء إضافة العنصر إلى السلة. حاول مرة أخرى.");
+      }
+    } else {
+      toast.error("برجاء تسجيل الدخول أولاً");
     }
   };
 
-  
   // Safe office mapping function
   const renderOfficeOptions = () => {
     if (error) {
@@ -185,7 +233,7 @@ const PaySadaka = ({
         </option>
       );
     }
-    
+
     return offices.map((office) => (
       <option
         key={office.Id}
@@ -202,8 +250,8 @@ const PaySadaka = ({
       {/* Zakat header */}
       <div className="flex items-center justify-between pl-12 mt-28">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
-            <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
-            الصدقة
+          <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
+          الصدقة
         </div>
       </div>
 
@@ -227,60 +275,60 @@ const PaySadaka = ({
             </select>
           </div>
           <div className="flex-1 flex flex-col">
-  <label className="block mb-2 text-gray-700 font-medium">نوع الصدقة</label>
+            <label className="block mb-2 text-gray-700 font-medium">نوع الصدقة</label>
 
-  <div className="flex mt-2 gap-4 justify-around font-semibold">
-    {/* زرار صدقة عامة */}
-    <label
-      className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
-        ${sadakaType === "G" 
-          ? "text-white border-transparent" 
-          : "text-gray-700 border-gray-300"
-        }`}
-      style={{
-        background:
-          sadakaType === "G"
-            ? "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)"
-            : "white",
-      }}
-    >
-      <input
-        type="radio"
-        name="sadaqaType"
-        value="G"
-        checked={sadakaType === "G"}
-        onChange={(e) => setSadakaType(e.target.value)}
-        className="hidden"
-      />
-      <span>صدقة عامة</span>
-    </label>
+            <div className="flex mt-2 gap-4 justify-around font-semibold">
+              {/* زرار صدقة عامة */}
+              <label
+                className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
+                  ${sadakaType === "G"
+                    ? "text-white border-transparent"
+                    : "text-gray-700 border-gray-300"
+                  }`}
+                style={{
+                  background:
+                    sadakaType === "G"
+                      ? "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)"
+                      : "white",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="sadaqaType"
+                  value="G"
+                  checked={sadakaType === "G"}
+                  onChange={(e) => setSadakaType(e.target.value)}
+                  className="hidden"
+                />
+                <span>صدقة عامة</span>
+              </label>
 
-    {/* زرار صدقة جارية */}
-    <label
-      className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
-        ${sadakaType === "R" 
-          ? "text-white border-transparent" 
-          : "text-gray-700 border-gray-300"
-        }`}
-      style={{
-        background:
-          sadakaType === "R"
-            ? "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)"
-            : "white",
-      }}
-    >
-      <input
-        type="radio"
-        name="sadaqaType"
-        value="R"
-        checked={sadakaType === "R"}
-        onChange={(e) => setSadakaType(e.target.value)}
-        className="hidden"
-      />
-      <span>صدقة جارية</span>
-    </label>
-  </div>
-</div>
+              {/* زرار صدقة جارية */}
+              <label
+                className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
+                  ${sadakaType === "R"
+                    ? "text-white border-transparent"
+                    : "text-gray-700 border-gray-300"
+                  }`}
+                style={{
+                  background:
+                    sadakaType === "R"
+                      ? "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)"
+                      : "white",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="sadaqaType"
+                  value="R"
+                  checked={sadakaType === "R"}
+                  onChange={(e) => setSadakaType(e.target.value)}
+                  className="hidden"
+                />
+                <span>صدقة جارية</span>
+              </label>
+            </div>
+          </div>
 
           <div className="flex-1">
             <label className="block mb-2 text-gray-700 font-medium">
@@ -293,11 +341,11 @@ const PaySadaka = ({
               disabled={!selectedOffice || !isAidEnabled}
             >
               <option className="bg-white text-black" value="">
-                {!selectedOffice 
-                  ? "يرجى اختيار مكتب أولاً" 
-                  : !isAidEnabled 
-                    ? "غير متاح لهذا النوع من الزكاة" 
-                    : aids.length === 0 
+                {!selectedOffice
+                  ? "يرجى اختيار مكتب أولاً"
+                  : !isAidEnabled
+                    ? "غير متاح لهذا النوع من الزكاة"
+                    : aids.length === 0
                       ? "لا توجد إعانات"
                       : "اختر إعانة"}
               </option>
@@ -314,46 +362,46 @@ const PaySadaka = ({
           </div>
         </div>
 
-        
         <hr className="border border-[#B7B7B7] mt-10" />
 
         <div className="w-full flex flex-col gap-4">
-            <div className="flex items-center justify-between font-medium text-lg my-4">
-                <span>الاجمالي</span>
-                <span>{Number(donationAmount).toLocaleString()} د.ل</span>
-            </div>
-            <div className="relative w-full">
-              <img
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 md:w-6 md:h-6"
-                src={moneyGreen}
-                alt="Money"
-              />
-              <input
-                type="number"
-                min="1"
-                value={donationAmount}
-                onChange={handleAmountChange}
-                placeholder={
-                  selectedOffice ? "رجاء ادخال المبلغ المدفوع" : "يرجى اختيار مكتب أولاً"
-                }
-                className={`w-full pl-10 pr-3 py-2 border-2 rounded-lg text-sm md:text-base
+          <div className="flex items-center justify-between font-medium text-lg my-4">
+            <span>الاجمالي</span>
+            <span className="font-bold text-[#16343A]">{getFormattedTotal()} د.ل</span>
+          </div>
+          <div className="relative w-full">
+            <img
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 md:w-6 md:h-6"
+              src={moneyGreen}
+              alt="Money"
+            />
+            <input
+              ref={amountInputRef}
+              type="text"
+              inputMode="decimal"
+              value={getDisplayValue()}
+              onChange={handleAmountChange}
+              onFocus={handleAmountFocus}
+              onBlur={handleAmountBlur}
+              placeholder={
+                selectedOffice ? "رجاء ادخال المبلغ المدفوع (مثال: 1,000.50)" : "يرجى اختيار مكتب أولاً"
+              }
+              className={`w-full pl-10 pr-3 py-2 border-2 rounded-lg text-sm md:text-base text-left
                   focus:outline-none focus:ring-2 focus:ring-emerald-600
-                  placeholder:font-medium ${
-                    selectedOffice
-                      ? "border-[#979797]"
-                      : "border-gray-300 bg-gray-100"
-                  }`}
-                disabled={!selectedOffice}
-              />
-            </div>
+                  placeholder:font-medium placeholder:text-right ${selectedOffice
+                  ? "border-[#979797]"
+                  : "border-gray-300 bg-gray-100"
+                }`}
+              disabled={!selectedOffice}
+            />
+          </div>
         </div>
         {/* buttons row */}
         <div className="w-full flex flex-col sm:flex-row items-center gap-4 mt-6">
           <button
             onClick={handleDonateNow}
-            className={`flex-1 flex items-center justify-center gap-3 text-white font-semibold py-2 px-6 rounded-lg shadow-lg text-sm md:text-base ${
-              !isPayNowValid ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`flex-1 flex items-center justify-center gap-3 text-white font-semibold py-2 px-6 rounded-lg shadow-lg text-sm md:text-base ${!isPayNowValid ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             style={{
               background:
                 "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)",
@@ -361,19 +409,17 @@ const PaySadaka = ({
             disabled={!isPayNowValid}
           >
             <div className="flex gap-2 items-center">
-                <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-                <span>ادفع الان</span>
+              <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
+              <span>ادفع الان</span>
             </div>
-            {/* <span></span> */}
           </button>
 
           <button
             onClick={handleAddToCart}
-            className={`w-full sm:w-auto flex items-center justify-center border rounded-lg p-2 ${
-              !isFormValid
+            className={`w-full sm:w-auto flex items-center justify-center border rounded-lg p-2 ${!isFormValid
                 ? "border-gray-300 cursor-not-allowed"
                 : "border-[#16343A]"
-            }`}
+              }`}
             disabled={!isFormValid}
           >
             <img src={ShoppingCart} alt="سلة التسوق" className="w-5 h-5" />
@@ -396,9 +442,9 @@ PaySadaka.propTypes = {
   onOfficeChange: PropTypes.func,
   onAidChange: PropTypes.func,
   onCategoryChange: PropTypes.func,
-  setDonationValue:PropTypes.func,
-  setSadakaType:PropTypes.func,
-  sadakaType:PropTypes.string
+  setDonationValue: PropTypes.func,
+  setSadakaType: PropTypes.func,
+  sadakaType: PropTypes.string
 };
 
 PaySadaka.defaultProps = {
@@ -410,11 +456,11 @@ PaySadaka.defaultProps = {
   selectedOffice: "",
   selectedAid: "",
   selectedCategory: "",
-  onOfficeChange: () => {},
-  onAidChange: () => {},
-  onCategoryChange: () => {},
-  setSadakaType:()=>{},
-  sadakaType:"G"
+  onOfficeChange: () => { },
+  onAidChange: () => { },
+  onCategoryChange: () => { },
+  setSadakaType: () => { },
+  sadakaType: "G"
 };
 
 export default PaySadaka;

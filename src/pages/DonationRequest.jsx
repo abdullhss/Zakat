@@ -276,7 +276,18 @@ const DonationRequest = () => {
   }
 
   return (
-    <div className='overflow-hidden min-h-screen'
+      <div
+    className="overflow-hidden min-h-screen"
+    style={{
+      backgroundImage: "url('/background pattern.png')",
+      backgroundRepeat: "repeat",
+      backgroundSize: "auto",
+    }}
+  >
+     {!canSendRequest ? (
+      <BlockedRequest />
+    ) : (
+      <div className='overflow-hidden min-h-screen'
       style={{
         backgroundImage: "url('/background pattern.png')",
         backgroundRepeat: "repeat",
@@ -538,7 +549,35 @@ const DonationRequest = () => {
         </form>
       </div>
     </div>
+    )}
+  </div>
   )
+  
 }
 
 export default DonationRequest
+
+const BlockedRequest = () => (
+  <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+      <div className="mb-4 text-emerald-800 text-5xl">⚠️</div>
+      <h2 className="text-xl font-bold mb-3 text-gray-800">
+        لا يمكنك تقديم طلب جديد
+      </h2>
+      <p className="text-gray-600 mb-6">
+        لا يمكنك تقديم طلب جديد قبل انتهاء الطلب السابق.
+      </p>
+
+      <Link
+        to="/DonationRequester"
+        className="inline-block px-6 py-3 rounded-lg text-white font-medium"
+        style={{
+          background:
+            "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)",
+        }}
+      >
+        متابعة الطلب السابق
+      </Link>
+    </div>
+  </div>
+);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Diamond from '../components/Diamond'
 import { executeProcedure } from '../services/apiServices'
 import moneyGreen from "../public/SVGs/moneyGreen.svg"
@@ -8,6 +8,12 @@ import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PayS
 import PayComponent from "../components/PayComponent";
 import NewHeader from '../features/home/components/NewHeader.jsx'
 import headerBackground from "../../public/header backgrounds/Kafara.png"
+import {
+  cleanAmount,
+  formatAmountAsTyping,
+  parseAmountToNumber
+} from "../utils/amountUtils";
+
 const KafaraAndNozor = () => {
   const [activeTab, setActiveTab] = useState('kafara'); // 'kafara', 'nothor', or 'fedya'
   const [offices, setOffices] = useState([]);
@@ -25,6 +31,16 @@ const KafaraAndNozor = () => {
   const [loading, setLoading] = useState({ offices: true, kafaraValue: true });
   const [errors, setErrors] = useState({ offices: null, kafaraValue: null });
   
+  // Focus states for inputs
+  const [isDonationAmountFocused, setIsDonationAmountFocused] = useState(false);
+  const [isKafaraAmountFocused, setIsKafaraAmountFocused] = useState(false);
+  const [isFedyaAmountFocused, setIsFedyaAmountFocused] = useState(false);
+  
+  // Refs for inputs
+  const donationAmountRef = useRef(null);
+  const kafaraAmountRef = useRef(null);
+  const fedyaAmountRef = useRef(null);
+  
   const dispatch = useDispatch();
 
   // Get selected office name
@@ -34,11 +50,43 @@ const KafaraAndNozor = () => {
   // Validation for Pay Now button
   const isPayNowValid = selectedOffice && (
     activeTab === 'nothor' 
-      ? donationAmount && parseFloat(donationAmount) > 0
+      ? donationAmount && parseAmountToNumber(donationAmount) > 0
       : activeTab === 'kafara'
-      ? kafaraAmount && parseFloat(kafaraAmount) > 0
-      : fedyaAmount && parseFloat(fedyaAmount) > 0
+      ? kafaraAmount && parseAmountToNumber(kafaraAmount) > 0
+      : fedyaAmount && parseAmountToNumber(fedyaAmount) > 0
   );
+
+  // Get formatted total for display
+  const getFormattedTotal = (amount) => {
+    return formatAmountAsTyping(amount);
+  };
+
+  // Get display value for inputs
+  const getDisplayValue = (value, isFocused) => {
+    if (!value) return "";
+    
+    if (isFocused) {
+      // Show raw value while editing
+      return value;
+    }
+    
+    // Show formatted value when not focused
+    return formatAmountAsTyping(value);
+  };
+
+  // Focus handlers
+  const handleFocus = (ref, setFocusState) => {
+    setFocusState(true);
+    setTimeout(() => {
+      if (ref.current) {
+        ref.current.select();
+      }
+    }, 0);
+  };
+
+  const handleBlur = (setFocusState) => {
+    setFocusState(false);
+  };
 
   // Fetch offices data
   useEffect(() => {
@@ -48,8 +96,6 @@ const KafaraAndNozor = () => {
           "mdemtAbueh2oz+k6MjjaFaOfTRzNK4XQQy0TBhCaV0Y=",
           "0"
         );
-        
-        
         
         if (response && response.decrypted) {
           const data = response.decrypted;
@@ -91,8 +137,6 @@ const KafaraAndNozor = () => {
           "0"
         );
         
-        
-        
         if (response && response.decrypted) {
           const data = response.decrypted;
           
@@ -106,7 +150,6 @@ const KafaraAndNozor = () => {
               if (Array.isArray(kafaraData) && kafaraData.length > 0) {
                 const kafaraValue = kafaraData[0].KafaraValue || 0;
                 setKafaraValue(kafaraValue);
-                
                 
                 // Auto-calculate initial kafara amount
                 if (!isManualAmount) {
@@ -155,8 +198,33 @@ const KafaraAndNozor = () => {
     setSelectedOffice(e.target.value);
   };
 
+  // Handle donation amount change (for nothor)
   const handleAmountChange = (e) => {
-    setDonationAmount(e.target.value);
+    const value = e.target.value;
+    const cleanedValue = cleanAmount(value);
+    setDonationAmount(cleanedValue);
+  };
+
+  // Handle kafara amount change
+  const handleKafaraAmountChange = (e) => {
+    const value = e.target.value;
+    const cleanedValue = cleanAmount(value);
+    setKafaraAmount(cleanedValue);
+    
+    // Check if the amount is different from the calculated amount
+    const calculatedAmount = (kafaraValue * counter).toString();
+    setIsManualAmount(cleanedValue !== "" && cleanedValue !== calculatedAmount);
+  };
+
+  // Handle fedya amount change
+  const handleFedyaAmountChange = (e) => {
+    const value = e.target.value;
+    const cleanedValue = cleanAmount(value);
+    setFedyaAmount(cleanedValue);
+    
+    // Check if the amount is different from the calculated amount
+    const calculatedAmount = (kafaraValue * counter).toString();
+    setIsFedyaManualAmount(cleanedValue !== "" && cleanedValue !== calculatedAmount);
   };
 
   const handleNothorDescriptionChange = (e) => {
@@ -169,18 +237,6 @@ const KafaraAndNozor = () => {
 
   const handleFedyaDescriptionChange = (e) => {
     setFedyaDescription(e.target.value);
-  };
-
-  const handleKafaraAmountChange = (e) => {
-    const value = e.target.value;
-    setKafaraAmount(value);
-    setIsManualAmount(value !== "" && value !== (kafaraValue * counter).toString());
-  };
-
-  const handleFedyaAmountChange = (e) => {
-    const value = e.target.value;
-    setFedyaAmount(value);
-    setIsFedyaManualAmount(value !== "" && value !== (kafaraValue * counter).toString());
   };
 
   const incrementCounter = () => {
@@ -230,7 +286,7 @@ const KafaraAndNozor = () => {
         officeName={officeName}
         officeId={selectedOffice}
         serviceTypeId="2"
-        totalAmount={parseFloat(amount) || 0}
+        totalAmount={parseAmountToNumber(amount) || 0}
         currency="دينار"
         actionID={actionID}
         PaymentDesc={description}
@@ -249,7 +305,7 @@ const KafaraAndNozor = () => {
 
     return offices.map((office) => (
       <option key={office.Id} value={office.Id} className="bg-white text-black">
-        {office.OfficeName} - {office.CityName}
+        {office.OfficeName}
       </option>
     ));
   };
@@ -340,16 +396,19 @@ const KafaraAndNozor = () => {
                       alt="Money"
                     />
                     <input
-                      type="number"
-                      min="1"
-                      value={donationAmount}
+                      ref={donationAmountRef}
+                      type="text"
+                      inputMode="decimal"
+                      value={getDisplayValue(donationAmount, isDonationAmountFocused)}
                       onChange={handleAmountChange}
+                      onFocus={() => handleFocus(donationAmountRef, setIsDonationAmountFocused)}
+                      onBlur={() => handleBlur(setIsDonationAmountFocused)}
                       placeholder={
-                        selectedOffice ? "رجاء ادخال المبلغ المدفوع" : "يرجى اختيار مكتب أولاً"
+                        selectedOffice ? "رجاء ادخال المبلغ المدفوع (مثال: 1,000.50)" : "يرجى اختيار مكتب أولاً"
                       }
-                      className={`w-full pl-12 pr-3 py-3 border-2 rounded-lg text-sm md:text-base
+                      className={`w-full pl-12 pr-3 py-3 border-2 rounded-lg text-sm md:text-base text-left
                         focus:outline-none focus:ring-2 focus:ring-emerald-600
-                        placeholder:font-medium ${
+                        placeholder:font-medium placeholder:text-right ${
                           selectedOffice
                             ? "border-[#979797]"
                             : "border-gray-300 bg-gray-100"
@@ -437,12 +496,15 @@ const KafaraAndNozor = () => {
                     alt="Money"
                   />
                   <input
-                    type="number"
-                    min="1"
-                    value={kafaraAmount}
+                    ref={kafaraAmountRef}
+                    type="text"
+                    inputMode="decimal"
+                    value={getDisplayValue(kafaraAmount, isKafaraAmountFocused)}
                     onChange={handleKafaraAmountChange}
+                    onFocus={() => handleFocus(kafaraAmountRef, setIsKafaraAmountFocused)}
+                    onBlur={() => handleBlur(setIsKafaraAmountFocused)}
                     placeholder="المبلغ"
-                    className="w-full pl-12 pr-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium"
+                    className="w-full pl-12 pr-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base text-left focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium"
                   />
                   {isManualAmount && (
                     <button
@@ -454,8 +516,8 @@ const KafaraAndNozor = () => {
                   )}
                 </div>
                 {!isManualAmount && kafaraValue > 0 && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    (المبلغ المحسوب: {kafaraValue} × {counter} = {kafaraValue * counter})
+                  <p className="text-sm text-gray-600 mt-1 text-left">
+                    (المبلغ المحسوب: {formatAmountAsTyping(kafaraValue.toString())} × {counter} = {formatAmountAsTyping((kafaraValue * counter).toString())})
                   </p>
                 )}
               </div>
@@ -537,12 +599,15 @@ const KafaraAndNozor = () => {
                     alt="Money"
                   />
                   <input
-                    type="number"
-                    min="1"
-                    value={fedyaAmount}
+                    ref={fedyaAmountRef}
+                    type="text"
+                    inputMode="decimal"
+                    value={getDisplayValue(fedyaAmount, isFedyaAmountFocused)}
                     onChange={handleFedyaAmountChange}
+                    onFocus={() => handleFocus(fedyaAmountRef, setIsFedyaAmountFocused)}
+                    onBlur={() => handleBlur(setIsFedyaAmountFocused)}
                     placeholder="المبلغ"
-                    className="w-full pl-12 pr-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium"
+                    className="w-full pl-12 pr-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base text-left focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium"
                   />
                   {isFedyaManualAmount && (
                     <button
@@ -554,8 +619,8 @@ const KafaraAndNozor = () => {
                   )}
                 </div>
                 {!isFedyaManualAmount && kafaraValue > 0 && (
-                  <p className="text-sm text-gray-600 mt-1">
-                    (المبلغ المحسوب: {kafaraValue} × {counter} = {kafaraValue * counter})
+                  <p className="text-sm text-gray-600 mt-1 text-left">
+                    (المبلغ المحسوب: {formatAmountAsTyping(kafaraValue.toString())} × {counter} = {formatAmountAsTyping((kafaraValue * counter).toString())})
                   </p>
                 )}
               </div>

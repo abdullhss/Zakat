@@ -59,11 +59,7 @@ const Opportunities = ({
           collected={project.OpeningBalance}
           goal={project.WantedAmount}
           className="bg-white"
-          payNowLink={`/project?data=${JSON.stringify({
-            ...project,
-            actionID: actionID,
-            donationValue: donationValue
-          })}`}
+          payNowLink={`/project?Id=${project.Id}&actionID=${actionID}&donationValue=${donationValue}`}
           showBtn={project.AllowZakat}
         />
       ));

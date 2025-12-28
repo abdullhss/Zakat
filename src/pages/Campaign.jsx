@@ -64,7 +64,7 @@ const Campaign = () => {
 
     // Validate donation amount
     const validateDonation = (amount) => {
-        if (!amount || amount.trim() === "") {
+        if (!amount) {
             return "يرجى إدخال مبلغ التبرع";
         }
         
@@ -94,34 +94,35 @@ const Campaign = () => {
             setLoading(true);
             setFetchError("");
             
-            try {
-                // Using a generic parameter for campaigns - adjust based on your API
-                const params = `C#${campaignData.Id}#1#4`; // Assuming campaign-specific parameter
-                const response = await executeProcedure("B0/KqqIyiS3j4lbxUKXJCw==", params);
+            // try {
+            //     // Using a generic parameter for campaigns - adjust based on your API
+            //     const params = `C#${campaignData.Id}#1#4`; // Assuming campaign-specific parameter
+            //     const response = await executeProcedure("B0/KqqIyiS3j4lbxUKXJCw==", params);
+            //     // console.log(response);
+                
+            //     if (response && response.decrypted) {
+            //         const campaignsDataString = response.decrypted.CampaignsData;
+            //         let cardsData = [];
 
-                if (response && response.decrypted) {
-                    const campaignsDataString = response.decrypted.CampaignsData;
-                    let cardsData = [];
+            //         if (campaignsDataString) {
+            //             try {
+            //                 cardsData = JSON.parse(campaignsDataString);
+            //             } catch (parseError) {
+            //                 console.error("Error parsing donation cards:", parseError);
+            //                 setFetchError("خطأ في تحميل قائمة التبرعات");
+            //             }
+            //         }
 
-                    if (campaignsDataString) {
-                        try {
-                            cardsData = JSON.parse(campaignsDataString);
-                        } catch (parseError) {
-                            console.error("Error parsing donation cards:", parseError);
-                            setFetchError("خطأ في تحميل قائمة التبرعات");
-                        }
-                    }
-
-                    setDonationCards(Array.isArray(cardsData) ? cardsData : []);
-                } else {
-                    setFetchError("فشل في تحميل بيانات التبرعات");
-                }
-            } catch (error) {
-                console.error("Error fetching donation cards:", error);
-                setFetchError("حدث خطأ أثناء تحميل المشاريع المماثلة");
-            } finally {
-                setLoading(false);
-            }
+            //         setDonationCards(Array.isArray(cardsData) ? cardsData : []);
+            //     } else {
+            //         setFetchError("فشل في تحميل بيانات التبرعات");
+            //     }
+            // } catch (error) {
+            //     console.error("Error fetching donation cards:", error);
+            //     setFetchError("حدث خطأ أثناء تحميل المشاريع المماثلة");
+            // } finally {
+            //     setLoading(false);
+            // }
         };
 
         fetchDonationCards();

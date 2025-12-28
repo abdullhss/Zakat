@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Diamond from "../components/Diamond";
@@ -13,87 +13,185 @@ import { useDispatch, useSelector } from "react-redux";
 import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
 import { toast } from "react-toastify";
-import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
+import cartReducer, { setCartData } from "../features/CartSlice/CartSlice";
 import { Helmet } from "react-helmet-async";
+import {
+  cleanAmount,
+  formatAmountAsTyping,
+  parseAmountToNumber
+} from "../utils/amountUtils";
+import PropTypes from "prop-types";
+
+
 
 const Project = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const params = new URLSearchParams(location.search);
-    const rawData = params.get("data");
+    const projectId = params.get("Id");
+    const actionIDFromUrl = params.get("actionID"); // Get actionID from URL
+    const donationValueFromUrl = params.get("donationValue"); // Get donationValue from URL
+    
     const [loading, setLoading] = useState(false);
     const [donationCards, setDonationCards] = useState([]);
     const [donationError, setDonationError] = useState("");
     const [fetchError, setFetchError] = useState("");
     const [donationType, setDonationType] = useState(""); // "zakat" or "sadaqa"
-    const [oldcartData , setOldcartData] = useState([]) ; 
-    const [statisticalData , setStatisticalData] = useState(null);
+    const [oldcartData, setOldcartData] = useState([]);
+    const [statisticalData, setStatisticalData] = useState(null);
+    const [projectData, setProjectData] = useState(null); // Initialize as null
     const UserData = JSON.parse(localStorage.getItem("UserData"));
-    
-    useEffect(()=>{
-        const getOldCartData = async()=>{
-            const response = await executeProcedure("2ktPqnItdgYCI/pHmg+wmA==" ,UserData.Id)
-            setOldcartData(JSON.parse(response.decrypted.CartCount >0 ? response.decrypted.CartData : []))
-            
+
+    const [showShareModal, setShowShareModal] = React.useState(false);
+    const projectLink = window.location.href;
+
+    // Focus states and refs
+    const [isDonationAmountFocused, setIsDonationAmountFocused] = useState(false);
+    const donationAmountRef = useRef(null);
+
+    // Initialize donation amount from URL if available
+    const [donationAmount, setDonationAmount] = useState(() => {
+        if (donationValueFromUrl) {
+            return cleanAmount(donationValueFromUrl);
+        }
+        return "";
+    });
+
+    // Initialize donation type based on actionID from URL
+    useEffect(() => {
+        if (actionIDFromUrl) {
+            setDonationType(actionIDFromUrl === "1" ? "zakat" : "sadaqa");
+        }
+    }, [actionIDFromUrl]);
+
+    useEffect(() => {
+        const getOldCartData = async () => {
+            const response = await executeProcedure("2ktPqnItdgYCI/pHmg+wmA==", UserData.Id)
+            setOldcartData(JSON.parse(response.decrypted.CartCount > 0 ? response.decrypted.CartData : []))
         }
         getOldCartData()
-    },[]) 
-    console.log(oldcartData);
-    
-    // Parse project data with error handling
-    const parseProjectData = (data) => {
+    }, [])
+
+    // Fetch project data
+    const getProjectData = async () => {
+        if (!projectId) {
+            setFetchError("معرف المشروع غير موجود");
+            return;
+        }
+        
+        setLoading(true);
         try {
-            if (!data) throw new Error("No project data provided");
-            return JSON.parse(decodeURIComponent(data));
+            const response = await executeProcedure("mgF3tyEAX7qTMncxk+XtyZVXzn0IBjpERA1iZ36EvLo=", projectId);
+            console.log("Project data response:", response);
+            
+            if (response && response.decrypted && response.decrypted.ProjectsData) {
+                try {
+                    const parsedData = JSON.parse(response.decrypted.ProjectsData);
+                    if (Array.isArray(parsedData) && parsedData.length > 0) {
+                        const project = parsedData[0];
+                        
+                        // Merge actionID from URL with project data if provided
+                        const mergedData = {
+                            ...project,
+                            actionID: actionIDFromUrl ? parseInt(actionIDFromUrl) : project.actionID
+                        };
+                        
+                        setProjectData(mergedData);
+                    } else {
+                        setFetchError("بيانات المشروع غير صالحة");
+                    }
+                } catch (parseError) {
+                    console.error("Error parsing project data:", parseError);
+                    setFetchError("خطأ في تحليل بيانات المشروع");
+                }
+            } else {
+                setFetchError("فشل في تحميل بيانات المشروع");
+            }
         } catch (error) {
-            console.error("Error parsing project data:", error);
-            setFetchError("خطأ في تحميل بيانات المشروع");
-            return null;
+            console.error("Error fetching project data:", error);
+            setFetchError("حدث خطأ أثناء تحميل بيانات المشروع");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const [projectData, setProjectData] = useState(() => parseProjectData(rawData));
+    useEffect(() => {
+        getProjectData();
+    }, [projectId]);
 
     useEffect(() => {
-        const fetchsomeData = async () => {
-            const response = await executeProcedure("Pnl2I5yvrTFeVH96QlzAsUDfACCXKoNvDpsIS2YJ77E=", `${0}#${projectData.Id}`);
-            console.log(response);
-            setStatisticalData(response.decrypted)
+        if (projectData) {
+            const fetchsomeData = async () => {
+                const response = await executeProcedure("Pnl2I5yvrTFeVH96QlzAsUDfACCXKoNvDpsIS2YJ77E=", `${0}#${projectData.Id}`);
+                setStatisticalData(response.decrypted)
+                console.log("Statistical data:", response.decrypted);
+            };
+            fetchsomeData();
         }
-        fetchsomeData();
     }, [projectData]);
+
     // Calculate progress values with safety checks
     const collected = projectData ? (projectData.WantedAmount - projectData.RemainingAmount) || 0 : 0;
     const remaining = projectData ? (projectData.RemainingAmount || 0) : 0;
     const totalAmount = projectData ? (projectData.WantedAmount || 0) : 0;
     const percentage = totalAmount > 0 ? ((collected / totalAmount) * 100).toFixed(1) : 0;
-    
-    // Donation state
-    const [donationAmount, setDonationAmount] = useState(projectData.donationValue);
+
+    // Get formatted display value for donation amount
+    const getDisplayValue = () => {
+        if (!donationAmount) return "";
+
+        if (isDonationAmountFocused) {
+            // Show raw value while editing
+            return donationAmount;
+        }
+
+        // Show formatted value when not focused
+        return formatAmountAsTyping(donationAmount);
+    };
+
+    // Handle focus for donation amount input
+    const handleAmountFocus = () => {
+        setIsDonationAmountFocused(true);
+        setTimeout(() => {
+            if (donationAmountRef.current) {
+                donationAmountRef.current.select();
+            }
+        }, 0);
+    };
+
+    // Handle blur for donation amount input
+    const handleAmountBlur = () => {
+        setIsDonationAmountFocused(false);
+        // Clean and format the amount on blur
+        if (donationAmount) {
+            const cleanedValue = cleanAmount(donationAmount);
+            setDonationAmount(cleanedValue);
+        }
+    };
 
     // Check if we need to show donation type radio buttons
-    // Show radio buttons only if AllowZakat is true AND actionID is 0 (meaning it can be either)
     const showDonationTypeRadio = projectData?.AllowZakat && projectData?.actionID === 0;
 
     const handleAmountChange = (e) => {
         const value = e.target.value;
+        const cleanedValue = cleanAmount(value);
 
-        // Validate input is a positive number
-        if (value === "" || (/^\d*\.?\d*$/.test(value) && parseFloat(value) >= 0)) {
-            let numericValue = parseFloat(value);
-
-            // Check if it exceeds the remaining amount
+        // Check if it exceeds the remaining amount
+        if (projectData) {
+            const numericValue = parseAmountToNumber(cleanedValue);
             if (numericValue > projectData.RemainingAmount) {
-                numericValue = projectData.RemainingAmount;
+                // If exceeds, set to max remaining amount
+                setDonationAmount(projectData.RemainingAmount.toString());
+                setDonationError("");
+            } else {
+                setDonationAmount(cleanedValue);
+                setDonationError("");
             }
-
-            setDonationAmount(numericValue);
-            setDonationError("");
         } else {
-            setDonationError("يرجى إدخال مبلغ صحيح");
+            setDonationAmount(cleanedValue);
+            setDonationError("");
         }
     };
-
 
     const handleDonationTypeChange = (type) => {
         setDonationType(type);
@@ -103,29 +201,28 @@ const Project = () => {
     // Get the final actionID based on conditions
     const getFinalActionID = () => {
         if (!projectData) return 2; // Default to sadaqa if no project data
-        
+
         // If AllowZakat is false, always use actionID 2 (sadaqa)
         if (!projectData.AllowZakat) {
             return 2;
         }
-        
+
         // If AllowZakat is true and we have donation type selection
         if (showDonationTypeRadio) {
             return donationType === "zakat" ? 1 : 2;
         }
-        
+
         // If AllowZakat is true but no selection needed, use the project's actionID
         return projectData.actionID || 2;
     };
 
     // Validate donation amount
     const validateDonation = (amount) => {
-        
-        const numericAmount = parseFloat(amount);
+        const numericAmount = parseAmountToNumber(amount);
         if (isNaN(numericAmount)) {
             return "يرجى إدخال مبلغ صحيح";
         }
-        
+
         if (numericAmount <= 0) {
             return "يجب أن يكون مبلغ التبرع أكبر من الصفر";
         }
@@ -134,24 +231,17 @@ const Project = () => {
         if (showDonationTypeRadio && !donationType) {
             return "يرجى اختيار نوع التبرع";
         }
-        
+
         return "";
     };
 
     useEffect(() => {
-        if (rawData) {
-            const parsedData = parseProjectData(rawData);
-            setProjectData(parsedData);
-        }
-    }, [location.search]);
-
-    useEffect(() => {
         const fetchDonationCards = async () => {
             if (!projectData) return;
-            
+
             setLoading(true);
             setFetchError("");
-            
+
             try {
                 const params = `O#${projectData.SubventionType_Id}#""#1#4`;
                 const response = await executeProcedure("B0/KqqIyiS3j4lbxUKXJCw==", params);
@@ -190,10 +280,10 @@ const Project = () => {
         .slice(0, 3);
 
     const dispatch = useDispatch();
-    
+
     const handleDonateNow = () => {
         const validationError = validateDonation(donationAmount);
-        
+
         if (validationError) {
             setDonationError(validationError);
             return;
@@ -206,13 +296,13 @@ const Project = () => {
 
         // Get the final actionID based on conditions
         const finalActionID = getFinalActionID();
-        
+
         // Determine service type based on actionID
         const serviceTypeId = finalActionID === 1 ? "1" : "2"; // 1 for zakat, 2 for sadaqa
 
         // Clear any previous errors
         setDonationError("");
-        
+
         // Open payment popup
         dispatch(setShowPopup(true));
         dispatch(setPopupTitle("الدفع"));
@@ -222,13 +312,12 @@ const Project = () => {
                 officeId={projectData.Office_Id}
                 serviceTypeId={serviceTypeId}
                 SubventionType_Id={projectData.SubventionType_Id}
-                totalAmount={parseFloat(donationAmount) || 0}
+                totalAmount={parseAmountToNumber(donationAmount) || 0}
                 currency="دينار"
                 actionID={finalActionID} // Use the calculated finalActionID
                 Project_Id={projectData.Id}
                 onSuccess={() => {
                     // Handle successful donation
-                    
                     setDonationAmount(""); // Clear donation amount after success
                     setDonationType(""); // Clear donation type selection
                 }}
@@ -239,7 +328,6 @@ const Project = () => {
         ));
     };
 
-    
     const cartData = useSelector((state) => state.cart);
 
     const safeParseArray = (str) => {
@@ -254,16 +342,16 @@ const Project = () => {
     const handleAddToCart = async () => {
         const hasDuplicateProject = oldcartData.some((item, index) =>
             oldcartData.findIndex(i => i.Project_Id === item.Project_Id) !== index
-            );
+        );
 
-        if(hasDuplicateProject){
+        if (hasDuplicateProject) {
             toast.error("لا يمكن إضافة نفس المشروع أكثر من مرة إلى السلة");
-            return ;
+            return;
         }
         try {
             if (!UserData) {
-            toast.error("برجاء تسجيل الدخول أولاً");
-            return;
+                toast.error("برجاء تسجيل الدخول أولاً");
+                return;
             }
 
             const cart = cartData?.cartData ?? {};
@@ -275,30 +363,30 @@ const Project = () => {
             const projectId = projectData?.Id ?? 0;
             const subventionId = projectData?.SubventionType_Id ?? 0;
             const actionId = getFinalActionID();
-            const donation = donationAmount || 0;
+            const donation = parseAmountToNumber(donationAmount) || 0;
 
             if (!projectOfficeId) {
-            toast.error("حدث خطأ: بيانات المشروع غير مكتملة");
-            return;
+                toast.error("حدث خطأ: بيانات المشروع غير مكتملة");
+                return;
             }
 
             if (firstItemCount == 0 || firstOfficeId == projectOfficeId) {
-            const payload = `0#${firstItems?.[0]?.Id || 0}#${UserData.Id}#${actionId}#${projectId}#${projectOfficeId}#${subventionId}#${donation}##false`;
+                const payload = `0#${firstItems?.[0]?.Id || 0}#${UserData.Id}#${actionId}#${projectId}#${projectOfficeId}#${subventionId}#${donation}##false`;
 
-            const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
+                const response = await DoTransaction("R4O0YYBMjM1ZWmcw3ZuKbQ==", payload);
 
-            const handleFetchCartData = async () => {
-                const data = await executeProcedure(
-                "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
-                UserData.Id
-                );
-                dispatch(setCartData(data.decrypted));
-            };
+                const handleFetchCartData = async () => {
+                    const data = await executeProcedure(
+                        "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+                        UserData.Id
+                    );
+                    dispatch(setCartData(data.decrypted));
+                };
 
-            await handleFetchCartData();
-            toast.success("تمت الإضافة إلى السلة بنجاح");
+                await handleFetchCartData();
+                toast.success("تمت الإضافة إلى السلة بنجاح");
             } else {
-            toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
+                toast.error("يجب أن تكون جميع عناصر السلة من نفس المكتب");
             }
         } catch (error) {
             console.error("handleAddToCart error:", error);
@@ -306,27 +394,22 @@ const Project = () => {
         }
     };
 
-
     const handleSimilarDonationClick = (cardData) => {
         try {
-            const encodedData = encodeURIComponent(JSON.stringify({
-                ...cardData,
-                actionID: projectData?.actionID // Preserve actionID if available
-            }));
-            navigate(`/project?data=${encodedData}`);
+            // Navigate with new URL structure
+            navigate(`/project?Id=${cardData.Id}&actionID=${cardData.actionID || 2}&donationValue=0`);
         } catch (error) {
             console.error("Error navigating to similar donation:", error);
             setFetchError("خطأ في تحميل بيانات المشروع");
         }
     };
-    const getButtonClass = (value) =>
-    `mb-6 p-4 rounded-xl border w-full transition-all
-    ${
-        donationAmount === value
-        ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
-        : "border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
-    }`;
 
+    const getButtonClass = (value) =>
+        `mb-6 p-4 rounded-xl border w-full transition-all
+        ${donationAmount === value.toString()
+            ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
+            : "border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
+        }`;
 
     // Animation variants
     const containerVariants = {
@@ -390,10 +473,25 @@ const Project = () => {
         }
     };
 
+    // Show loading state
+    if (loading && !projectData) {
+        return (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center justify-center h-96 gap-4"
+            >
+                <div className="text-center text-gray-600 text-xl">
+                    جاري تحميل بيانات المشروع...
+                </div>
+            </motion.div>
+        );
+    }
+
     // If no project data, show error message
     if (!projectData || fetchError) {
         return (
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="flex flex-col items-center justify-center h-96 gap-4"
@@ -401,7 +499,7 @@ const Project = () => {
                 <div className="text-center text-red-500 text-xl">
                     {fetchError || "خطأ في تحميل بيانات المشروع"}
                 </div>
-                <button 
+                <button
                     onClick={() => navigate(-1)}
                     className="px-6 py-2 bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white rounded-lg hover:opacity-90 transition-opacity"
                 >
@@ -410,11 +508,11 @@ const Project = () => {
             </motion.div>
         );
     }
-    const getProjectLink = ()=>{
-        return(window.location.href);
-        
+
+    const getProjectLink = () => {
+        return window.location.href;
     }
-    getProjectLink()
+
     return (
         <>
             <Helmet>
@@ -431,7 +529,7 @@ const Project = () => {
                 <meta name="twitter:description" content={projectData.Description} />
                 <meta name="twitter:image" content={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`} />
             </Helmet>
-            <motion.div 
+            <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
@@ -443,7 +541,7 @@ const Project = () => {
                 }}
             >
                 {/* Header Section */}
-                <motion.div 
+                <motion.div
                     variants={itemVariants}
                     className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28"
                 >
@@ -455,35 +553,35 @@ const Project = () => {
 
                 {/* Main Content */}
                 <div className="flex justify-center w-full px-4 sm:px-6">
-                    <motion.div 
+                    <motion.div
                         variants={containerVariants}
                         className="w-full max-w-5xl flex flex-col lg:flex-row items-start justify-around gap-6 sm:gap-8 lg:gap-12 p-4 sm:p-6"
                     >
                         {/* Project Details Card */}
-                        <motion.div 
+                        <motion.div
                             variants={itemVariants}
                             whileHover="hover"
                             className="relative flex flex-col gap-4 sm:gap-5 px-6 sm:pl-8 sm:pr-5 py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden flex-1 w-full"
                         >
                             <img src={cardWave} className="absolute left-0" alt="wave background" />
-                            
+
                             {/* Project Image */}
-                            <motion.img 
+                            <motion.img
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5, delay: 0.2 }}
-                                src={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`} 
-                                alt={projectData.Name} 
+                                src={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`}
+                                alt={projectData.Name}
                                 className="w-full h-40 sm:h-48 object-cover rounded-lg"
                                 onError={(e) => {
                                     e.target.src = '/placeholder-image.jpg'; // Fallback image
                                     e.target.alt = 'صورة المشروع غير متوفرة';
                                 }}
                             />
-                            
+
                             <div className="flex justify-between items-start gap-4">
                                 <div className="flex flex-col justify-between flex-1">
-                                    <motion.p 
+                                    <motion.p
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.3 }}
@@ -491,7 +589,7 @@ const Project = () => {
                                     >
                                         {projectData.Name || "اسم المشروع غير متوفر"}
                                     </motion.p>
-                                    <motion.p 
+                                    <motion.p
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         transition={{ delay: 0.4 }}
@@ -500,19 +598,20 @@ const Project = () => {
                                         {projectData.Description || "لا يوجد وصف للمشروع"}
                                     </motion.p>
                                 </div>
+                                {/* copy */}
                                 <div className="flex-shrink-0">
-                                    <img src={Navigate} width={20} className="sm:w-6" alt="navigation" />
+                                    <img   onClick={() => setShowShareModal(true)} src={Navigate} width={20} className="sm:w-6" alt="navigation" />
                                 </div>
                             </div>
-                            
+
                             {/* Progress Section */}
-                            <motion.div 
+                            <motion.div
                                 variants={itemVariants}
                                 className="flex flex-col gap-3 relative z-10"
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm sm:text-base font-bold text-[#16343A] gap-2">
-                                    <span>تم جمع {collected.toLocaleString()}$</span>
-                                    <span>المتبقي {remaining.toLocaleString()}$</span>
+                                    <span>تم جمع {formatAmountAsTyping(collected.toString())}$</span>
+                                    <span>المتبقي {formatAmountAsTyping(remaining.toString())}$</span>
                                 </div>
                                 <div className="w-full h-2 sm:h-[9px] bg-gray-200 rounded-full overflow-hidden">
                                     <motion.div
@@ -527,7 +626,7 @@ const Project = () => {
                                 </span>
                             </motion.div>
 
-                            <motion.div 
+                            <motion.div
                                 variants={itemVariants}
                                 className="flex flex-col gap-2"
                             >
@@ -539,24 +638,24 @@ const Project = () => {
 
                             {/* Show current donation type if not showing radio buttons */}
                             {!showDonationTypeRadio && (
-                                <motion.div 
+                                <motion.div
                                     variants={itemVariants}
                                     className="flex flex-col gap-2"
                                 >
                                     <p className="text-base sm:text-lg font-medium">نوع التبرع</p>
                                     <p className="w-full rounded-xl text-base sm:text-lg font-medium bg-white p-2 sm:p-3">
-                                        {projectData.AllowZakat ? 
-                                            (projectData.actionID === 1 ? "زكاة" : "صدقة") 
+                                        {projectData.AllowZakat ?
+                                            (projectData.actionID === 1 ? "زكاة" : "صدقة")
                                             : "صدقة"}
                                     </p>
                                 </motion.div>
                             )}
                         </motion.div>
-                        
+
                         {/* Sidebar */}
                         <div className="flex flex-col gap-4 sm:gap-6 w-full lg:w-96">
                             {/* Donation Section */}
-                            <motion.div 
+                            <motion.div
                                 variants={itemVariants}
                                 whileHover="hover"
                                 className="px-6 sm:pl-8 sm:pr-5 font-medium py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
@@ -564,23 +663,23 @@ const Project = () => {
                                 <div className="flex items-center justify-between gap-4">
                                     <button
                                         className={getButtonClass(5)}
-                                        onClick={() => setDonationAmount(5)}
+                                        onClick={() => setDonationAmount("5")}
                                     >
-                                        5
+                                        5 د.ل
                                     </button>
 
                                     <button
                                         className={getButtonClass(10)}
-                                        onClick={() => setDonationAmount(10)}
+                                        onClick={() => setDonationAmount("10")}
                                     >
-                                        10
+                                        10 د.ل
                                     </button>
 
                                     <button
                                         className={getButtonClass(20)}
-                                        onClick={() => setDonationAmount(20)}
+                                        onClick={() => setDonationAmount("20")}
                                     >
-                                        20
+                                        20 د.ل
                                     </button>
                                 </div>
 
@@ -591,17 +690,18 @@ const Project = () => {
                                         alt="Money"
                                     />
                                     <input
-                                        type="number"
-                                        min="1"
-                                        step="0.01"
-                                        max={projectData.RemainingAmount}
-                                        value={donationAmount}
+                                        ref={donationAmountRef}
+                                        type="text"
+                                        inputMode="decimal"
+                                        value={getDisplayValue()}
                                         onChange={handleAmountChange}
-                                        placeholder="رجاء ادخال المبلغ المدفوع"
-                                        className="w-full pl-9 sm:pl-10 pr-3 py-3 border-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium border-[#979797] bg-transparent"
+                                        onFocus={handleAmountFocus}
+                                        onBlur={handleAmountBlur}
+                                        placeholder="رجاء ادخال المبلغ المدفوع (مثال: 1,000.50)"
+                                        className="w-full pl-9 sm:pl-10 pr-3 py-3 border-2 rounded-lg text-sm text-left focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium placeholder:text-right border-[#979797] bg-transparent"
                                     />
                                 </div>
-                                
+
                                 {/* Donation Type Radio Buttons - Conditionally Rendered */}
                                 {showDonationTypeRadio && (
                                     <motion.div
@@ -611,54 +711,50 @@ const Project = () => {
                                         className="mb-6 p-4 rounded-xl border border-gray-200 bg-gradient-to-l from-gray-50 to-white shadow-sm"
                                     >
                                         <p className="text-base font-semibold text-gray-800 mb-4 text-right">
-                                        اختر النوع:
+                                            اختر النوع:
                                         </p>
 
                                         <div className="grid grid-cols-2 gap-4">
-                                        {[
-                                            { label: "زكاة", value: "zakat",},
-                                            { label: "صدقة", value: "sadaqa",},
-                                        ].map(({ label, value, icon }) => (
-                                            <motion.label
-                                            key={value}
-                                            whileHover={{ scale: 1.03 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            className={`flex items-center cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${
-                                                donationType === value
-                                                ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
-                                                : "border-gray-300 bg-white hover:border-[#17433b]"
-                                            }`}
-                                            >
-                                            <div
-                                                className={`w-4 h-4 rounded-full border-2 ${
-                                                donationType === value
-                                                    ? "border-[#17433b] bg-[#17433b]"
-                                                    : "border-gray-400"
-                                                }`}
-                                            ></div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-lg">{icon}</span>
-                                                <span className="text-sm md:text-base font-medium">{label}</span>
-                                            </div>
-                                            <input
-                                                type="radio"
-                                                name="donationType"
-                                                value={value}
-                                                checked={donationType === value}
-                                                onChange={() => handleDonationTypeChange(value)}
-                                                className="hidden"
-                                            />
-                                            </motion.label>
-                                        ))}
+                                            {[
+                                                { label: "زكاة", value: "zakat", },
+                                                { label: "صدقة", value: "sadaqa", },
+                                            ].map(({ label, value, icon }) => (
+                                                <motion.label
+                                                    key={value}
+                                                    whileHover={{ scale: 1.03 }}
+                                                    whileTap={{ scale: 0.98 }}
+                                                    className={`flex items-center cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${donationType === value
+                                                        ? "border-[#17433b] bg-emerald-50 text-[#17433b] shadow-md"
+                                                        : "border-gray-300 bg-white hover:border-[#17433b]"
+                                                        }`}
+                                                >
+                                                    <div
+                                                        className={`w-4 h-4 rounded-full border-2 ${donationType === value
+                                                            ? "border-[#17433b] bg-[#17433b]"
+                                                            : "border-gray-400"
+                                                            }`}
+                                                    ></div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-lg">{icon}</span>
+                                                        <span className="text-sm md:text-base font-medium">{label}</span>
+                                                    </div>
+                                                    <input
+                                                        type="radio"
+                                                        name="donationType"
+                                                        value={value}
+                                                        checked={donationType === value}
+                                                        onChange={() => handleDonationTypeChange(value)}
+                                                        className="hidden"
+                                                    />
+                                                </motion.label>
+                                            ))}
                                         </div>
                                     </motion.div>
                                 )}
 
-                                
-
                                 {/* Donation Error Message */}
                                 {donationError && (
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ opacity: 0, y: -10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm text-center"
@@ -666,61 +762,60 @@ const Project = () => {
                                         {donationError}
                                     </motion.div>
                                 )}
-                                
+
                                 <div className="flex items-center gap-4 sm:gap-6">
-                                    <motion.button 
+                                    <motion.button
                                         whileHover="hover"
                                         whileTap="tap"
                                         onClick={handleDonateNow}
                                         disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
                                         variants={buttonHoverVariants}
-                                        className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] transition-opacity text-sm sm:text-base ${
-                                            !donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
-                                        }`}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-3 rounded-lg text-white bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] transition-opacity text-sm sm:text-base ${!donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                                            }`}
                                     >
                                         <img src={money} alt="donate icon" />
                                         ادفع الان
                                     </motion.button>
-                                    <motion.button 
+                                    <motion.button
                                         whileHover="hover"
                                         whileTap="tap"
                                         onClick={handleAddToCart}
                                         disabled={!donationAmount || donationError || (showDonationTypeRadio && !donationType)}
                                         variants={buttonHoverVariants}
                                         className={`p-2 sm:p-3 rounded-lg border border-[#16343A] text-[#16343A] transition-colors
-                                                                                    ${!donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
-                                                    }`}
+                                        ${!donationAmount || donationError || (showDonationTypeRadio && !donationType) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                                            }`}
                                     >
                                         <img src={shoppingCart} width={24} className="sm:w-8" alt="shopping cart" />
                                     </motion.button>
                                 </div>
                             </motion.div>
-                            
+
                             {/* Statistics Section */}
-                            <motion.div 
+                            <motion.div
                                 variants={itemVariants}
                                 whileHover="hover"
                                 className="px-6 sm:pl-8 sm:pr-5 py-4 sm:py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] w-full"
                             >
 
-                                    {/* Donation Operations */}
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.7 }}
-                                        className="pb-8 border-[#17343B] pr-6 sm:pr-8 text-center"
-                                    >
-                                        <div className="text-[#8E6D4C] text-base sm:text-lg mb-2 font-medium">اجمالي التبرع</div>
-                                        <div className="flex items-baseline justify-center gap-2">
+                                {/* Donation Operations */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.7 }}
+                                    className="pb-8 border-[#17343B] pr-6 sm:pr-8 text-center"
+                                >
+                                    <div className="text-[#8E6D4C] text-base sm:text-lg mb-2 font-medium">عدد مرات التبرع</div>
+                                    <div className="flex items-baseline justify-center gap-2">
                                         <span className="font-bold text-gray-800 text-lg sm:text-xl">
-                                        {statisticalData?.PaidAmount ?? "جاري التحميل..."}
+                                            {statisticalData?.PaidAmount ? formatAmountAsTyping(statisticalData.PaidCount.toString()) : "جاري التحميل..."}
                                         </span>
-                                            <span className="text-[#7B7B7B] text-sm sm:text-base">د.ل</span>
-                                        </div>
-                                    </motion.div>
+                                        {/* <span className="text-[#7B7B7B] text-sm sm:text-base">د.ل</span> */}
+                                    </div>
+                                </motion.div>
 
                                 {/* Divider */}
-                                <motion.div 
+                                <motion.div
                                     initial={{ scaleX: 0 }}
                                     animate={{ scaleX: 1 }}
                                     transition={{ delay: 0.8 }}
@@ -728,16 +823,16 @@ const Project = () => {
                                 />
 
                                 {/* Bottom Statistics Section */}
-                                <motion.div 
+                                <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.9 }}
-                                    className="text-center" 
+                                    className="text-center"
                                     dir="rtl"
                                 >
                                     <div className="text-amber-700 text-lg sm:text-xl mb-2 sm:mb-3 font-semibold">عدد المستفيدين</div>
                                     <div className="text-lg sm:text-xl font-bold text-gray-800">
-                                    {statisticalData?.beneficiariesCount ?? "جاري التحميل..."}
+                                        {statisticalData?.beneficiariesCount ?? "جاري التحميل..."}
                                     </div>
                                 </motion.div>
                             </motion.div>
@@ -746,7 +841,7 @@ const Project = () => {
                 </div>
 
                 {/* Similar Donations Section */}
-                <motion.div 
+                <motion.div
                     variants={itemVariants}
                     className="flex flex-col gap-8 px-4 "
                 >
@@ -759,7 +854,7 @@ const Project = () => {
 
                     {/* Error Message for Donation Cards */}
                     {fetchError && (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center"
@@ -789,7 +884,7 @@ const Project = () => {
                                         collected={item.WantedAmount - item.RemainingAmount}
                                         goal={item.WantedAmount}
                                         className="min-w-[320px]"
-                                        payNowLink={`/project?data=${encodeURIComponent(JSON.stringify({ ...item, actionID: projectData.actionID }))}`}
+                                        payNowLink={`/project?Id=${item.Id}&actionID=${projectData.actionID}&donationValue=0`}
                                     />
                                 </div>
                             ))}
@@ -804,14 +899,99 @@ const Project = () => {
                         )
                     )}
                 </motion.div>
-                
 
-            <div className="rightBow"></div>
-            <div className="leftBow"></div> 
+                <div className="rightBow"></div>
+                <div className="leftBow"></div>
             </motion.div>
-        </>
+            <ShareProjectModal
+                isOpen={showShareModal}
+                onClose={() => setShowShareModal(false)}
+                projectLink={projectLink}
+            />
 
+        </>
     );
 };
 
 export default Project;
+
+
+
+const ShareProjectModal = ({ isOpen, onClose, projectLink }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999] backdrop-blur-sm animate-fadeIn">
+      <div className="bg-white w-[90%] max-w-md rounded-xl shadow-xl p-6 animate-slideUp">
+
+        <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">
+          مشاركة المشروع
+        </h2>
+
+        <p className="text-gray-600 text-center mb-3">
+          يمكنك نسخ رابط المشروع لمشاركته مع الآخرين
+        </p>
+
+        {/* Copy */}
+        <div className="flex gap-2 mt-4">
+          <input
+            type="text"
+            value={projectLink}
+            readOnly
+            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-gray-700 bg-gray-100"
+          />
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(projectLink);
+              toast.success("تم نسخ الرابط!");
+            }}
+            className="bg-[#18383D] text-white px-4 py-2 rounded-lg hover:bg-[#24645E] transition"
+          >
+            نسخ
+          </button>
+        </div>
+
+        {/* Social */}
+        <div className="flex items-center justify-center gap-4 mt-4 mb-4">
+          {/* Twitter */}
+          <img
+            onClick={() => {
+              const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                "تقدر تشوف مشروع التبرع من هنا:"
+              )}&url=${encodeURIComponent(projectLink)}`;
+              window.open(twitterShareUrl, "_blank");
+            }}
+            src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg"
+            className="w-8 h-8 cursor-pointer hover:scale-110 transition"
+          />
+
+          {/* WhatsApp */}
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+            className="w-10 h-10 cursor-pointer hover:scale-110 transition"
+            onClick={() =>
+              window.open(
+                `https://wa.me/?text=${encodeURIComponent(
+                  "أشاركك هذا المشروع: " + projectLink
+                )}`,
+                "_blank"
+              )
+            }
+          />
+        </div>
+
+        <button
+          onClick={onClose}
+          className="w-full py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition text-gray-800 font-semibold"
+        >
+          إغلاق
+        </button>
+      </div>
+    </div>
+  );
+};
+ShareProjectModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  projectLink: PropTypes.string.isRequired,
+};

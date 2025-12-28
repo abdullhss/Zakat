@@ -179,7 +179,7 @@ const UrgentProjects = () => {
                   goal={card.WantedAmount}
                   image={`https://framework.md-license.com:8093/ZakatImages/${card.PhotoName}.jpg`}
                   title={card.Name}
-                  payNowLink={`/project?data=${JSON.stringify({ ...card, actionID: 0 })}`}
+                  payNowLink={`/project?Id=${card.Id}&actionID=${0}`}
                   showBtn={card.AllowZakat}
                 />
               ))

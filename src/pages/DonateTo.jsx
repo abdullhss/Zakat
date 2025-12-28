@@ -100,12 +100,14 @@ const DonateTo = () => {
       try {
         setLoading(prev => ({ ...prev, subventionTypes: true }));
         
-        const params = `${selectedOffice}#0#z#1#100`;
+        const params = `${selectedOffice}#0#s#0#1#100`;
         
         const response = await executeProcedure(
           "phjR2bFDp5o0FyA7euBbsp/Ict4BDd2zHhHDfPlrwnk=",
           params
         );
+        console.log(response);
+        
         
         if (response && response.decrypted) {
           const data = response.decrypted;

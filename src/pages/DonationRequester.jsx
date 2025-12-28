@@ -78,7 +78,7 @@ const DonationRequester = () => {
                         
                     } catch (error) {
                         console.error('Error parsing donations data:', error);
-                        setError('لا يوجد طلبات معلقة');
+                        setError(' لا توجد طلبات في هذا القسم');
                         setDonationsData([]);
                     }
                 } else {

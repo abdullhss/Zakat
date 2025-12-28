@@ -397,7 +397,7 @@ const Sacrifice = () => {
                   <option value="">اختر المكتب</option>
                   {filteredOffices.map((office) => (
                     <option key={office.Id} value={office.Id}>
-                      {office.OfficeName} - {office.Address}
+                      {office.OfficeName}
                     </option>
                   ))}
                 </select>

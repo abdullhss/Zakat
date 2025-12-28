@@ -16,12 +16,22 @@ import { toast } from "react-toastify";
 // Validation schema using Zod
 const signupSchema = z.object({
   name: z
-    .string()
-    .min(1, "الاسم مطلوب")
-    .refine((val) => {
-      const words = val.trim().split(/\s+/);
-      return words.length === 4 && words.every(word => word.length >= 2);
-    }, "الاسم يجب أن يتكون من 4 كلمات بمسافات بينها"),
+  .string()
+  .min(1, "الاسم مطلوب")
+  .refine((val) => {
+    const trimmed = val.trim();
+
+    const arabicOnlyRegex = /^[\u0600-\u06FF\s]+$/;
+    if (!arabicOnlyRegex.test(trimmed)) return false;
+
+    const words = trimmed.split(/\s+/);
+
+    if (words.length !== 4) return false;
+
+    return words.every(word => word.length >= 2);
+  }, {
+    message: "الاسم يجب أن يكون رباعي ويتكون من حروف عربية فقط (كل اسم لا يقل عن حرفين)",
+  }),
   phone: z
     .string()
     .min(1, "رقم الهاتف مطلوب")

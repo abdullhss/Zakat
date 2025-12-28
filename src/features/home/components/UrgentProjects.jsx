@@ -152,23 +152,7 @@ const UrgentProjects = ({ data }) => {
                     goal={item.WantedAmount}
                     className="w-[400px]"
                     showBtn={item.AllowZakat}
-                    payNowLink={`/project?data=${encodeURIComponent(JSON.stringify({ 
-                    Id: item.Id,
-                    Name: item.Name,
-                    Description: item.Description,
-                    SubventionType_Id: item.SubventionType_Id,
-                    WantedAmount: item.WantedAmount,
-                    OpeningBalance: item.OpeningBalance,
-                    RemainingAmount: item.RemainingAmount,
-                    AllowZakat: item.AllowZakat,
-                    Importance_Id: item.Importance_Id,
-                    Office_Id: item.Office_Id,
-                    IsActive: item.IsActive,
-                    PhotoName: item.PhotoName,
-                    SubventionTypeName: item.SubventionTypeName,
-                    OfficeName: item.OfficeName,
-                    actionID: 0
-                    }))}`}
+                    payNowLink={`/project?Id=${item.Id}&actionID=${0}`}
                 />
                 </div>
             );

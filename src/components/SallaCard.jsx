@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import cardWave from "../public/SVGs/cardWave.svg";
 import { Trash2 } from "lucide-react";
 import money from "../public/SVGs/moneyGreen.svg";
+import { Link } from "react-router-dom";
 const SallaCard = ({
   image,
   title,
@@ -11,7 +12,8 @@ const SallaCard = ({
   goal,
   className,
   price,
-  onDelete
+  onDelete,
+  payNowLink
 }) => {
   const remaining = goal - collected;
   const percentage = Math.min(Math.round((collected / goal) * 100), 100);
@@ -36,7 +38,7 @@ const SallaCard = ({
                 />
                 )}
                 <div className="flex flex-col justify-center gap-2">
-                <h2 className="text-lg font-bold">{title}</h2>
+                <Link className="text-lg font-bold underline underline-offset-2" to={payNowLink}>{title}</Link>
                 <span className="text text-gray-500">{description}</span>
                 </div>
             </div>
@@ -69,7 +71,7 @@ const SallaCard = ({
         {/* Buttons (تحت خالص) */}
             <div className=" w-full bg-transparent py-2 px-4 font-bold border border-[#979797] rounded-lg flex items-center gap-4 relative z-10 mt-auto">
                 <img className="absolute left-3" src={money} width={30} />
-                {price}
+                {Number(price).toLocaleString()}
             </div>
     </div>
   );
@@ -84,6 +86,7 @@ SallaCard.propTypes = {
   price: PropTypes.number.isRequired,
   onDelete:PropTypes.any , 
   className: PropTypes.string,
+  payNowLink:PropTypes.string
 };
 
 export default SallaCard;

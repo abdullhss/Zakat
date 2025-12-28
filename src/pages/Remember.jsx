@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { DoTransaction, executeProcedure } from '../services/apiServices';
 import { toast } from 'react-toastify';
-import { Calendar, Clock, Bell, MessageSquare, Phone, Trash2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Calendar, Clock, Bell, MessageSquare, Phone, Trash2, Edit, Save, X, ChevronRight, ChevronLeft } from 'lucide-react';
 
 const Remember = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +12,9 @@ const Remember = () => {
     notificationType: 'N'
   });
   
+  const [editingId, setEditingId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  
   const userData = localStorage.getItem("UserData");
   const userId = JSON.parse(userData).Id;
   
@@ -20,6 +23,7 @@ const Remember = () => {
   const [totalRemindersCount, setTotalRemindersCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingReminders, setLoadingReminders] = useState(false);
+  const [loadingAction, setLoadingAction] = useState(false);
   const itemsPerPage = 3;
   const totalPages = Math.ceil(totalRemindersCount / itemsPerPage);
 
@@ -48,9 +52,6 @@ const Remember = () => {
         "EHJUSddT77wRe5BM+zwUjw==",
         `${userId}#${startfrom + 1}#${itemsPerPage}`
       );
-      console.log(`${userId}#${startfrom + 1}#${itemsPerPage}`);
-      
-      console.log(response);
       
       if (response && response.decrypted) {
         const count = Number(JSON.parse(response.decrypted.SendToMeCount));
@@ -101,9 +102,61 @@ const Remember = () => {
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Function to handle edit reminder
+  const handleEditReminder = (reminder) => {
+    setIsEditing(true);
+    setEditingId(reminder.Id);
     
+    // Parse the SendDate string to get date and time
+    const sendDate = new Date(reminder.SendDate);
+    const year = sendDate.getFullYear();
+    const month = String(sendDate.getMonth() + 1).padStart(2, '0');
+    const day = String(sendDate.getDate()).padStart(2, '0');
+    const hours = String(sendDate.getHours()).padStart(2, '0');
+    const minutes = String(sendDate.getMinutes()).padStart(2, '0');
+    
+    setFormData({
+      text: reminder.SendMessage,
+      date: `${year}-${month}-${day}`,
+      time: `${hours}:${minutes}`,
+      notificationType: reminder.SendType
+    });
+  };
+
+  // Function to cancel edit
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditingId(null);
+    resetForm();
+  };
+
+  // Function to delete reminder
+  const handleDeleteReminder = async (reminderId) => {
+    try {
+      setLoadingAction(true);
+      const response = await DoTransaction(
+        "2dGct9IfGTg/fXhktm/Huw==",
+        `${reminderId}#${userId}#${getCurrentFormattedDateTime()}#${getCurrentFormattedDateTime()}#${formData.text}#${formData.notificationType}`,
+        2 // Delete action
+      );
+      
+      if (response.success == 200) {
+        toast.success("تم حذف التذكير بنجاح");
+        // Refresh the list
+        fetchOldReminders(currentPage);
+      } else {
+        toast.error("فشل في حذف التذكير");
+      }
+    } catch (error) {
+      console.error("Error deleting reminder:", error);
+      toast.error("حدث خطأ أثناء حذف التذكير");
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  // Function to update reminder
+  const handleUpdateReminder = async () => {
     // Validate that selected date/time is not in the past
     const selectedDateTime = new Date(`${formData.date}T${formData.time}`);
     const currentDateTime = new Date();
@@ -112,29 +165,97 @@ const Remember = () => {
       toast.error("لا يمكن اختيار تاريخ أو وقت مضى. الرجاء اختيار وقت مستقبلي");
       return;
     }
-    
-    const formattedData = {
-      ...formData,
-      datetime: formatDateTime(formData.date, formData.time)
-    };
-    
-    console.log("Form submitted:", formattedData);
-    const response = await DoTransaction("2dGct9IfGTg/fXhktm/Huw==", 
-      `0#${userId}#${getCurrentFormattedDateTime()}#${formattedData.datetime}#${formattedData.text}#${formattedData.notificationType}`
-    );
-    
-    if(response.success == 200){
-      toast.success("تم إنشاء التذكير بنجاح");
-      // Reset form
-      setFormData({
-        text: '',
-        date: '',
-        time: '',
-        notificationType: 'N'
-      });
-      // Refresh old reminders list
-      fetchOldReminders(currentPage);
+
+    try {
+      setLoadingAction(true);
+      const formattedData = {
+        ...formData,
+        datetime: formatDateTime(formData.date, formData.time)
+      };
+      
+      const response = await DoTransaction(
+        "2dGct9IfGTg/fXhktm/Huw==",
+        `${editingId}#${userId}#${getCurrentFormattedDateTime()}#${formattedData.datetime}#${formattedData.text}#${formattedData.notificationType}`,
+        1 // Edit action
+      );
+      
+      if (response.success == 200) {
+        toast.success("تم تحديث التذكير بنجاح");
+        // Reset form and exit edit mode
+        handleCancelEdit();
+        // Refresh the list
+        fetchOldReminders(currentPage);
+      } else {
+        toast.error("فشل في تحديث التذكير");
+      }
+    } catch (error) {
+      console.error("Error updating reminder:", error);
+      toast.error("حدث خطأ أثناء تحديث التذكير");
+    } finally {
+      setLoadingAction(false);
     }
+  };
+
+  // Function to add new reminder
+  const handleAddReminder = async () => {
+    // Validate that selected date/time is not in the past
+    const selectedDateTime = new Date(`${formData.date}T${formData.time}`);
+    const currentDateTime = new Date();
+    
+    if (selectedDateTime <= currentDateTime) {
+      toast.error("لا يمكن اختيار تاريخ أو وقت مضى. الرجاء اختيار وقت مستقبلي");
+      return;
+    }
+
+    try {
+      setLoadingAction(true);
+      const formattedData = {
+        ...formData,
+        datetime: formatDateTime(formData.date, formData.time)
+      };
+      
+      const response = await DoTransaction(
+        "2dGct9IfGTg/fXhktm/Huw==",
+        `0#${userId}#${getCurrentFormattedDateTime()}#${formattedData.datetime}#${formattedData.text}#${formattedData.notificationType}`,
+        0 // Add action
+      );
+      
+      if (response.success == 200) {
+        toast.success("تم إنشاء التذكير بنجاح");
+        // Reset form
+        resetForm();
+        // Refresh old reminders list
+        fetchOldReminders(currentPage);
+      } else {
+        toast.error("فشل في إنشاء التذكير");
+      }
+    } catch (error) {
+      console.error("Error creating reminder:", error);
+      toast.error("حدث خطأ أثناء إنشاء التذكير");
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  // Main submit handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (isEditing) {
+      await handleUpdateReminder();
+    } else {
+      await handleAddReminder();
+    }
+  };
+
+  // Reset form function
+  const resetForm = () => {
+    setFormData({
+      text: '',
+      date: '',
+      time: '',
+      notificationType: 'N'
+    });
   };
 
   const handlePageChange = (pageNumber) => {
@@ -220,10 +341,16 @@ const Remember = () => {
         >
           <h1 className="text-4xl font-bold text-gray-800 mb-2">التذكيرات</h1>
           <p className="text-gray-600">أنشئ تذكيرات جديدة واستعرض التذكيرات السابقة</p>
+          {isEditing && (
+            <div className="mt-4 bg-yellow-100 border border-yellow-300 text-yellow-800 px-4 py-2 rounded-lg inline-flex items-center space-x-2 space-x-reverse">
+              <Edit className="w-4 h-4" />
+              <span>وضع التعديل - قم بتعديل التذكير ثم انقر على تحديث التذكير</span>
+            </div>
+          )}
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Create New Reminder */}
+          {/* Left Column - Create/Edit Reminder */}
           <motion.div
             initial="hidden"
             animate="visible"
@@ -235,7 +362,7 @@ const Remember = () => {
                 variants={itemVariants}
                 className="text-2xl font-bold text-center text-gray-800 mb-6"
               >
-                إنشاء تذكير جديد
+                {isEditing ? 'تعديل التذكير' : 'إنشاء تذكير جديد'}
               </motion.h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -343,23 +470,54 @@ const Remember = () => {
                   </div>
                 </motion.div>
 
-                {/* Submit Button */}
+                {/* Submit/Cancel Buttons */}
                 <motion.div variants={itemVariants} className="pt-4">
-                  <motion.button
-                    type="submit"
-                    variants={buttonVariants}
-                    initial="initial"
-                    whileHover={isFormValid ? "hover" : "initial"}
-                    whileTap={isFormValid ? "tap" : "initial"}
-                    disabled={!isFormValid}
-                    className={`w-full py-4 px-6 rounded-lg text-white font-semibold text-lg bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] transform transition-all duration-300 shadow-lg ${
-                      isFormValid 
-                        ? 'hover:shadow-xl cursor-pointer' 
-                        : 'opacity-50 cursor-not-allowed hover:shadow-lg'
-                    }`}
-                  >
-                    إنشاء التذكير
-                  </motion.button>
+                  <div className="flex space-x-4 space-x-reverse">
+                    {isEditing && (
+                      <motion.button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        variants={buttonVariants}
+                        initial="initial"
+                        whileHover="hover"
+                        whileTap="tap"
+                        className="flex-1 py-4 px-6 rounded-lg text-white font-semibold text-lg bg-gradient-to-l from-gray-600 to-gray-700 transform transition-all duration-300 shadow-lg hover:shadow-xl"
+                      >
+                        <div className="flex items-center justify-center space-x-2 space-x-reverse">
+                          <X className="w-5 h-5" />
+                          <span>إلغاء</span>
+                        </div>
+                      </motion.button>
+                    )}
+                    
+                    <motion.button
+                      type="submit"
+                      variants={buttonVariants}
+                      initial="initial"
+                      whileHover={isFormValid ? "hover" : "initial"}
+                      whileTap={isFormValid ? "tap" : "initial"}
+                      disabled={!isFormValid || loadingAction}
+                      className={`flex-1 py-4 px-6 rounded-lg text-white font-semibold text-lg bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] transform transition-all duration-300 shadow-lg ${
+                        isFormValid && !loadingAction
+                          ? 'hover:shadow-xl cursor-pointer' 
+                          : 'opacity-50 cursor-not-allowed hover:shadow-lg'
+                      }`}
+                    >
+                      {loadingAction ? (
+                        <div className="flex items-center justify-center space-x-2 space-x-reverse">
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                          <span>جاري المعالجة...</span>
+                        </div>
+                      ) : isEditing ? (
+                        <div className="flex items-center justify-center space-x-2 space-x-reverse">
+                          <Save className="w-5 h-5" />
+                          <span>تحديث التذكير</span>
+                        </div>
+                      ) : (
+                        'إنشاء التذكير'
+                      )}
+                    </motion.button>
+                  </div>
                 </motion.div>
               </form>
             </div>
@@ -401,7 +559,11 @@ const Remember = () => {
                           key={reminder.Id}
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className={`border rounded-lg p-4 transition-all ${
+                            editingId === reminder.Id 
+                              ? 'border-[#18383D] bg-blue-50' 
+                              : 'border-gray-200 hover:shadow-md'
+                          }`}
                         >
                           <div className="flex justify-between items-start mb-3">
                             <div className="flex items-center space-x-2 space-x-reverse">
@@ -410,13 +572,30 @@ const Remember = () => {
                               </div>
                               <span className="text-sm font-medium">{typeInfo.label}</span>
                             </div>
-                            {/* <button
-                              onClick={() => handleDeleteReminder(reminder.Id)}
-                              className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
-                              title="حذف التذكير"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button> */}
+                            
+                            <div className="flex items-center space-x-2 space-x-reverse">
+                              <button
+                                onClick={() => handleEditReminder(reminder)}
+                                className={`p-2 rounded-lg transition-colors ${
+                                  editingId === reminder.Id
+                                    ? 'bg-blue-100 text-blue-600'
+                                    : 'text-blue-500 hover:text-blue-700 hover:bg-blue-50'
+                                }`}
+                                title="تعديل التذكير"
+                                disabled={loadingAction}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              
+                              <button
+                                onClick={() => handleDeleteReminder(reminder.Id)}
+                                className="p-2 rounded-lg text-red-500 hover:text-red-700 hover:bg-red-50 transition-colors"
+                                title="حذف التذكير"
+                                disabled={loadingAction}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           </div>
                           
                           <p className="text-gray-800 mb-3 text-right">{reminder.SendMessage}</p>
@@ -431,6 +610,15 @@ const Remember = () => {
                               <span>موعد الإرسال: {formatDateForDisplay(reminder.SendDate)}</span>
                             </div>
                           </div>
+                          
+                          {editingId === reminder.Id && (
+                            <div className="mt-3 pt-3 border-t border-blue-200">
+                              <div className="flex items-center space-x-2 space-x-reverse text-blue-600 text-sm">
+                                <Edit className="w-3 h-3" />
+                                <span>جاري تعديل هذا التذكير</span>
+                              </div>
+                            </div>
+                          )}
                         </motion.div>
                       );
                     })}
@@ -450,9 +638,9 @@ const Remember = () => {
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
+                            disabled={currentPage === 1 || loadingAction}
                             className={`p-2 rounded-lg border ${
-                              currentPage === 1
+                              currentPage === 1 || loadingAction
                                 ? 'opacity-50 cursor-not-allowed text-gray-400'
                                 : 'hover:bg-gray-50 text-gray-700'
                             }`}
@@ -476,6 +664,7 @@ const Remember = () => {
                               <button
                                 key={pageNum}
                                 onClick={() => handlePageChange(pageNum)}
+                                disabled={loadingAction}
                                 className={`w-10 h-10 rounded-lg ${
                                   currentPage === pageNum
                                     ? 'bg-[#18383D] text-white'
@@ -489,9 +678,9 @@ const Remember = () => {
                           
                           <button
                             onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
+                            disabled={currentPage === totalPages || loadingAction}
                             className={`p-2 rounded-lg border ${
-                              currentPage === totalPages
+                              currentPage === totalPages || loadingAction
                                 ? 'opacity-50 cursor-not-allowed text-gray-400'
                                 : 'hover:bg-gray-50 text-gray-700'
                             }`}

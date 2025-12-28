@@ -297,7 +297,7 @@ const OpportunitiesTab = ({Officeid}) => {
                                         description={project.Description}
                                         image={`https://framework.md-license.com:8093/ZakatImages/${project.PhotoName}.jpg`}
                                         title={project.Name}
-                                        payNowLink={`/project?data=${JSON.stringify({...project , actionID:0})}`}
+                                        payNowLink={`/project?Id=${project.Id}&actionID=${0}`}
                                     />
                                 </motion.div>
                             ))}
