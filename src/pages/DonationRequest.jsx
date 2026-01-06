@@ -5,7 +5,7 @@ import money from "../public/SVGs/moneyGreen.svg"
 import phone from "../public/SVGs/phone.svg"
 import { DoTransaction, executeProcedure } from '../services/apiServices'
 import { toast } from 'react-toastify'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { MapContainer, Marker, Popup, TileLayer, useMapEvents , useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import PropTypes from "prop-types";
@@ -31,7 +31,7 @@ const DonationRequest = () => {
   const [errors, setErrors] = useState({ offices: null, filters: null })
   const [canSendRequest , setCanSendRequest] = useState(false)
   const userData = JSON.parse(localStorage.getItem("UserData"));
-
+  const navigate = useNavigate() ; 
   // Form state
   const [formData, setFormData] = useState({
     name: userData.UserName,
@@ -271,6 +271,7 @@ const DonationRequest = () => {
         setMarkerPosition([30.0444, 31.2357])
         setPosition([30.0444, 31.2357])
         toast.success("تم انشاء الطلب بنجاح")
+        navigate(-1)
       }
     }
   }

@@ -24,11 +24,17 @@ const DonationCard = ({
   const [showShareModal, setShowShareModal] = React.useState(false);
   const projectLink = `${window.location.origin}${payNowLink}`;
 
+  const truncateText = (text, maxLength = 150) => {
+  if (!text) return "";
+  return text.length > maxLength
+    ? text.slice(0, maxLength) + "... المزيد"
+    : text;
+};
+
+
   return (
     <div
-      className={`relative flex flex-col justify-between gap-5 pl-8 pr-5 py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden ${className}`}
-      style={{ minHeight: "370px" }}
-    >
+      className={`relative flex flex-col justify-between gap-5 pl-8 pr-5 py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden w-[500px] h-[430px] ${className}`}    >
       {/* waves */}
       <img src={cardWave} className="absolute left-0 top-0" />
 
@@ -45,7 +51,7 @@ const DonationCard = ({
             )}
             <div className="flex flex-col justify-center gap-2">
               {/* زر تقبل الزكاة */}
-              {showBtn && (
+              {showBtn ? (
                 <button
                   className="w-fit flex items-center gap-2 text-white font-semibold py-2 px-5 rounded-lg shadow-md"
                   style={{
@@ -54,11 +60,24 @@ const DonationCard = ({
                   }}
                 >
                   <img src={handWithMoney} alt="زكاة" className="w-6 h-6" />
-                  <span>تقبل الزكاة</span>
+                  <span>تقبل  الصدقة و الزكاة</span>
+                </button>
+              ): (
+                <button
+                  className="w-fit flex items-center gap-2 text-white font-semibold py-2 px-5 rounded-lg shadow-md"
+                  style={{
+                    background:
+                      "linear-gradient(90deg , #1B3F45 0% , #2B5E61 50% , #3A8D84 100%)",
+                  }}
+                >
+                  <img src={handWithMoney} alt="زكاة" className="w-6 h-6" />
+                  <span>تقبل الصدقة</span>
                 </button>
               )}
               <h2 className="text-lg font-bold">{title}</h2>
-              <span className="text text-gray-500">{description}</span>
+              <span className="text text-gray-500">
+                {truncateText(description, 50)}
+              </span>
               
             </div>
           </div>

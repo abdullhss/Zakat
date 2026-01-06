@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import logoImage from '../../public/LogoWhite.png';
 import { Link } from 'react-router-dom';
 import { executeProcedure } from '../services/apiServices';
-
+import { FaFacebook, FaInstagram } from "react-icons/fa"
 const InfoModal = ({ isOpen, onClose, title, content }) => {
   if (!isOpen) return null;
 
@@ -110,7 +110,8 @@ const Footer = () => {
 
   // Extract policy data from the array
   const policyData = polices && polices[0] ? polices[0] : null;
-
+  console.log(contactData);
+  
   return (
     <>
       <footer 
@@ -169,9 +170,38 @@ const Footer = () => {
                     {contactData?.WebSite ?? "جاري التحميل..."}
                   </a>
                 </p>
+
+                <div className='flex items-center gap-2'>
+                  {/* فيسبوك */}
+                  {contactData?.FaceBook && (
+                    <a
+                      href={contactData.FaceBook.startsWith("http")
+                        ? contactData.FaceBook
+                        : `https://${contactData.FaceBook}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center space-x-2 hover:text-blue-600"
+                    >
+                      <FaFacebook size={18} />
+                    </a>
+                  )}
+
+                  {/* انستجرام */}
+                  {contactData?.Instegram && (
+                    <a
+                      href={contactData.Instegram.startsWith("http")
+                        ? contactData.Instegram
+                        : `https://${contactData.Instegram}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center space-x-2 hover:text-pink-500"
+                    >
+                      <FaInstagram size={18} />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
-
             {/* Company Section */}
             <div className='col-span-2'>
               <h3 className="text-lg font-semibold mb-4">الشركة</h3>

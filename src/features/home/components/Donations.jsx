@@ -153,6 +153,7 @@ const Donations = ({ data }) => {
                 className="min-w-[320px]"
                 showBtn={item.AllowZakat}
                 payNowLink={`/project?Id=${item.Id}&actionID=${0}`}
+                OfficeName={item.OfficeName}
 
               />
             </div>

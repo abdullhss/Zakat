@@ -111,6 +111,7 @@ const CreateCampaign = () => {
   const isFormValid = () => {
     return (
       campaignData.description.trim() !== "" &&
+      campaignData.description.length <= 500 &&
       campaignData.name.trim() !== "" &&
       campaignData.targetAmount.trim() !== "" &&
       campaignData.type.trim() !== "" &&
@@ -123,6 +124,10 @@ const CreateCampaign = () => {
     e.preventDefault();
     
     // Validate form data
+    if (campaignData.description.length > 500) {
+      toast.error("وصف الحملة يجب أن يكون أقل من 500 حرف");
+      return;
+    }
     if (!isFormValid()) {
       return;
     }
@@ -239,9 +244,13 @@ const CreateCampaign = () => {
             value={campaignData.description}
             onChange={handleInputChange}
             placeholder="أدخل وصف الحملة..."
+            maxLength={500}
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#17343B] focus:border-transparent"
             required
           />
+          <p className="text-sm text-gray-500 mt-1">
+            {campaignData.description.length} / 500 حرف
+          </p>
         </div>
 
         {/* اسم الحملة (Campaign Name) */}

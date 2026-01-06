@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import PayZakat from '../components/Zakat page/PayZakat'
 import Opportunities from '../components/Zakat page/Opportunities'
 import { executeProcedure } from "../services/apiServices";
-
+import NewHeader from '../features/home/components/NewHeader';
+import headerBackground from "../../public/header backgrounds/Zakat.png"
 const Zakat = () => {
   const [offices, setOffices] = useState([]);
   const [zakatTypes, setZakatTypes] = useState([]);
@@ -236,6 +237,11 @@ const Zakat = () => {
             backgroundSize: "auto",
           }}
         >
+          
+          <div className='mt-20'>
+            <NewHeader backgroundImage={headerBackground}/>
+          </div>
+          
           <PayZakat 
             offices={offices}
             zakatTypes={zakatTypes}
