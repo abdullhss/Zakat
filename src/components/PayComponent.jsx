@@ -404,7 +404,7 @@ function formatAmount(amount) {
       try {
         const response = await executeProcedure(
           "ImyBmglW7DWznCguP6on2NPvg+wEyBZypFCDrNeFKn0MOCivVpSW2QdNIPSDoSko",
-          "0"
+          actionID == 1 ? 1 : 2 
         );
         const internationalData = JSON.parse(response?.decrypted?.InternationalBankAccountsData || "[]");
         setInternationalBankAccountsData(internationalData);
@@ -444,7 +444,7 @@ function formatAmount(amount) {
     }
     else{
         const fetchZemaAccounts = async ()=>{
-          const params = `0`;
+          const params = `1`;
             const response = await executeProcedure(
               "NJ4Pn13/Fmu75bylIUDbD5FLwUl6QiMGGZ0Okh5MPas=",
               params
