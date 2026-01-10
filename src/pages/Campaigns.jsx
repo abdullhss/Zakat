@@ -20,7 +20,8 @@ const Campaigns = () => {
     const [donationTotalPages, setDonationTotalPages] = useState(0);
     const [donationCampaigns, setDonationCampaigns] = useState([]);
     const [donationTotalCount, setDonationTotalCount] = useState(0);
-
+    console.log(donationCampaigns);
+    
     // Pagination states for my campaigns
     const [myCampaignsCurrentPage, setMyCampaignsCurrentPage] = useState(1);
     const [myCampaignsTotalPages, setMyCampaignsTotalPages] = useState(0);

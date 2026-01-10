@@ -51,12 +51,13 @@ const NewsDetails = () => {
           transition={{ duration: 0.5 }}
         >
           <NewsCard
-            image={`https://framework.md-license.com:8093/ZakatImages/${newsItem.NewsMainPhotoName}${newsItem.AttachmentFileExt}`}
+            image={`https://framework.md-license.com:8093/ZakatImages/${newsItem.NewsMainPhotoName}.jpg`}
             title={newsItem.NewsMainTitle}
             descirption={newsItem.NewsContents}
             canBeBig={true}
             newsPageOnly={true}
             newsItem={newsItem}
+            className={"w-full"}
           />
 
           <motion.button

@@ -67,7 +67,7 @@ const DonationCard = ({
                   className="w-fit flex items-center gap-2 text-white font-semibold py-2 px-5 rounded-lg shadow-md"
                   style={{
                     background:
-                      "linear-gradient(90deg , #1B3F45 0% , #2B5E61 50% , #3A8D84 100%)",
+                      "linear-gradient(90deg,#9E7C2F 0%,#F2DCA5 50%,#D1B05A 100%)",
                   }}
                 >
                   <img src={handWithMoney} alt="زكاة" className="w-6 h-6" />
@@ -116,13 +116,17 @@ const DonationCard = ({
       {/* Buttons (تحت خالص) */}
       <div className="flex items-center gap-4 relative z-10 mt-auto">
         <Link
-          to={payNowLink}
+          to={remaining === 0 ? "#" : payNowLink}
+          onClick={(e) => {
+            if (remaining === 0) e.preventDefault();
+          }}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white 
-            bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] 
-            `}
+            bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E]
+            ${remaining === 0 ? "opacity-60 cursor-not-allowed" : ""}
+          `}
         >
           <img src={money} width={30} />
-          {cantPay ? "تم الوصول للهدف" : "ادفع الان"}
+          {remaining === 0 ? "المشروع مكتمل" : "ادفع الان"}
         </Link>
       </div>
       {showShareModal && (

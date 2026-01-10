@@ -1,5 +1,5 @@
 import React from 'react'
-import { Phone, Users } from 'lucide-react'
+import { House, Phone, Users } from 'lucide-react'
 import proptypes from 'prop-types';
 
 const DonationRequestState = ({ data, status }) => {
@@ -48,6 +48,11 @@ const DonationRequestState = ({ data, status }) => {
         <div className="flex items-center font-bold justify-between mb-6 pt-4 border-t-2 border-[#979797]">
           <span className="text-black text-lg">المبلغ</span>
           <span className="text-xl font-bold text-gray-800">{data?.WantedAmount || '200.00'} د.ل</span>
+        </div>
+
+        <div className="flex items-center font-bold justify-between mb-6">
+          <span className="text-black">المكتب</span>
+          <span className="font-bold text-gray-800">{data?.OfficeName}</span>
         </div>
 
         <div className="flex items-center font-bold justify-between mb-6 pb-4 border-b-2 border-[#979797]">

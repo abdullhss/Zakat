@@ -33,11 +33,14 @@ const Sacrifice = () => {
   const [loading, setLoading] = useState(true)
   const [showReceipt, setShowReceipt] = useState(false)
   const [offices, setOffices] = useState([])
-  const [selectedOffice, setSelectedOffice] = useState('')
+  const [selectedOffice, setSelectedOffice] = useState('');
   const [cities, setCities] = useState([])
   const [selectedCity, setSelectedCity] = useState('')
   const [ projectId , setProjectId] = useState() ;
   const dispatch = useDispatch() ; 
+
+  console.log(selectedOffice);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -204,7 +207,7 @@ const Sacrifice = () => {
       actionID={8}
       officeId={selectedOffice}
       totalAmount={totalPrice}
-      officeName={offices[selectedOffice].OfficeName}
+      officeName={offices.find(office => office.Id.toString() === selectedOffice)?.OfficeName}
       />
     ));
     dispatch(setShowPopup(true));

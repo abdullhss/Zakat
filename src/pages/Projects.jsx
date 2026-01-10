@@ -272,6 +272,7 @@ const Projects = () => {
                   collected={card.OpeningBalance}
                   description={card.Description}
                   goal={card.WantedAmount}
+                  OfficeName={card.OfficeName}
                   image={`https://framework.md-license.com:8093/ZakatImages/${card.PhotoName}.jpg`}
                   title={card.Name}
                   payNowLink={`/project?Id=${card.Id}&actionID=${0}`}
