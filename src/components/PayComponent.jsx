@@ -158,7 +158,7 @@ const PayComponent = ({
         accountNum = selectedLocalAccountNumber;
         // For local, Bank_Id should be the bank account ID
         const selectedAccount = JSON.parse(selectedLocalAccount);
-        bankId = selectedAccount.Id || "0";
+        bankId = selectedAccount.Bank_Id || "0";
       }
 
       // Prepare parameters according to the specified format
