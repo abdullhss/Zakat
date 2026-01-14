@@ -5,11 +5,11 @@ import Diamond from "../../../components/Diamond";
 import NewsCard from "../../../components/NewsCard";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useImageContext } from '../../../Context/imageContext.jsx';
 const LastNews = ({ data }) => {
   const news = JSON.parse(data);
   console.log(news);
-  
+  const { images } = useImageContext();
   const scrollContainerRef = useRef(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { amount: 0.2, once: false }); // replay animation
@@ -137,7 +137,7 @@ const LastNews = ({ data }) => {
               onClick={() => handleNewsClick(item)}
             >
               <NewsCard
-                image={`https://framework.md-license.com:8093/ZakatImages/${item.NewsMainPhotoName}.jpg`}
+                image={`${images}/${item.NewsMainPhotoName}.jpg`}
                 title={item.NewsMainTitle}
                 descirption={item.NewsSubTitle}
                 className="w-[320px] transition-transform duration-300 hover:scale-105"

@@ -5,11 +5,11 @@ import Diamond from "../../../components/Diamond";
 import DonationCard from "../../../components/DonationCard";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-
+import { useImageContext } from '../../../Context/imageContext.jsx';
 const UrgentProjects = ({ data }) => {
   const donations = JSON.parse(data);
   console.log(donations);
-  
+  const { images } = useImageContext();
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -144,7 +144,7 @@ const UrgentProjects = ({ data }) => {
             return (
                 <div key={item.Id} className="flex-shrink-0">
                 <DonationCard
-                    image={`https://framework.md-license.com:8093/ZakatImages/${item.PhotoName}.jpg`}
+                    image={`${images}/${item.PhotoName}.jpg`}
                     OfficeName={item.OfficeName}
                     title={item.Name}
                     description={item.Description}

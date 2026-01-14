@@ -6,7 +6,7 @@ import DonationCard from '../components/DonationCard'
 import { executeProcedure } from "../services/apiServices"
 import headerBackground from "../../public/header backgrounds/projects.png"
 import NewHeader from '../features/home/components/NewHeader.jsx'
-
+import { useImageContext } from '../Context/imageContext.jsx';
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState(0)
   const [filters, setFilters] = useState([])
@@ -17,6 +17,7 @@ const Projects = () => {
   const [loading, setLoading] = useState(false)
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const { images } = useImageContext();
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchValue);
@@ -273,7 +274,7 @@ const Projects = () => {
                   description={card.Description}
                   goal={card.WantedAmount}
                   OfficeName={card.OfficeName}
-                  image={`https://framework.md-license.com:8093/ZakatImages/${card.PhotoName}.jpg`}
+                  image={`${images}/${card.PhotoName}.jpg`}
                   title={card.Name}
                   payNowLink={`/project?Id=${card.Id}&actionID=${0}`}
                   showBtn={card.AllowZakat}

@@ -7,7 +7,7 @@ import Arrow from "../../public/SVGs/Arrow.svg"
 import { Search } from "lucide-react";
 import DonationCard from "../DonationCard"
 import { useLocation } from "react-router-dom";
-
+import { useImageContext } from '../../Context/imageContext.jsx';
 const Opportunities = ({ 
   donations = [], 
   loading = false, 
@@ -19,7 +19,7 @@ const Opportunities = ({
   setZakatSearch ,
   zakatSearch
 }) => {
-
+  const { images } = useImageContext();
   const location = useLocation();
   const path = location.pathname.split("/").pop();
   const actionID = path === "zakat" ? 1 : path === "sadaka" ? 2 : 0;
@@ -53,7 +53,7 @@ const Opportunities = ({
       return currentDonations.map((project) => (
         <DonationCard
           key={project.Id}
-          image={`https://framework.md-license.com:8093/ZakatImages/${project.PhotoName}.jpg`}
+          image={`${images}/${project.PhotoName}.jpg`}
           title={project.Name}
           description={project.Description}
           collected={project.OpeningBalance}

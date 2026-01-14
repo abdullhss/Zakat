@@ -25,6 +25,8 @@ function Home() {
           "I0uFFxOqnfWgAy1EbMHIi+epTgwWrmYV51/bDxo0U0s=",
           "0"
         );
+        console.log(response);
+        
         setMainScreenData(response);
         
         

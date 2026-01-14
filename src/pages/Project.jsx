@@ -21,7 +21,7 @@ import {
   parseAmountToNumber
 } from "../utils/amountUtils";
 import PropTypes from "prop-types";
-
+import { useImageContext } from '../Context/imageContext.jsx';
 
 
 const Project = () => {
@@ -41,7 +41,7 @@ const Project = () => {
     const [statisticalData, setStatisticalData] = useState(null);
     const [projectData, setProjectData] = useState(null); // Initialize as null
     const UserData = JSON.parse(localStorage.getItem("UserData"));
-
+    const { images } = useImageContext();
     const [showShareModal, setShowShareModal] = React.useState(false);
     const projectLink = window.location.href;
 
@@ -519,7 +519,7 @@ const Project = () => {
                 {/* Open Graph */}
                 <meta property="og:title" content={projectData.Name} />
                 <meta property="og:description" content={projectData.Description} />
-                <meta property="og:image" content={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`} />
+                <meta property="og:image" content={`${images}/${projectData.PhotoName}.jpg`} />
                 <meta property="og:url" content={getProjectLink()} />
                 <meta property="og:type" content="website" />
 
@@ -527,7 +527,7 @@ const Project = () => {
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={projectData.Name} />
                 <meta name="twitter:description" content={projectData.Description} />
-                <meta name="twitter:image" content={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`} />
+                <meta name="twitter:image" content={`${images}/${projectData.PhotoName}.jpg`} />
             </Helmet>
             <motion.div
                 initial="hidden"
@@ -570,7 +570,7 @@ const Project = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.5, delay: 0.2 }}
-                                src={`https://framework.md-license.com:8093/ZakatImages/${projectData.PhotoName}.jpg`}
+                                src={`${images}/${projectData.PhotoName}.jpg`}
                                 alt={projectData.Name}
                                 className="w-full h-40 sm:h-48 object-cover rounded-lg"
                                 onError={(e) => {
@@ -878,7 +878,7 @@ const Project = () => {
                                     className="flex-shrink-0"
                                 >
                                     <DonationCard
-                                        image={`https://framework.md-license.com:8093/ZakatImages/${item.PhotoName}.jpg`}
+                                        image={`${images}/${item.PhotoName}.jpg`}
                                         title={item.Name}
                                         description={item.Description}
                                         collected={item.WantedAmount - item.RemainingAmount}

@@ -8,13 +8,13 @@ import CreateCampaign from '../components/CreateCampaign';
 import { toast } from 'react-toastify';
 import DonationCard from '../components/DonationCard';
 import { executeProcedure } from '../services/apiServices';
-
+import { useImageContext } from '../Context/imageContext.jsx';
 const pageSize = 6 ;
 const Campaigns = () => {
     const [activeTab, setActiveTab] = useState('donation');
     const dispatch = useDispatch();
     const UserData = JSON.parse(localStorage.getItem("UserData"));
-
+    const { images } = useImageContext();
     // Pagination states for donation campaigns
     const [donationCurrentPage, setDonationCurrentPage] = useState(1);
     const [donationTotalPages, setDonationTotalPages] = useState(0);
@@ -343,7 +343,7 @@ useEffect(() => {
                             {donationCampaigns.map((campaign, index) => (
                                 <DonationCard
                                     key={index}
-                                    image={`https://framework.md-license.com:8093/ZakatImages/${campaign.CampaignPhotoName}.jpg`}
+                                    image={`${images}/${campaign.CampaignPhotoName}.jpg`}
                                     title={campaign.CampaignName}
                                     description={campaign.CampaignDesc}
                                     collected={campaign.WantedAmount - campaign.CampaignRemainingAmount}
@@ -399,7 +399,7 @@ useEffect(() => {
                             {myCampaigns.map((campaign, index) => (
                                 <DonationCard
                                     key={index}
-                                    image={`https://framework.md-license.com:8093/ZakatImages/${campaign.CampaignPhotoName}.jpg`}
+                                    image={`${images}/${campaign.CampaignPhotoName}.jpg`}
                                     title={campaign.CampaignName}
                                     description={campaign.CampaignDesc}
                                     collected={campaign.WantedAmount - campaign.CampaignRemainingAmount}

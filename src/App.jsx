@@ -34,7 +34,7 @@ import DonationRequester from "./pages/DonationRequester.jsx";
 import MainZakatPage from "./pages/MainZakatPage.jsx";
 import cartReducer , {setCartData} from "./features/CartSlice/CartSlice";
 import { executeProcedure } from "./services/apiServices.js";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Cart from "./pages/Cart.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import Offices from "./pages/Offices.jsx";
@@ -55,7 +55,7 @@ import DonateTo from "./pages/DonateTo.jsx";
 import Remember from "./pages/Remember.jsx";
 import FitrZakat from "./pages/FitrZakat.jsx";
 import ForgetPassword from "./pages/ForgetPassword.jsx";
-
+import { useImageContext } from "./Context/imageContext.jsx";
 // Main Pages (with navbar via Layout)
 
 // Protected Routes (you can add these later)
@@ -71,8 +71,7 @@ function App() {
   const dispatch = useDispatch();
   const {showPayPopup,  popupComponent , popupTitle ,popups  } = useSelector((state) => state.pay);
   const cartData = useSelector((state) => state.cart);
-  
-  
+  const { images, setImages } = useImageContext();
   const handleFetchCartData =   async () => {
     const data = await executeProcedure(
       "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
@@ -84,6 +83,24 @@ function App() {
     if(userID != null){
       handleFetchCartData();
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await executeProcedure(
+          "I0uFFxOqnfWgAy1EbMHIi+epTgwWrmYV51/bDxo0U0s=",
+          "0"
+        );
+        console.log(response);
+        console.log(response.decrypted.ImagesPath);
+        setImages(response.decrypted.ImagesPath);
+      } catch (error) {
+        console.error("Error fetching main screen data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (

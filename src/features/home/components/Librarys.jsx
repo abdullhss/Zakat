@@ -5,9 +5,10 @@ import Diamond from "../../../components/Diamond";
 import LibraryCard from "../../../components/LibraryCard";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useImageContext } from '../../../Context/imageContext.jsx';
 const Librarys = ({ data }) => {
   const libs = JSON.parse(data);
+  const { images } = useImageContext();
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -140,7 +141,7 @@ const Librarys = ({ data }) => {
             >
               <LibraryCard
                 PhoneNum= {office.PhoneNum}
-                image={`https://framework.md-license.com:8093/ZakatImages/${office.OfficePhotoName}.jpg`}
+                image={`${images}/${office.OfficePhotoName}.jpg`}
                 title={office.OfficeName}
                 description={`${office.Address} - ${office.PhoneNum}`}
                 className="w-[320px]"

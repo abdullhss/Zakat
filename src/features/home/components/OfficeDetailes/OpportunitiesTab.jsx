@@ -4,7 +4,7 @@ import { executeProcedure } from '../../../../services/apiServices';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import DonationCard from '../../../../components/DonationCard';
 import { motion, AnimatePresence } from "framer-motion";
-
+import { useImageContext } from '../../../../Context/imageContext.jsx';
 const OpportunitiesTab = ({Officeid}) => {
     const [filters, setFilters] = useState([]);
     const [activeFilter, setActiveFilter] = useState(0);
@@ -16,7 +16,7 @@ const OpportunitiesTab = ({Officeid}) => {
     const [totalPages, setTotalPages] = useState(0);
     const [totalProjectsCount, setTotalProjectsCount] = useState(0);
     const [loading, setLoading] = useState(false);
-    
+    const { images } = useImageContext();
     const filtersContainerRef = useRef(null);
     const countPerPage = 6;
 
@@ -295,7 +295,7 @@ const OpportunitiesTab = ({Officeid}) => {
                                         collected={(project.WantedAmount - project.RemainingAmount).toFixed(2)}
                                         goal={project.WantedAmount.toFixed(2)}
                                         description={project.Description}
-                                        image={`https://framework.md-license.com:8093/ZakatImages/${project.PhotoName}.jpg`}
+                                        image={`${images}/${project.PhotoName}.jpg`}
                                         title={project.Name}
                                         payNowLink={`/project?Id=${project.Id}&actionID=${0}`}
                                     />

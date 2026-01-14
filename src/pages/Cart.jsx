@@ -12,14 +12,14 @@ import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PayS
 import PayComponent from '../components/PayComponent'
 import { toast } from 'react-toastify'
 import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
-
+import { useImageContext } from '../Context/imageContext.jsx';
 const Cart = () => {
   const [cartData, setCartData] = useState(null);
   const [activeTab, setActiveTab] = useState("charity");
   const [searchTerm, setSearchTerm] = useState("");
   const userid = JSON.parse(localStorage.getItem("UserData"))?.Id || 0;
   const dispatch = useDispatch() ;
-
+  const { images } = useImageContext();
   useEffect(() => {
     fetchData();
   }, []);
@@ -233,7 +233,7 @@ const Cart = () => {
               {currentData?.map((item) => (
                 <SallaCard
                   key={item.Id}
-                  image={item.ProjectPhotoName ? `https://framework.md-license.com:8093/ZakatImages/${item.ProjectPhotoName}.jpg` : money}
+                  image={item.ProjectPhotoName ? `${images}/${item.ProjectPhotoName}.jpg` : money}
                   title={item.ProjectName || item.SubventionTypeName || item.ItemDesc || "تبرع"}
                   description={item.OfficeName}
                   collected={item.PaymentValue}

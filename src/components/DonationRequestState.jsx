@@ -1,6 +1,7 @@
 import React from 'react'
 import { House, Phone, Users } from 'lucide-react'
 import proptypes from 'prop-types';
+import { useImageContext } from '../Context/imageContext.jsx';
 
 const DonationRequestState = ({ data, status }) => {
   const statusConfig = {
@@ -19,7 +20,8 @@ const DonationRequestState = ({ data, status }) => {
   };
 
   const currentStatus = statusConfig[status] || statusConfig.pending;
-
+  const { images } = useImageContext();
+  console.log(images);
   return (
       <div className="mx-auto rounded-xl shadow-lg p-6 w-full"
         style={{background: "linear-gradient(180deg, #FCFCFC 0%, #CFCFCF 100%)"}}
@@ -72,7 +74,7 @@ const DonationRequestState = ({ data, status }) => {
             <button
               onClick={() =>
                 window.open(
-                  `https://framework.md-license.com:8093/ZakatImages/${data.ResreachFileName}.pdf`,
+                  `${images}/${data.ResreachFileName}.pdf`,
                   "_blank"
                 )
               }

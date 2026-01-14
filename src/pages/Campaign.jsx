@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
 import { toast } from "react-toastify";
-
+import { useImageContext } from "../Context/imageContext.jsx";
 const Campaign = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
@@ -21,7 +21,7 @@ const Campaign = () => {
     const [donationError, setDonationError] = useState("");
     const [fetchError, setFetchError] = useState("");
     const UserData = JSON.parse(localStorage.getItem("UserData"));
-    
+    const { images } = useImageContext();
     // Get and parse the data from URL
     const dataParam = searchParams.get('data');
     const isMine = searchParams.get('isMine') === 'true';
@@ -314,7 +314,7 @@ const Campaign = () => {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            src={`https://framework.md-license.com:8093/ZakatImages/${campaignData.CampaignPhotoName}.jpg`} 
+                            src={`${images}/${campaignData.CampaignPhotoName}.jpg`} 
                             alt={campaignData.CampaignName} 
                             className="w-full h-40 sm:h-48 object-cover rounded-lg"
                             onError={(e) => {
@@ -569,7 +569,7 @@ const Campaign = () => {
                                     className="flex-shrink-0"
                                 >
                                     <DonationCard
-                                        image={`https://framework.md-license.com:8093/ZakatImages/${item.CampaignPhotoName}.jpg`}
+                                        image={`${images}/${item.CampaignPhotoName}.jpg`}
                                         title={item.CampaignName}
                                         description={item.CampaignDesc}
                                         collected={item.WantedAmount - item.CampaignRemainingAmount}

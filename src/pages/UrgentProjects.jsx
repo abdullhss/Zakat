@@ -4,7 +4,7 @@ import filter from "../public/SVGs/fillter.svg"
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import DonationCard from '../components/DonationCard'
 import { executeProcedure } from "../services/apiServices"
-
+import { useImageContext } from '../Context/imageContext.jsx';
 const UrgentProjects = () => {
   const [donationCards, setDonationCards] = useState([])
   const [offices, setOffices] = useState([])
@@ -15,7 +15,7 @@ const UrgentProjects = () => {
   const [loading, setLoading] = useState(false)
   const [loadingOffices, setLoadingOffices] = useState(false)
   const itemsPerPage = 12
-
+  const { images } = useImageContext();
   // Fetch offices on component mount
   useEffect(() => {
     const fetchOffices = async () => {
@@ -177,7 +177,7 @@ const UrgentProjects = () => {
                   collected={card.OpeningBalance}
                   description={card.Description}
                   goal={card.WantedAmount}
-                  image={`https://framework.md-license.com:8093/ZakatImages/${card.PhotoName}.jpg`}
+                  image={`${images}/${card.PhotoName}.jpg`}
                   title={card.Name}
                   payNowLink={`/project?Id=${card.Id}&actionID=${0}`}
                   showBtn={card.AllowZakat}

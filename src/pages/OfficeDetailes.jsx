@@ -12,7 +12,7 @@ import NewHeader from '../features/home/components/NewHeader';
 import { toast } from 'react-toastify';
 import { executeProcedure } from '../services/apiServices';
 import officeBanner from "../../public/header backgrounds/Maktab.png"
-
+import { useImageContext } from '../Context/imageContext.jsx';
 
 const OfficeDetailes = () => {
   const [activeTab, setActiveTab] = useState('opportunities');
@@ -20,6 +20,7 @@ const OfficeDetailes = () => {
   const [officeData, setOfficeData] = useState(null);
   const location = useLocation();
   const [statisticalData , setStatisticalData] = useState(null);
+  const { images } = useImageContext();
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const dataParam = urlParams.get('data');
@@ -87,7 +88,7 @@ const OfficeDetailes = () => {
     );
   }
   
-  const headerBackground = officeData?.HeaderPhotoName &&`url("https://framework.md-license.com:8093/ZakatImages/${officeData.HeaderPhotoName}.jpg")`
+  const headerBackground = officeData?.HeaderPhotoName &&`url("${images}/${officeData.HeaderPhotoName}.jpg")`
 
   return (
     <motion.div 
@@ -123,7 +124,7 @@ const OfficeDetailes = () => {
           <div className='flex h-full w-full items-end px-4 md:px-12 py-6 relative z-[100]'>
             <div className='flex items-center gap-3 w-full h-fit'>
               <img 
-                src={`https://framework.md-license.com:8093/ZakatImages/${officeData.OfficePhotoName}.jpg`} 
+                src={`${images}/${officeData.OfficePhotoName}.jpg`} 
                 alt={officeData.OfficeName} 
                 className='w-40 h-36 rounded-md object-cover' 
               />

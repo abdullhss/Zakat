@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import NewsCard from '../../../../components/NewsCard'
 import { executeProcedure } from '../../../../services/apiServices'
 import back from "../../../../public/SVGs/Back.svg"
-
+import { useImageContext } from '../../../../Context/imageContext.jsx';
 const NewsTab = ({ Officeid, onOpenDetail }) => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -12,7 +12,7 @@ const NewsTab = ({ Officeid, onOpenDetail }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalNewsCount, setTotalNewsCount] = useState(0);
   const [expandedNewsId, setExpandedNewsId] = useState(null);
-
+  const { images } = useImageContext();
   const countPerPage = 6;
 
   useEffect(() => {
@@ -89,7 +89,7 @@ const NewsTab = ({ Officeid, onOpenDetail }) => {
                 detailClick={() => {}}
                 title={expandedNews.NewsMainTitle}
                 descirption={expandedNews.NewsContents}
-                image={`https://framework.md-license.com:8093/ZakatImages/${expandedNews.NewsMainPhotoName}.jpg`}
+                image={`${images}/${expandedNews.NewsMainPhotoName}.jpg`}
                 className="w-full"
               />
               <motion.button
@@ -123,7 +123,7 @@ const NewsTab = ({ Officeid, onOpenDetail }) => {
                     detailClick={() => handleDetailClick(item.Id)}
                     title={item.NewsMainTitle}
                     descirption={item.NewsContents}
-                    image={`https://framework.md-license.com:8093/ZakatImages/${item.NewsMainPhotoName}.jpg`}
+                    image={`${images}/${item.NewsMainPhotoName}.jpg`}
                   />
                 </motion.div>
               ))}

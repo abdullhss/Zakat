@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { executeProcedure } from '../services/apiServices'
 import Diamond from '../components/Diamond'
-
+import { useImageContext } from '../Context/imageContext.jsx';
 const TermsAndConditions = () => {
     const [lawsData, setLawsData] = useState([])
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
     const [totalCount, setTotalCount] = useState(0)
     const [loading, setLoading] = useState(true)
-
+    const { images } = useImageContext();
     const totalPages = Math.ceil(totalCount / itemsPerPage)
 
     useEffect(() => {
@@ -140,7 +140,7 @@ const TermsAndConditions = () => {
                                     {law.LawAttachFileId && law.LawAttachFileName && (
                                         <div className="mt-4 pt-4 border-t border-gray-200">
                                             <a 
-                                                href={`https://framework.md-license.com:8093/ZakatImages/${law.LawAttachFileName}.pdf`} 
+                                                href={`${images}/${law.LawAttachFileName}.pdf`} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
                                                 className="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-medium transition-colors"

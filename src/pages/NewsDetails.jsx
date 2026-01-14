@@ -3,12 +3,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import NewsCard from '../components/NewsCard'
 import Back from "../public/SVGs/Back.svg"
 import { motion } from "framer-motion"
-
+import { useImageContext } from '../Context/imageContext.jsx';
 const NewsDetails = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const { newsItem } = location.state || {}
-
+  const { images } = useImageContext();
   const handleBack = () => {
     navigate(-1) // Go back to previous page
   }
@@ -51,7 +51,7 @@ const NewsDetails = () => {
           transition={{ duration: 0.5 }}
         >
           <NewsCard
-            image={`https://framework.md-license.com:8093/ZakatImages/${newsItem.NewsMainPhotoName}.jpg`}
+            image={`${images}/${newsItem.NewsMainPhotoName}.jpg`}
             title={newsItem.NewsMainTitle}
             descirption={newsItem.NewsContents}
             canBeBig={true}

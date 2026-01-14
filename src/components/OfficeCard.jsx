@@ -2,9 +2,10 @@
 import React from 'react'
 import cardWave from "../public/SVGs/cardWave.svg";
 import { Link } from 'react-router-dom';
-
+import { useImageContext } from '../Context/imageContext.jsx';
 const OfficeCard = ({ office }) => {
     const imageUrl = office.OfficePhotoName;
+    const { images } = useImageContext();
 
     return (
         <div
@@ -21,7 +22,7 @@ const OfficeCard = ({ office }) => {
             <div className="flex items-start gap-6 relative z-10">
                 {/* Office Image */}
                 <img
-                    src={`https://framework.md-license.com:8093/ZakatImages/${imageUrl}.jpg`}
+                    src={`${images}/${imageUrl}.jpg`}
                     alt={office.OfficeName}
                     className="h-32 w-32 rounded-xl object-cover shadow-md border border-gray-200"
                 />

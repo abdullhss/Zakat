@@ -4,7 +4,7 @@ import { executeProcedure } from '../services/apiServices'
 import NewsCard from '../components/NewsCard';
 import Back from "../public/SVGs/Back.svg"
 import { motion, AnimatePresence } from "framer-motion";
-
+import { useImageContext } from '../Context/imageContext.jsx';
 const News = () => {
   const [news, setNews] = useState([]);
   const [selectedNews, setSelectedNews] = useState(null);
@@ -13,7 +13,7 @@ const News = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalNewsCount, setTotalNewsCount] = useState(0);
   const navigate = useNavigate();
-
+  const { images } = useImageContext();
   useEffect(() => {
     const fetchNews = async () => {
       try {
@@ -86,7 +86,7 @@ const News = () => {
                 <NewsCard
                   title={item.NewsMainTitle}
                   descirption={item.NewsContents}
-                  image={`https://framework.md-license.com:8093/ZakatImages/${item.NewsMainPhotoName}${item.AttachmentFileExt}`}
+                  image={`${images}/${item.NewsMainPhotoName}${item.AttachmentFileExt}`}
                   detailClick={() => handleNewsDetails(item)}
                   canBeBig={false}
                 />
