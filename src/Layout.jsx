@@ -5,7 +5,8 @@ import Navbar from "./globalComponents/Navbar";
 import HeroBanner from "./features/home/components/HeroBanner";
 import { useEffect, useState } from "react";
 import { executeProcedure } from "./services/apiServices";
-
+import NewHeader from "./features/home/components/NewHeader";
+import mainImage from "../public/header backgrounds/mainimage.png";
 const Layout = () => {
   const location = useLocation();
   
@@ -59,7 +60,8 @@ useEffect(() => {
 
       {(!isOfficePage && !isSadakaPage && !isKaffaraPage && !isProjectsPage && !isZakatPage) && (
         <div className="mt-20">
-          <HeroBanner data={mainScreenData?.heroBanner} />
+          {/* <HeroBanner data={mainScreenData?.heroBanner} /> */}
+          <NewHeader data={mainScreenData?.heroBanner} backgroundImage={mainImage}/>
         </div>
       )}
 

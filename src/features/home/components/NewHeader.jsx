@@ -46,13 +46,13 @@ const NewHeader = ({backgroundImage , officeName}) => {
   
   return (
     <section
-      className="relative w-full h-[400px] overflow-hidden bg-[length:100%_100%] bg-no-repeat bg-center"
+      className="relative w-full h-[200px] md:h-[400px] overflow-hidden bg-[length:100%_100%] bg-no-repeat bg-center"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       {
         isOfficePage && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2">
-            <h1 className="text-white text-4xl font-bold">{officeName}</h1>
+            <h1 className="text-white text-xl md:text-4xl font-bold">{officeName}</h1>
           </div>
         )
       }
@@ -62,14 +62,14 @@ const NewHeader = ({backgroundImage , officeName}) => {
         src={donationRequest}
         alt="donation request"
         onClick={handleDonationRequest}
-        className="cursor-pointer absolute left-5 md:left-1/4 bottom-20 md:bottom-0 w-[120px] sm:w-[160px] md:w-[200px] lg:w-[250px] transition-transform duration-200 hover:scale-105"
+        className="cursor-pointer absolute left-1 md:left-1/4 bottom-0 w-[120px] sm:w-[160px] md:w-[200px] lg:w-[250px] transition-transform duration-200 hover:scale-105"
       />
 
       <img
         src={fastDonation}
         alt="fast donation"
         onClick={handleDonationClick}
-        className="cursor-pointer absolute right-5 md:right-1/4 bottom-20 md:bottom-0 w-[120px] sm:w-[160px] md:w-[200px] transition-transform duration-200 hover:scale-105"
+        className="cursor-pointer absolute right-1 md:right-1/4 bottom-0 w-[120px] sm:w-[160px] md:w-[200px] transition-transform duration-200 hover:scale-105"
       />
 
       {/* السلة */}
