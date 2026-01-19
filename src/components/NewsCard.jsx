@@ -34,9 +34,9 @@ const NewsCard = ({
           <div className="mt-4 text-[#3C3C43] space-y-2">
             <p><span className="font-semibold">نوع الخبر:</span> {newsItem.NewsTypeName}</p>
             <p><span className="font-semibold">اسم المكتب:</span> {newsItem.OfficeName}</p>
-            <p><span className="font-semibold">المستخدم:</span> {newsItem.UserName}</p>
-            <p><span className="font-semibold">تاريخ النشر:</span> {new Date(newsItem.NewsPublishDate).toLocaleDateString('ar-EG')}</p>
-            <p><span className="font-semibold">تاريخ الإنشاء:</span> {new Date(newsItem.NewsCreateDate).toLocaleDateString('ar-EG')}</p>
+            {/* <p><span className="font-semibold">المستخدم:</span> {newsItem.UserName}</p> */}
+            <p><span className="font-semibold">تاريخ النشر:</span> {new Date(newsItem.NewsPublishDate).toLocaleDateString('en-US')}</p>
+            <p><span className="font-semibold">تاريخ الإنشاء:</span> {new Date(newsItem.NewsCreateDate).toLocaleDateString('en-US')}</p>
           </div>
         )}
 

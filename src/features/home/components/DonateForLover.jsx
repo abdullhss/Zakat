@@ -181,7 +181,7 @@ const Zema = () => {
               className="relative w-2/3 md:w-1/4 h-56 md:h-full overflow-hidden"
             >
               <img
-                src={Plant}
+                src="/plant.webp"
                 alt="plant"
                 className="w-full h-full object-cover"
               />

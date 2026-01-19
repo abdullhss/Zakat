@@ -190,6 +190,9 @@ const ZakatCategories = () => {
     >
       <div className="flex flex-col gap-12 items-center">
         {/* Quranic Verse */}
+        <span className="text-2xl bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] bg-clip-text text-transparent font-semibold">
+          قال الله تعالى
+        </span>
         <motion.div 
           className="text-center mb-12"
           variants={verseVariants}

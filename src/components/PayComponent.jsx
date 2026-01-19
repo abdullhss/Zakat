@@ -582,7 +582,7 @@ function formatAmount(amount) {
               <option value="">اختر الحساب</option>
               {internationalBankAccountsData.map((account, index) => (
                 <option key={account.Id || index} value={JSON.stringify(account)}>
-                  {account.AccountNum}
+                  {account.AccountNum} - {account.BankName}
                 </option>
               ))}
               {internationalBankAccountsData.length === 0 && (
@@ -714,7 +714,7 @@ function formatAmount(amount) {
                   <option value="">اختر الحساب</option>
                   {localBankAccountsData.map((account, index) => (
                     <option key={account.Id || index} value={JSON.stringify(account)}>
-                      {account.AccountNum}
+                      {account.AccountNum} - {account.BankName}
                     </option>
                   ))}
                   {localBankAccountsData.length === 0 && (
