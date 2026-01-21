@@ -34,7 +34,7 @@ const DonationCard = ({
 
   return (
     <div
-      className={`relative flex flex-col justify-between gap-5 pl-8 pr-5 py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden w-[500px] h-[430px] ${className}`}    >
+      className={`relative flex flex-col justify-between gap-5 pl-8 pr-5 py-5 rounded-2xl shadow-md bg-gradient-to-tl from-[#DEDEDE] to-[#FFFFFF] overflow-hidden w-full max-w-[500px] h-[430px] ${className}`}    >
       {/* waves */}
       <img src={cardWave} className="absolute left-0 top-0" />
 
@@ -122,11 +122,11 @@ const DonationCard = ({
           }}
           className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-white 
             bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E]
-            ${remaining === 0 ? "opacity-60 cursor-not-allowed" : ""}
+            ${remaining <= 0 ? "opacity-60 cursor-not-allowed" : ""}
           `}
         >
           <img src={money} width={30} />
-          {remaining === 0 ? "المشروع مكتمل" : "ادفع الان"}
+          {remaining <= 0 ? "المشروع مكتمل" : "ادفع الان"}
         </Link>
       </div>
       {showShareModal && (

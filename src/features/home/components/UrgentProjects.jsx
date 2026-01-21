@@ -150,7 +150,7 @@ const UrgentProjects = ({ data }) => {
                     description={item.Description}
                     collected={item.OpeningBalance}
                     goal={item.WantedAmount}
-                    className="w-[400px]"
+                    className="!w-[500px]"
                     showBtn={item.AllowZakat}
                     payNowLink={`/project?Id=${item.Id}&actionID=${0}`}
                 />
