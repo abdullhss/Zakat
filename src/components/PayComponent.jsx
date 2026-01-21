@@ -63,7 +63,7 @@ const PayComponent = ({
   const [electronicPaymentSystemReference ,  setElectronicPaymentSystemReference] = useState("") ; 
   const [isOpeningGateway, setIsOpeningGateway] = useState(false);
   const [rememberBobUp , setRememberBobUp] = useState(false);
-  const [afterSaveElectronicPaymentId , setAfterSaveElectronicPaymentId] = useState(""); 
+  const afterSaveElectronicPaymentIdRef = useRef(null);
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate() ;
@@ -192,7 +192,8 @@ const PayComponent = ({
       const response = await DoTransaction("rCSWIwrXh3HGKRYh9gCA8g==", params);
 
       console.log(response);
-      setAfterSaveElectronicPaymentId(response.id);
+      afterSaveElectronicPaymentIdRef.current = response.id;
+
       if (response?.success) {
         // Reset form or navigate to success page
         // Reset all states
@@ -364,12 +365,14 @@ function formatAmount(amount) {
 
       completeCallback: async function (data) {
         setElectronicPaymentSystemReference(data.SystemReference);
-        await DoTransaction(
+        const response = await DoTransaction(
           "rCSWIwrXh3HGKRYh9gCA8g==",
-          `${afterSaveElectronicPaymentId}#${totalAmount}#${data.SystemReference}#${data.NetworkReference}`,
+          `${afterSaveElectronicPaymentIdRef.current}#${totalAmount}#${data.SystemReference}#${data.NetworkReference}`,
           1,
           "Id#PaymentValue#SystemReference#NetworkReference"
-        )
+        ) ;
+        console.log(response);
+        
         // toast.success('تم الدفع بنجاح')
         setIsOpeningGateway(false);
       },
