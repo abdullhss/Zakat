@@ -134,6 +134,12 @@ export const DoTransaction = async (tableName, ColumnsValues , WantedAction=0 ,C
         API_CONFIG.PUBLIC_KEY
       );
     }
+    if (response.data.NewId) {
+        decryptedResponse.NewId = AES256Encryption.decrypt(
+        response.data.NewId,
+        API_CONFIG.PUBLIC_KEY
+        )
+    }
 
     if (response.data.Error) {
       decryptedResponse.error = AES256Encryption.decrypt(
@@ -155,11 +161,13 @@ export const DoTransaction = async (tableName, ColumnsValues , WantedAction=0 ,C
         API_CONFIG.PUBLIC_KEY
       );
     }
-
+    console.log(decryptedResponse);
+    
     console.log("Decrypted response:", decryptedResponse.result);
 
     return {
       success:  decryptedResponse.result,
+      id : decryptedResponse.NewId
     };
   } catch (error) {
     console.error("API call failed:", error);
