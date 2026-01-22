@@ -274,7 +274,7 @@ const PayComponent = ({
 
     // Lightbox
     const lightboxScript = document.createElement("script");
-    lightboxScript.src = "https://tnpg.moamalat.net:6006/js/lightbox.js";
+    lightboxScript.src = "https://npg.moamalat.net:6006/js/lightbox.js";
     lightboxScript.async = true;
     document.body.appendChild(lightboxScript);
 
