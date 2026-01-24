@@ -63,9 +63,11 @@ const PayComponent = ({
   const [electronicPaymentSystemReference ,  setElectronicPaymentSystemReference] = useState("") ; 
   const [isOpeningGateway, setIsOpeningGateway] = useState(false);
   const [rememberBobUp , setRememberBobUp] = useState(false);
+  const afterSaveElectronicPaymentIdRef = useRef(null);
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate() ;
+  const merchantRef = useRef(null);
   const gradientBtn =
     "bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white";
   const grayBtn = "bg-[#C9C9C9] text-black";
@@ -120,19 +122,17 @@ const PayComponent = ({
       setIsUploading(false);
     }
   };
-
-  const callPaymentProcedure = async () => {
+  
+  const callPaymentProcedure = async (saveElectronicDataBeforePayment) => {
     if (!uploadedFileId && (donationType === "international" || localMethod === "bank")) {
       return;
     }
-
     setIsProcessing(true);
 
     try {
       // Determine payment way and method based on selection
-      let paymentWayId = "0";
-      let paymentMethodIdValue = "0";
-
+      let paymentWayId = "2";
+      let paymentMethodIdValue = "1";
       if (donationType === "international") {
         paymentWayId = "1"; // دولي
         paymentMethodIdValue = "0"; // حوالة بنكية
@@ -162,28 +162,37 @@ const PayComponent = ({
       }
 
       // Prepare parameters according to the specified format
+      // paymentMethodIdValue == 1 for electronic 
+      console.log(paymentMethodIdValue)
+      console.log(saveElectronicDataBeforePayment?.Merchant_Id)
       const params = [
         "0", // Id
         formattedDate, // PaymentDate
         PaymentDesc==""?electronicPaymentSystemReference:PaymentDesc, // PaymentDesc (فاضي)
-        totalAmount.toString(), // PaymentValue
+        paymentMethodIdValue == 1 ? 0 : totalAmount.toString(), // PaymentValue
         actionID, // Action_Id (زكاة)
         paymentWayId, // PaymentWay_Id
         paymentMethodIdValue, // PaymentMethod_Id
         SubventionType_Id, // SubventionType_Id
         Project_Id, // Project_Id
         officeId || "0", // Office_Id
-        bankId, // Bank_Id - fixed to use proper bank ID
-        accountNum, // AccountNum - now properly set
+        paymentMethodIdValue ? saveElectronicDataBeforePayment?.bankId :bankId, // Bank_Id - fixed to use proper bank ID
+        paymentMethodIdValue ? saveElectronicDataBeforePayment?.accountNum : accountNum, // AccountNum - now properly set
         uploadedFileId || "", // AttachmentPhotoName
-        "False", // IsApproved
-        JSON.parse(localStorage.getItem("UserData"))?.Id || 0 // GeneralUser_Id
+        paymentMethodIdValue == 1 ? "True" : "False", // IsApproved
+        JSON.parse(localStorage.getItem("UserData"))?.Id || 0 , // GeneralUser_Id
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.Merchant_Id : "",
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.Terminal_Id : "",
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.MerchantReference : "",
+        "",
+        ""
       ].join("#");
-
       
 
       const response = await DoTransaction("rCSWIwrXh3HGKRYh9gCA8g==", params);
-      
+
+      console.log(response);
+      afterSaveElectronicPaymentIdRef.current = response.id;
 
       if (response?.success) {
         // Reset form or navigate to success page
@@ -197,7 +206,9 @@ const PayComponent = ({
         setUploadedFileId("");
         setUploadedFileName("");
         setFileError(""); // Clear file error on success
-        toast.success("تم الدفع بنجاح");
+        if(paymentMethodIdValue != 1){
+          toast.success("تم الدفع بنجاح")
+        }
         dispatch(setShowPopup(false));
         dispatch(closeAllPopups());
         
@@ -256,6 +267,7 @@ const PayComponent = ({
       setIsProcessing(false);
     }
   };
+  
   useEffect(() => {
     // Bootstrap bundle
     const bootstrapScript = document.createElement("script");
@@ -304,11 +316,27 @@ function formatAmount(amount) {
   return intPart + decimalPart; // 122.333 → 122333
 }
 
-  const callLightbox = useCallback((amount) => {
-    var mID='10081014649';
-    var tID='99179395';
-    var merchantKey= '3a488a89b3f7993476c252f017c488bb';
-    var merchRef='test-demo';
+  const callLightbox = useCallback( async (amount) => {
+    const GetElectParametersData = await executeProcedure("XPkLod2NSVCM0aXC325W4FRbmaZdYSv5oKkVb3jxQ6w=",`${officeId}#${actionID == 1 ? 1 : 2}#$????`);
+    const electparametersData = JSON.parse(GetElectParametersData.decrypted.ElectParametersData) ;
+    console.log(electparametersData);
+
+      
+    var mID=electparametersData[0].Merchant_Id;
+    var tID=electparametersData[0].Terminal_Id;
+    var merchantKey= electparametersData[0].Secure_key;
+    if (!merchantRef.current) {
+      merchantRef.current = crypto.randomUUID();
+    }
+
+    const merchRef = merchantRef.current;
+    await callPaymentProcedure({
+      bankId: electparametersData[0].Bank_Id,
+      accountNum: electparametersData[0].AccountNum ,
+      Merchant_Id : electparametersData[0].Merchant_Id,
+      Terminal_Id : electparametersData[0].Terminal_Id,
+      MerchantReference : merchRef
+    });
 
     if (mID === '' || tID === '') {
       return;
@@ -317,7 +345,6 @@ function formatAmount(amount) {
     var dt = new Date().YYYYMMDDHHMMSS().substring(0, 12);
     
     var hmacSHA256 = '';
-    
     if(merchantKey) {
       var keyHex = CryptoJS.enc.Hex.parse(merchantKey);
       var strHashData = 'Amount='+amount+'000&DateTimeLocalTrxn='+dt+'&MerchantId='+mID+'&MerchantReference='+merchRef+'&TerminalId='+tID;
@@ -336,10 +363,18 @@ function formatAmount(amount) {
       TrxDateTime: dt,
       SecureHash: hmacSHA256,
 
-      completeCallback: function (data) {
-        setIsOpeningGateway(false);
+      completeCallback: async function (data) {
         setElectronicPaymentSystemReference(data.SystemReference);
-        callPaymentProcedure();
+        const response = await DoTransaction(
+          "rCSWIwrXh3HGKRYh9gCA8g==",
+          `${afterSaveElectronicPaymentIdRef.current}#${totalAmount}#${data.SystemReference}#${data.NetworkReference}`,
+          1,
+          "Id#PaymentValue#SystemReference#NetworkReference"
+        ) ;
+        console.log(response);
+        
+        // toast.success('تم الدفع بنجاح')
+        setIsOpeningGateway(false);
       },
 
       errorCallback: function (data) {
@@ -354,10 +389,10 @@ function formatAmount(amount) {
       cancelCallback: function () {
         setIsOpeningGateway(false);
         // Use a unique toastId to prevent duplicates
-        toast.error('تم الالغاء', { 
-          toastId: 'cancel-payment',
-          autoClose: 3000 
-        });
+        // toast.error('تم الالغاء', { 
+        //   toastId: 'cancel-payment',
+        //   autoClose: 3000 
+        // });
       }
     };
 

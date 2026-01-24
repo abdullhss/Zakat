@@ -56,8 +56,9 @@ const Opportunities = ({
           image={`${images}/${project.PhotoName}.jpg`}
           title={project.Name}
           description={project.Description}
-          collected={project.OpeningBalance}
+          collected={project.WantedAmount - project.RemainingAmount}
           goal={project.WantedAmount}
+          cantPay={Number(project.RemainingAmount) <= 0}
           className="bg-white"
           payNowLink={`/project?Id=${project.Id}&actionID=${actionID}&donationValue=${donationValue}`}
           showBtn={project.AllowZakat}
@@ -65,6 +66,9 @@ const Opportunities = ({
       ));
 
   };
+
+  console.log(currentDonations);
+  
 
   return (
     <div className="flex flex-col gap-6">

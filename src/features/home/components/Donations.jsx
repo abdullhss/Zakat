@@ -151,7 +151,7 @@ const Donations = ({ data }) => {
                 description={item.ProjectDesc}
                 collected={item.ProjectOpeningBalance}
                 goal={item.ProjectWantedAmount}
-                className="min-w-[320px]"
+                className="!w-[500px]"
                 showBtn={item.AllowZakat}
                 payNowLink={`/project?Id=${item.Id}&actionID=${0}`}
                 OfficeName={item.OfficeName}
