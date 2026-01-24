@@ -131,59 +131,59 @@ const FastDonation = () => {
   }, [isOfficeRoute, officeDataFromRoute]);
 
   // Fetch subvention types when office is selected
-  useEffect(() => {
-    const fetchSubventionTypes = async () => {
-      if (!selectedOffice) {
-        setSubventionTypes([]);
-        setSelectedSubvention("");
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchSubventionTypes = async () => {
+  //     if (!selectedOffice) {
+  //       setSubventionTypes([]);
+  //       setSelectedSubvention("");
+  //       return;
+  //     }
 
-      try {
-        setLoading(prev => ({ ...prev, subventionTypes: true }));
+  //     try {
+  //       setLoading(prev => ({ ...prev, subventionTypes: true }));
 
-        const params = `${selectedOffice}#0#z#1#100`;
+  //       const params = `${selectedOffice}#0#z#1#100`;
 
-        const response = await executeProcedure(
-          "phjR2bFDp5o0FyA7euBbsp/Ict4BDd2zHhHDfPlrwnk=",
-          params
-        );
+  //       const response = await executeProcedure(
+  //         "phjR2bFDp5o0FyA7euBbsp/Ict4BDd2zHhHDfPlrwnk=",
+  //         params
+  //       );
 
-        if (response && response.decrypted) {
-          const data = response.decrypted;
+  //       if (response && response.decrypted) {
+  //         const data = response.decrypted;
 
-          // Parse SubventionTypes
-          if (data.SubventionTypes) {
-            try {
-              const parsedSubventionTypes = typeof data.SubventionTypes === 'string'
-                ? JSON.parse(data.SubventionTypes)
-                : data.SubventionTypes;
+  //         // Parse SubventionTypes
+  //         if (data.SubventionTypes) {
+  //           try {
+  //             const parsedSubventionTypes = typeof data.SubventionTypes === 'string'
+  //               ? JSON.parse(data.SubventionTypes)
+  //               : data.SubventionTypes;
 
-              setSubventionTypes(Array.isArray(parsedSubventionTypes) ? parsedSubventionTypes : []);
+  //             setSubventionTypes(Array.isArray(parsedSubventionTypes) ? parsedSubventionTypes : []);
 
-            } catch (parseError) {
-              console.error("Error parsing SubventionTypes:", parseError);
-              setSubventionTypes([]);
-            }
-          } else {
-            setSubventionTypes([]);
-          }
-        } else {
-          setSubventionTypes([]);
-        }
+  //           } catch (parseError) {
+  //             console.error("Error parsing SubventionTypes:", parseError);
+  //             setSubventionTypes([]);
+  //           }
+  //         } else {
+  //           setSubventionTypes([]);
+  //         }
+  //       } else {
+  //         setSubventionTypes([]);
+  //       }
 
-        setError(prev => ({ ...prev, subventionTypes: null }));
-      } catch (error) {
-        console.error("Error fetching subvention types:", error);
-        setError(prev => ({ ...prev, subventionTypes: error.message }));
-        setSubventionTypes([]);
-      } finally {
-        setLoading(prev => ({ ...prev, subventionTypes: false }));
-      }
-    };
+  //       setError(prev => ({ ...prev, subventionTypes: null }));
+  //     } catch (error) {
+  //       console.error("Error fetching subvention types:", error);
+  //       setError(prev => ({ ...prev, subventionTypes: error.message }));
+  //       setSubventionTypes([]);
+  //     } finally {
+  //       setLoading(prev => ({ ...prev, subventionTypes: false }));
+  //     }
+  //   };
 
-    fetchSubventionTypes();
-  }, [selectedOffice]);
+  //   fetchSubventionTypes();
+  // }, [selectedOffice]);
 
   const handleCalcZakat = () => {
     setZakatPopUp(true);

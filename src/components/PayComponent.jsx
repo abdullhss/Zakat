@@ -176,8 +176,8 @@ const PayComponent = ({
         SubventionType_Id, // SubventionType_Id
         Project_Id, // Project_Id
         officeId || "0", // Office_Id
-        paymentMethodIdValue ? saveElectronicDataBeforePayment?.bankId :bankId, // Bank_Id - fixed to use proper bank ID
-        paymentMethodIdValue ? saveElectronicDataBeforePayment?.accountNum : accountNum, // AccountNum - now properly set
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.bankId : bankId, // Bank_Id - fixed to use proper bank ID
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.accountNum : accountNum, // AccountNum - now properly set
         uploadedFileId || "", // AttachmentPhotoName
         paymentMethodIdValue == 1 ? "True" : "False", // IsApproved
         JSON.parse(localStorage.getItem("UserData"))?.Id || 0 , // GeneralUser_Id
@@ -455,6 +455,7 @@ function formatAmount(amount) {
   // Local Bank Accounts Data
   useEffect(() => {
     const fetchData = async () => {
+      if (!officeId || !serviceTypeId || !paymentMethodId) return;
       try {
         const params = `${officeId}#${1}#${serviceTypeId}#${paymentMethodId}`;
         const response = await executeProcedure(
