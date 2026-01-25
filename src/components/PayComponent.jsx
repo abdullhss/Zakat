@@ -2,35 +2,17 @@ import { ImagePlus, Loader2, CheckCircle, FileText, AlertCircle } from "lucide-r
 import { useState, useRef, useEffect } from "react";
 import PropTypes from 'prop-types';
 import moenyWhite from "../public/SVGs/moneyWhite.svg";
-import { executeProcedure , DoTransaction} from "../services/apiServices";
+import { executeProcedure, DoTransaction } from "../services/apiServices";
 import { HandelFile } from "./HandelFile";
-import {setShowPopup , closeAllPopups} from "../features/PaySlice/PaySlice"
+import { setShowPopup, closeAllPopups } from "../features/PaySlice/PaySlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import cartReducer , {setCartData} from "../features/CartSlice/CartSlice";
+import cartReducer, { setCartData } from "../features/CartSlice/CartSlice";
 import { useNavigate } from "react-router-dom";
-import CryptoJS from "crypto-js";
-import { useCallback } from "react";
 import { toArabicWord } from 'number-to-arabic-words/dist/index-node.js';
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@headlessui/react";
 
-
-
-if (!Date.prototype.YYYYMMDDHHMMSS) {
-  Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
-    value: function() {
-      function pad2(n) { return (n < 10 ? '0' : '') + n; }
-      return this.getFullYear() +
-             pad2(this.getMonth() + 1) +
-             pad2(this.getDate()) +
-             pad2(this.getHours()) +
-             pad2(this.getMinutes()) +
-             pad2(this.getSeconds());
-    }
-  });
-}
-
+const PAYMENT_GATEWAY_URL = "https://moaamalat.almedadsoft.com";
 
 const PayComponent = ({
   officeName = "",
@@ -39,11 +21,11 @@ const PayComponent = ({
   serviceTypeId = "2",
   totalAmount = 0,
   currency = "د.ل",
-  actionID="1",
-  SubventionType_Id="0",
-  Project_Id="0",
-  PaymentDesc="",
-  Salla=false
+  actionID = "1",
+  SubventionType_Id = "0",
+  Project_Id = "0",
+  PaymentDesc = "",
+  Salla = false
 }) => {
   const [donationType, setDonationType] = useState(null);
   const [localMethod, setLocalMethod] = useState(null);
@@ -59,18 +41,249 @@ const PayComponent = ({
   const [uploadedFileId, setUploadedFileId] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [fileError, setFileError] = useState(""); // New state for file error
-  const [electronicPaymentSystemReference ,  setElectronicPaymentSystemReference] = useState("") ; 
+  const [fileError, setFileError] = useState("");
+  const [electronicPaymentSystemReference, setElectronicPaymentSystemReference] = useState("");
   const [isOpeningGateway, setIsOpeningGateway] = useState(false);
-  const [rememberBobUp , setRememberBobUp] = useState(false);
+  const [showIframe, setShowIframe] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0);
+  const [paymentData, setPaymentData] = useState(null); // Store payment data to send to iframe
+  
   const afterSaveElectronicPaymentIdRef = useRef(null);
   const fileRef = useRef(null);
-  const dispatch = useDispatch();
-  const navigate = useNavigate() ;
+  const iframeRef = useRef(null);
   const merchantRef = useRef(null);
-  const gradientBtn =
-    "bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white";
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
+  const gradientBtn = "bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white";
   const grayBtn = "bg-[#C9C9C9] text-black";
+
+  // Message handler for iframe communication
+  useEffect(() => {
+    const handleMessage = async (event) => {
+      console.log('Received message from gateway:', event.data);
+      
+      // Filter out React devtools messages
+      if (event.data && event.data.source === 'react-devtools-bridge') {
+        return;
+      }
+      
+      switch (event.data.type) {
+        case 'PAYMENT_SUCCESS':
+          await handlePaymentSuccess(event.data.data);
+          break;
+          
+        case 'PAYMENT_ERROR':
+          handlePaymentError(event.data.data);
+          break;
+          
+        case 'PAYMENT_CANCELLED':
+          handlePaymentCancelled();
+          break;
+          
+        case 'IFRAME_READY':
+          // Iframe is ready, send payment data
+          console.log('Iframe is ready, sending payment data...');
+          if (showIframe && iframeRef.current && paymentData) {
+            setTimeout(() => {
+              if (iframeRef.current && iframeRef.current.contentWindow) {
+                console.log('Sending payment data to iframe:', paymentData);
+                iframeRef.current.contentWindow.postMessage({
+                  type: 'INIT_PAYMENT',
+                  params: paymentData
+                }, '*');
+              }
+            }, 100);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [showIframe, paymentData]);
+
+  const handlePaymentSuccess = async (paymentData) => {
+    setElectronicPaymentSystemReference(paymentData.SystemReference);
+    
+    try {
+      // Update payment record with gateway response
+      const response = await DoTransaction(
+        "rCSWIwrXh3HGKRYh9gCA8g==",
+        `${afterSaveElectronicPaymentIdRef.current}#${totalAmount}#${paymentData.SystemReference}#${paymentData.NetworkReference}`,
+        1,
+        "Id#PaymentValue#SystemReference#NetworkReference"
+      );
+      
+      console.log('Payment update response:', response);
+      
+      // Close iframe
+      setShowIframe(false);
+      setIsOpeningGateway(false);
+      
+      // Show success message
+      toast.success('تم الدفع بنجاح');
+      
+      // Reset all states
+      resetForm();
+      dispatch(setShowPopup(false));
+      dispatch(closeAllPopups());
+      
+      // Handle post-payment actions
+      handlePostPaymentActions();
+      
+    } catch (error) {
+      console.error('Error updating payment:', error);
+      toast.error('حدث خطأ أثناء تحديث حالة الدفع');
+    }
+  };
+
+  const handlePaymentError = (errorData) => {
+    console.error('Payment error:', errorData);
+    setShowIframe(false);
+    setIsOpeningGateway(false);
+    toast.error(`فشل الدفع: ${errorData.error || 'حدث خطأ غير معروف'}`);
+  };
+
+  const handlePaymentCancelled = () => {
+    console.log('Payment was cancelled by user');
+    setShowIframe(false);
+    setIsOpeningGateway(false);
+    toast.info('تم إلغاء الدفع');
+  };
+
+  const handlePostPaymentActions = () => {
+    if (Salla && JSON.parse(localStorage.getItem("UserData"))?.Id) {
+      const handleFetchCartData = async () => {
+        try {
+          const data = await executeProcedure(
+            "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
+            JSON.parse(localStorage.getItem("UserData")).Id
+          );
+          dispatch(setCartData(data.decrypted));
+        } catch (error) {
+          console.error('Error fetching cart data:', error);
+        }
+      };
+      handleFetchCartData();
+      navigate("/");
+    }
+    
+    if (actionID == 1 || actionID == 2) {
+      showReminderPopup();
+    }
+  };
+
+  const showReminderPopup = () => {
+    toast.info(
+      <div className="flex flex-col gap-3">
+        <span className="font-semibold">تريد انشاء تذكير؟</span>
+        <div className="flex gap-2">
+          <button
+            className="px-3 py-1 bg-emerald-600 text-white rounded-md"
+            onClick={() => {
+              toast.dismiss();
+              navigate("/remember");
+            }}
+          >
+            ذهاب
+          </button>
+          <button
+            className="px-3 py-1 border rounded-md"
+            onClick={() => toast.dismiss()}
+          >
+            إلغاء
+          </button>
+        </div>
+      </div>,
+      {
+        autoClose: false,
+        closeOnClick: false,
+      }
+    );
+  };
+
+  const resetForm = () => {
+    setDonationType(null);
+    setLocalMethod(null);
+    setSelectedInternationalAccount("");
+    setSelectedLocalAccount("");
+    setSelectedInternationalAccountNumber("");
+    setSelectedLocalAccountNumber("");
+    setUploadedFileId("");
+    setUploadedFileName("");
+    setFileError("");
+    setPaymentData(null);
+  };
+
+  // Open payment gateway in iframe
+  const openPaymentGateway = async () => {
+    setIsOpeningGateway(true);
+    
+    try {
+      // Fetch payment parameters
+      const GetElectParametersData = await executeProcedure(
+        "XPkLod2NSVCM0aXC325W4FRbmaZdYSv5oKkVb3jxQ6w=",
+        `${officeId}#${actionID == 1 ? 1 : 2}#$????`
+      );
+
+      const electparametersData = JSON.parse(GetElectParametersData.decrypted.ElectParametersData);
+      console.log('Payment parameters:', electparametersData);
+      
+      if (!electparametersData || electparametersData.length === 0) {
+        throw new Error('No payment parameters found');
+      }
+      
+      // Generate merchant reference
+      if (!merchantRef.current) {
+        merchantRef.current = crypto.randomUUID();
+      }
+      
+      const merchRef = merchantRef.current;
+      
+      // Save initial payment record
+      await callPaymentProcedure({
+        bankId: electparametersData[0].Bank_Id,
+        accountNum: electparametersData[0].AccountNum,
+        Merchant_Id: electparametersData[0].Merchant_Id,
+        Terminal_Id: electparametersData[0].Terminal_Id,
+        MerchantReference: merchRef
+      });
+      
+      // Prepare payment data for gateway
+      const paymentParams = {
+        mID: electparametersData[0].Merchant_Id,
+        tID: electparametersData[0].Terminal_Id,
+        merchantKey: electparametersData[0].Secure_key,
+        merchantReference: merchRef,
+        amount: totalAmount
+      };
+      
+      console.log('Payment params prepared:', paymentParams);
+      
+      // Store payment data to send to iframe when it's ready
+      setPaymentData(paymentParams);
+      
+      // Open iframe with payment gateway
+      setIframeKey(prev => prev + 1);
+      setShowIframe(true);
+      
+    } catch (error) {
+      console.error('Error opening payment gateway:', error);
+      setIsOpeningGateway(false);
+      toast.error('فشل في فتح بوابة الدفع');
+    }
+  };
+
+  // When iframe loads, check if we have payment data to send
+  useEffect(() => {
+    if (showIframe && iframeRef.current && paymentData) {
+      console.log('Iframe shown, checking if ready to send data...');
+    }
+  }, [showIframe, paymentData]);
 
   const handleUploadClick = () => {
     if (fileRef.current && !isUploading) {
@@ -81,14 +294,12 @@ const PayComponent = ({
   const handleFileUpload = async (file) => {
     if (!file) return;
 
-    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
     if (!allowedTypes.includes(file.type)) {
       setFileError("يرجى رفع ملف من النوع: PDF, PNG, JPG, JPEG فقط");
       return;
     }
 
-    // Clear any previous errors
     setFileError("");
     setIsUploading(true);
     setUploadProgress(0);
@@ -101,23 +312,22 @@ const PayComponent = ({
         action: "Add",
         file: file,
         fileId: "",
-        SessionID: "", // You'll need to provide the actual SessionID
+        SessionID: "",
         onProgress: (progress) => {
           setUploadProgress(progress);
         }
       });
 
-      
-
       if (result.status === 200) {
         setUploadedFileId(result.id);
         setUploadedFileName(file.name);
-        
       } else {
         console.error("Upload failed:", result.error);
+        setFileError("فشل رفع الملف. حاول مرة أخرى");
       }
     } catch (error) {
       console.error("Upload error:", error);
+      setFileError("حدث خطأ أثناء رفع الملف");
     } finally {
       setIsUploading(false);
     }
@@ -127,299 +337,108 @@ const PayComponent = ({
     if (!uploadedFileId && (donationType === "international" || localMethod === "bank")) {
       return;
     }
+    
     setIsProcessing(true);
 
     try {
-      // Determine payment way and method based on selection
       let paymentWayId = "2";
       let paymentMethodIdValue = "1";
+      
       if (donationType === "international") {
-        paymentWayId = "1"; // دولي
-        paymentMethodIdValue = "0"; // حوالة بنكية
+        paymentWayId = "1";
+        paymentMethodIdValue = "0";
       } else if (donationType === "local") {
-        paymentWayId = "2"; // محلي
-        paymentMethodIdValue = localMethod === "electronic" ? "1" : "2"; // 1: دفع الكتروني, 2: حوالة بنكية
+        paymentWayId = "2";
+        paymentMethodIdValue = localMethod === "electronic" ? "1" : "2";
       }
 
-      // Get current date in YYYY-MM-DD format
       const currentDate = new Date();
       const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
 
-      // Prepare account number based on selection
       let accountNum = "";
       let bankId = "0";
 
       if (donationType === "international") {
         accountNum = selectedInternationalAccountNumber;
-        // For international, Bank_Id should be the actual bank ID from the selected account
         const selectedAccount = JSON.parse(selectedInternationalAccount);
         bankId = selectedAccount.BankId || selectedAccount.Id || "0";
       } else if (donationType === "local" && localMethod === "bank") {
         accountNum = selectedLocalAccountNumber;
-        // For local, Bank_Id should be the bank account ID
         const selectedAccount = JSON.parse(selectedLocalAccount);
         bankId = selectedAccount.Bank_Id || "0";
       }
 
-      // Prepare parameters according to the specified format
-      // paymentMethodIdValue == 1 for electronic 
-      console.log(paymentMethodIdValue)
-      console.log(saveElectronicDataBeforePayment?.Merchant_Id)
       const params = [
-        "0", // Id
-        formattedDate, // PaymentDate
-        PaymentDesc==""?electronicPaymentSystemReference:PaymentDesc, // PaymentDesc (فاضي)
-        paymentMethodIdValue == 1 ? 0 : totalAmount.toString(), // PaymentValue
-        actionID, // Action_Id (زكاة)
-        paymentWayId, // PaymentWay_Id
-        paymentMethodIdValue, // PaymentMethod_Id
-        SubventionType_Id, // SubventionType_Id
-        Project_Id, // Project_Id
-        officeId || "0", // Office_Id
-        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.bankId : bankId, // Bank_Id - fixed to use proper bank ID
-        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.accountNum : accountNum, // AccountNum - now properly set
-        uploadedFileId || "", // AttachmentPhotoName
-        paymentMethodIdValue == 1 ? "True" : "False", // IsApproved
-        JSON.parse(localStorage.getItem("UserData"))?.Id || 0 , // GeneralUser_Id
+        "0",
+        formattedDate,
+        PaymentDesc === "" ? electronicPaymentSystemReference : PaymentDesc,
+        paymentMethodIdValue == 1 ? 0 : totalAmount.toString(),
+        actionID,
+        paymentWayId,
+        paymentMethodIdValue,
+        SubventionType_Id,
+        Project_Id,
+        officeId || "0",
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.bankId : bankId,
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.accountNum : accountNum,
+        uploadedFileId || "",
+        paymentMethodIdValue == 1 ? "True" : "False",
+        JSON.parse(localStorage.getItem("UserData"))?.Id || 0,
         paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.Merchant_Id : "",
         paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.Terminal_Id : "",
         paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.MerchantReference : "",
         "",
         ""
       ].join("#");
-      
 
       const response = await DoTransaction("rCSWIwrXh3HGKRYh9gCA8g==", params);
-
-      console.log(response);
+      console.log("Payment procedure response:", response);
+      
       afterSaveElectronicPaymentIdRef.current = response.id;
 
       if (response?.success) {
-        // Reset form or navigate to success page
-        // Reset all states
-        setDonationType(null);
-        setLocalMethod(null);
-        setSelectedInternationalAccount("");
-        setSelectedLocalAccount("");
-        setSelectedInternationalAccountNumber("");
-        setSelectedLocalAccountNumber("");
-        setUploadedFileId("");
-        setUploadedFileName("");
-        setFileError(""); // Clear file error on success
-        if(paymentMethodIdValue != 1){
-          toast.success("تم الدفع بنجاح")
-        }
-        dispatch(setShowPopup(false));
-        dispatch(closeAllPopups());
-        
-        
-        if(Salla && JSON.parse(localStorage.getItem("UserData")).Id){
-            const handleFetchCartData =   async () => {
+        if (paymentMethodIdValue != 1) {
+          toast.success("تم الدفع بنجاح");
+          resetForm();
+          dispatch(setShowPopup(false));
+          dispatch(closeAllPopups());
+          
+          if (Salla && JSON.parse(localStorage.getItem("UserData"))?.Id) {
+            const handleFetchCartData = async () => {
               const data = await executeProcedure(
                 "ErZm8y9oKKuQnK5LmJafNAUcnH+bSFupYyw5NcrCUJ0=",
                 JSON.parse(localStorage.getItem("UserData")).Id
               );
               dispatch(setCartData(data.decrypted));
-            } 
+            };
             handleFetchCartData();
-            navigate("/")
-        }
-        console.log(actionID);
-        
-        if(actionID == 1 || actionID==2){
-          toast.info(
-            <div className="flex flex-col gap-3">
-              <span className="font-semibold">
-                تريد انشاء تذكير ؟
-              </span>
-
-              <div className="flex gap-2">
-                <button
-                  className="px-3 py-1 bg-emerald-600 text-white rounded-md"
-                  onClick={() => {
-                    toast.dismiss();
-                    navigate("/remember");
-                  }}
-                >
-                  ذهاب
-                </button>
-
-                <button
-                  className="px-3 py-1 border rounded-md"
-                  onClick={() => toast.dismiss()}
-                >
-                  إلغاء
-                </button>
-              </div>
-            </div>,
-            {
-              autoClose: false,
-              closeOnClick: false,
-            }
-          );
-
+            navigate("/");
+          }
+          
+          if (actionID == 1 || actionID == 2) {
+            showReminderPopup();
+          }
         }
       }
 
     } catch (error) {
       console.error("Error calling payment procedure:", error);
+      toast.error("حدث خطأ أثناء معالجة الدفع");
     } finally {
       setIsProcessing(false);
     }
   };
-  
-  useEffect(() => {
-    // Bootstrap bundle
-    const bootstrapScript = document.createElement("script");
-    bootstrapScript.src = "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.bundle.min.js.map";
-    bootstrapScript.async = true;
-    document.body.appendChild(bootstrapScript);
-
-    // CryptoJS
-    const cryptoScript = document.createElement("script");
-    cryptoScript.src = "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js";
-    cryptoScript.integrity = "sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==";
-    cryptoScript.crossOrigin = "anonymous";
-    cryptoScript.referrerPolicy = "no-referrer";
-    cryptoScript.async = true;
-    document.body.appendChild(cryptoScript);
-
-    // Lightbox
-    const lightboxScript = document.createElement("script");
-    lightboxScript.src = "https://npg.moamalat.net:6006/js/lightbox.js";
-    lightboxScript.async = true;
-    document.body.appendChild(lightboxScript);
-
-    // Cleanup
-    return () => {
-      document.body.removeChild(bootstrapScript);
-      document.body.removeChild(cryptoScript);
-      document.body.removeChild(lightboxScript);
-    };
-  }, []);
-  
-function Do(){
-    setIsOpeningGateway(true);
-    callLightbox(totalAmount);
-    //Lightbox.Checkout.showLightbox();
-}
-function formatAmount(amount) {
-  const str = String(amount);
-  if (!str.includes(".")) {
-    return str + "000";
-  }
-
-  let [intPart, decimalPart] = str.split(".");
-
-  decimalPart = (decimalPart + "000").slice(0, 3);
-
-  return intPart + decimalPart; // 122.333 → 122333
-}
-
-  const callLightbox = useCallback( async (amount) => {
-    const GetElectParametersData = await executeProcedure("XPkLod2NSVCM0aXC325W4FRbmaZdYSv5oKkVb3jxQ6w=",`${officeId}#${actionID == 1 ? 1 : 2}#$????`);
-    const electparametersData = JSON.parse(GetElectParametersData.decrypted.ElectParametersData) ;
-    console.log(electparametersData);
-
-      
-    var mID=electparametersData[0].Merchant_Id;
-    var tID=electparametersData[0].Terminal_Id;
-    var merchantKey= electparametersData[0].Secure_key;
-    if (!merchantRef.current) {
-      merchantRef.current = crypto.randomUUID();
-    }
-
-    const merchRef = merchantRef.current;
-    await callPaymentProcedure({
-      bankId: electparametersData[0].Bank_Id,
-      accountNum: electparametersData[0].AccountNum ,
-      Merchant_Id : electparametersData[0].Merchant_Id,
-      Terminal_Id : electparametersData[0].Terminal_Id,
-      MerchantReference : merchRef
-    });
-
-    if (mID === '' || tID === '') {
-      return;
-    }
-
-    var dt = new Date().YYYYMMDDHHMMSS().substring(0, 12);
-    
-    var hmacSHA256 = '';
-    if(merchantKey) {
-      var keyHex = CryptoJS.enc.Hex.parse(merchantKey);
-      var strHashData = 'Amount='+amount+'000&DateTimeLocalTrxn='+dt+'&MerchantId='+mID+'&MerchantReference='+merchRef+'&TerminalId='+tID;
-      hmacSHA256 = CryptoJS.HmacSHA256(strHashData, keyHex).toString().toUpperCase();
-    }
-
-    // Clear any existing toasts with the same ID
-    toast.dismiss('cancel-payment');
-    toast.dismiss('payment-error');
-
-    window.Lightbox.Checkout.configure = {
-      MID: mID,
-      TID: tID,
-      AmountTrxn: formatAmount(amount),
-      MerchantReference: merchRef,
-      TrxDateTime: dt,
-      SecureHash: hmacSHA256,
-
-      completeCallback: async function (data) {
-        setElectronicPaymentSystemReference(data.SystemReference);
-        const response = await DoTransaction(
-          "rCSWIwrXh3HGKRYh9gCA8g==",
-          `${afterSaveElectronicPaymentIdRef.current}#${totalAmount}#${data.SystemReference}#${data.NetworkReference}`,
-          1,
-          "Id#PaymentValue#SystemReference#NetworkReference"
-        ) ;
-        console.log(response);
-        
-        // toast.success('تم الدفع بنجاح')
-        setIsOpeningGateway(false);
-      },
-
-      errorCallback: function (data) {
-        setIsOpeningGateway(false);
-        // Use a unique toastId to prevent duplicates
-        toast.error('Payment Failed: ' + data.error, { 
-          toastId: 'payment-error',
-          autoClose: 3000 
-        });
-      },
-
-      cancelCallback: function () {
-        setIsOpeningGateway(false);
-        // Use a unique toastId to prevent duplicates
-        // toast.error('تم الالغاء', { 
-        //   toastId: 'cancel-payment',
-        //   autoClose: 3000 
-        // });
-      }
-    };
-
-    try {
-      window.Lightbox.Checkout.showLightbox();
-    } catch (error) {
-      setIsOpeningGateway(false);
-      console.error('Error calling showLightbox:', error);
-    }
-  }, [totalAmount]); // Add dependencies if needed
 
   const handlePayNow = () => {
-    // For electronic payment without file upload
     if (donationType === "local" && localMethod === "electronic") {
-      Do()
-    } 
-    // For bank transfers with file upload
-    else if (uploadedFileId) {
+      openPaymentGateway();
+    } else if (uploadedFileId) {
       callPaymentProcedure();
-    } 
-    // For bank transfers without file upload yet
-    
-    // If no donation type selected
-    
+    } else {
+      toast.error("يرجى رفع ملف إيصال الدفع");
+    }
   };
 
-  // Check if pay button should be enabled
   const isPayButtonEnabled = () => {
     if (isUploading || isProcessing || isOpeningGateway || !donationType) return false;
 
@@ -450,7 +469,7 @@ function formatAmount(amount) {
     };
 
     fetchData();
-  }, []);
+  }, [actionID]);
 
   // Local Bank Accounts Data
   useEffect(() => {
@@ -463,11 +482,7 @@ function formatAmount(amount) {
           params
         );
         
-        
-        
         const localData = JSON.parse(response?.decrypted?.OfficeBanksData || "[]");
-        
-        
         setLocalBankAccountsData(localData);
       } catch (error) {
         console.error("Error fetching local bank accounts:", error);
@@ -475,24 +490,66 @@ function formatAmount(amount) {
       }
     };
 
-    if (officeId && actionID!=12) {
+    if (officeId && actionID != 12) {
       fetchData();
+    } else {
+      const fetchZemaAccounts = async () => {
+        const params = `1`;
+        const response = await executeProcedure(
+          "NJ4Pn13/Fmu75bylIUDbD5FLwUl6QiMGGZ0Okh5MPas=",
+          params
+        );
+        setLocalBankAccountsData(JSON.parse(response.decrypted.EbraBankAccountsData));
+      };
+      fetchZemaAccounts();
     }
-    else{
-        const fetchZemaAccounts = async ()=>{
-          const params = `1`;
-            const response = await executeProcedure(
-              "NJ4Pn13/Fmu75bylIUDbD5FLwUl6QiMGGZ0Okh5MPas=",
-              params
-            );
-            setLocalBankAccountsData(JSON.parse(response.decrypted.EbraBankAccountsData));
-        }
-        fetchZemaAccounts() ;
-    }
-  }, [officeId, serviceTypeId, paymentMethodId]);
+  }, [officeId, serviceTypeId, paymentMethodId, actionID]);
+
 
   return (
     <div className="flex flex-col h-full">
+      {/* Payment Gateway Iframe Modal */}
+      <AnimatePresence>
+        {showIframe && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-lg shadow-2xl w-[90%] max-w-2xl h-[80%] flex flex-col"
+            >
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="text-lg font-semibold">بوابة الدفع الإلكتروني</h3>
+                <button
+                  onClick={() => setShowIframe(false)}
+                  className="p-1 hover:bg-gray-100 rounded-full"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="flex-1 relative">
+                <iframe
+                  key={iframeKey}
+                  ref={iframeRef}
+                  src={PAYMENT_GATEWAY_URL}
+                  className="w-full h-full border-0"
+                  title="Payment Gateway"
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+                  allow="payment"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="p-4 flex-1 overflow-y-auto">
         <p className="text-lg font-semibold mb-6">المكاتب</p>
         <input
