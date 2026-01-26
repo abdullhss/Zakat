@@ -28,10 +28,10 @@ const DonateTo = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  
-  // Check if we're on the office route and extract office data
-  const isOfficeRoute = location.pathname === "/office";
-  const officeDataFromRoute = isOfficeRoute ? searchParams.get("data") : null;
+  const Officeid = searchParams.get("Officeid");
+  const officeName = searchParams.get("officeName");
+  // Check if office is passed via URL params
+  const isOfficeFromRoute = Officeid && officeName;
 
   // Fetch offices data only if not on office route
   useEffect(() => {
@@ -71,22 +71,15 @@ const DonateTo = () => {
       }
     };
 
-    // If on office route, set the office from URL parameters
-    if (isOfficeRoute && officeDataFromRoute) {
-      try {
-        const decodedData = JSON.parse(decodeURIComponent(officeDataFromRoute));
-        setSelectedOffice(decodedData.Id);
-        setLoading(prev => ({ ...prev, offices: false }));
-      } catch (error) {
-        console.error("Error parsing office data from URL:", error);
-        setError(prev => ({ ...prev, offices: "خطأ في تحميل بيانات المكتب" }));
-        setLoading(prev => ({ ...prev, offices: false }));
-      }
+    // If office is passed via URL params, set it directly
+    if (isOfficeFromRoute && Officeid) {
+      setSelectedOffice(Officeid);
+      setLoading(prev => ({ ...prev, offices: false }));
     } else {
-      // Only fetch offices if not on office route
+      // Only fetch offices if not from route
       fetchData();
     }
-  }, [isOfficeRoute, officeDataFromRoute]);
+  }, [isOfficeFromRoute, Officeid]);
 
   // Fetch subvention types when office is selected
   useEffect(() => {
@@ -214,21 +207,10 @@ const DonateTo = () => {
       return;
     }
     
-    // Get office name - try to get from URL data first, then from fetched offices
-    let officeName = '';
-    if (isOfficeRoute && officeDataFromRoute) {
-      try {
-        const decodedData = JSON.parse(decodeURIComponent(officeDataFromRoute));
-        officeName = decodedData.OfficeName || '';
-      } catch (error) {
-        console.error("Error getting office name from URL:", error);
-      }
-    }
-    
-    // If we don't have office name from URL, try to get from fetched offices
-    if (!officeName) {
-      officeName = offices.find(office => office.Id == selectedOffice)?.OfficeName || '';
-    }
+    // Get office name - use from URL if available, otherwise from fetched offices
+    const finalOfficeName = isOfficeFromRoute 
+      ? officeName 
+      : offices.find(office => office.Id == selectedOffice)?.OfficeName || '';
 
     // Create description with name and phone
     const paymentDescription = `${donorName} - ${donorPhone}`;
@@ -239,7 +221,7 @@ const DonateTo = () => {
         component: (
           <PayComponent
             officeId={selectedOffice}
-            officeName={officeName}
+            officeName={finalOfficeName}
             SubventionType_Id={selectedSubvention || '0'}
             totalAmount={donationAmount}
             Project_Id='0'
@@ -251,15 +233,10 @@ const DonateTo = () => {
     );
   };
 
-  // Get office name for display when on office route
+  // Get office name for display
   const getCurrentOfficeName = () => {
-    if (isOfficeRoute && officeDataFromRoute) {
-      try {
-        const decodedData = JSON.parse(decodeURIComponent(officeDataFromRoute));
-        return decodedData.OfficeName || "المكتب المحدد";
-      } catch (error) {
-        return "المكتب المحدد";
-      }
+    if (isOfficeFromRoute) {
+      return officeName || "المكتب المحدد";
     }
     return offices.find(office => office.Id == selectedOffice)?.OfficeName || "";
   };
@@ -267,8 +244,8 @@ const DonateTo = () => {
   return (
     <>
       <div  className='flex flex-col gap-4 m-8'>
-        {/* Office Selection - Only show if not on office route */}
-        {!isOfficeRoute && (
+        {/* Office Selection - Only show if not from route */}
+        {!isOfficeFromRoute && (
           <div className='flex flex-col gap-4'>
             <span className='font-bold text-lg'>المكاتب</span>
             {loading.offices ? (
@@ -292,8 +269,8 @@ const DonateTo = () => {
           </div>
         )}
 
-        {/* Show current office info when on office route */}
-        {isOfficeRoute && selectedOffice && (
+        {/* Show current office info when from route */}
+        {isOfficeFromRoute && selectedOffice && (
           <div className='flex flex-col gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
             <span className='font-bold text-lg'>المكتب المحدد</span>
             <div className='py-2 px-3 bg-white border border-gray-300 rounded-md'>
@@ -369,13 +346,13 @@ const DonateTo = () => {
 
         {/* Donor Phone Input */}
         <div className="flex flex-col gap-2">
-          <span className='font-bold text-lg'>رقم المتبرع له</span>
+          <span className='font-bold text-lg'>رقم هاتف المتبرع له </span>
 
           <input
             type="tel"
             value={donorPhone}
             onChange={handleDonorPhoneChange}
-            placeholder="أدخل رقم المتبرع له"
+            placeholder="أدخل رقم هاتف المتبرع له "
             className={`w-full px-3 py-3 border-2 rounded-lg text-sm md:text-base 
               focus:outline-none focus:ring-2 
               ${phoneError ? "border-red-500 focus:ring-red-500" : "border-[#979797] focus:ring-emerald-600"}

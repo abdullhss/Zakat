@@ -11,6 +11,8 @@ export const getBase64 = (file) => {
   });
 };
 //  BASE_URL: "https://client-frw.almedadsoft.com/emsserver.dll/ERPDatabaseWorkFunctions/",
+//  BASE_URL: "https://api.wasl.zakatfund.gov.ly/emsserver.dll/ERPDatabaseWorkFunctions/",
+//             https://framework.md-license.com:8093/emsserver.dll/ERPDatabaseWorkFunctions
 const CONFIG = {
   API_TOKEN: "TTRgG@i$$ol@m$Wegh77",
   DATA_TOKEN: "Zakat",

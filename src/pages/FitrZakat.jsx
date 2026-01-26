@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { setShowPopup, setPopupComponent , setPopupTitle} from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
-
+import { useSearchParams } from 'react-router-dom';
 const FitrZakat = () => {
   const [isAllowed, setIsAllowed] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,8 +13,11 @@ const FitrZakat = () => {
   const [fitrZakatTypes, setFitrZakatTypes] = useState([]);
   const [personCounts, setPersonCounts] = useState({});
   const [totals, setTotals] = useState({});
-
+  const [searchParams] = useSearchParams();
+  const Officeid = searchParams.get("Officeid");
+  const officeName = searchParams.get("officeName");
   const dispatch = useDispatch() ;
+  const isOfficeFromRoute = Officeid && officeName;
 
     const handleOfficeChange = (e) => {
         const id = e.target.value;
@@ -101,11 +104,20 @@ const FitrZakat = () => {
         "mdemtAbueh2oz+k6MjjaFaOfTRzNK4XQQy0TBhCaV0Y=",
         "0"
       );
-      setOffices(JSON.parse(response.decrypted.OfficesData));
+      const officesData = JSON.parse(response.decrypted.OfficesData);
+      setOffices(officesData);
+      
+      // If Officeid is in URL, pre-select the office
+      if (Officeid && officeName) {
+        const officeObj = officesData.find(o => o.Id == Officeid);
+        if (officeObj) {
+          setSelectedOffice(officeObj);
+        }
+      }
     };
 
     fetchdata();
-  }, []);
+  }, [Officeid, officeName]);
 
   useEffect(() => {
     const fetchdata = async () => {
@@ -140,12 +152,16 @@ const FitrZakat = () => {
     console.log(selectedOffice);
       const paymentDesc = buildPaymentDescription();
       
+      // Use office name from URL if available, otherwise from selectedOffice
+      const finalOfficeName = isOfficeFromRoute ? officeName : selectedOffice.OfficeName;
+      const finalOfficeId = isOfficeFromRoute ? Officeid : selectedOffice.Id;
+      
         dispatch(setPopupTitle("الدفع"))
         dispatch(setPopupComponent(
           <PayComponent
-          officeName={selectedOffice.OfficeName}
+          officeName={finalOfficeName}
           PaymentDesc={paymentDesc}
-          officeId={selectedOffice.Id}
+          officeId={finalOfficeId}
           totalAmount={totals.grandTotal}
           actionID={11}
           currency="دينار"
@@ -178,19 +194,28 @@ const FitrZakat = () => {
         {/* Office Selection */}
         <div className="mb-8">
             <label className="block text-lg font-semibold mb-3 text-right">
-            اختر المكتب
+            {isOfficeFromRoute ? "المكتب المحدد" : "اختر المكتب"}
             </label>
-            <select
-            value={selectedOffice?.Id || ""}
-            onChange={handleOfficeChange}
-            className="w-full border-2 border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold text-right"
-            disabled={loading}
-            >
-            <option className="bg-white text-black" value="">
-                {loading ? "جاري تحميل المكاتب..." : "اختر مكتب"}
-            </option>
-            {renderOfficeOptions()}
-            </select>
+            {isOfficeFromRoute ? (
+              <div className="w-full border-2 border-gray-300 rounded-lg p-3 bg-gray-50 font-semibold text-right">
+                {officeName || selectedOffice?.OfficeName}
+                <p className="text-sm text-gray-600 mt-2 font-normal">
+                  تم تحديد هذا المكتب مسبقاً. يمكنك اختيار أنواع زكاة الفطر والمبالغ.
+                </p>
+              </div>
+            ) : (
+              <select
+              value={selectedOffice?.Id || ""}
+              onChange={handleOfficeChange}
+              className="w-full border-2 border-gray-300 rounded-lg p-3 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold text-right"
+              disabled={loading}
+              >
+              <option className="bg-white text-black" value="">
+                  {loading ? "جاري تحميل المكاتب..." : "اختر مكتب"}
+              </option>
+              {renderOfficeOptions()}
+              </select>
+            )}
         </div>
 
         {/* Zakat Types */}

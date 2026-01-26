@@ -79,6 +79,7 @@ function Home() {
           className="z-10 mx-auto px-4 flex flex-col gap-4"
           style={{
             backgroundImage: "url('/background pattern.png')",
+            backgroundPosition: "center",
             backgroundRepeat: "repeat",
             backgroundSize: "auto",
           }}

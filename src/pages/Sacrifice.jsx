@@ -7,6 +7,7 @@ import { DoMultiTransaction, executeProcedure } from '../services/apiServices'
 import { useDispatch } from 'react-redux'
 import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
+import { useSearchParams } from 'react-router-dom'
 
 const Sacrifice = () => {
   const [accordions, setAccordions] = useState([
@@ -38,6 +39,10 @@ const Sacrifice = () => {
   const [selectedCity, setSelectedCity] = useState('')
   const [ projectId , setProjectId] = useState() ;
   const dispatch = useDispatch() ; 
+  const [searchParams] = useSearchParams();
+  const Officeid = searchParams.get("Officeid");
+  const officeName = searchParams.get("officeName");
+  const isOfficeFromRoute = Officeid && officeName;
 
   console.log(selectedOffice);
   
@@ -200,6 +205,12 @@ const Sacrifice = () => {
       alert('يرجى اختيار المكتب أولاً')
       return
     }
+    
+    // Use office name from URL if available, otherwise from fetched offices
+    const finalOfficeName = isOfficeFromRoute 
+      ? officeName 
+      : offices.find(office => office.Id.toString() === selectedOffice)?.OfficeName || '';
+    
     dispatch(setPopupTitle("الدفع"));
     dispatch(setPopupComponent(
       <PayComponent
@@ -207,7 +218,7 @@ const Sacrifice = () => {
       actionID={8}
       officeId={selectedOffice}
       totalAmount={totalPrice}
-      officeName={offices.find(office => office.Id.toString() === selectedOffice)?.OfficeName}
+      officeName={finalOfficeName}
       />
     ));
     dispatch(setShowPopup(true));
@@ -235,6 +246,13 @@ const Sacrifice = () => {
   useEffect(() => {
     getAllOffices();
   }, []);
+
+  // Pre-select office from URL if available
+  useEffect(() => {
+    if (isOfficeFromRoute && Officeid && offices.length > 0) {
+      setSelectedOffice(Officeid);
+    }
+  }, [isOfficeFromRoute, Officeid, offices]);
 
   // Filter offices by selected city
   const filteredOffices = selectedCity 
@@ -289,7 +307,9 @@ const Sacrifice = () => {
                 <div className='flex items-center gap-2 font-bold'>
                   <h4 className="font-semibold text-[#16343A] text-sm ">المكتب المختار:</h4>
                   <p className="text-[#16343A] text-sm">
-                    {offices.find(office => office.Id.toString() === selectedOffice)?.OfficeName}
+                    {isOfficeFromRoute 
+                      ? officeName 
+                      : offices.find(office => office.Id.toString() === selectedOffice)?.OfficeName}
                   </p>
                 </div>
               )}
@@ -390,20 +410,29 @@ const Sacrifice = () => {
               {/* Office Selection */}
               <div>
                 <label className="font-bold block text-lg text-[#16343A] mb-2 text-right">
-                  اختر المكتب
+                  {isOfficeFromRoute ? "المكتب المحدد" : "اختر المكتب"}
                 </label>
-                <select
-                  value={selectedOffice}
-                  onChange={(e) => setSelectedOffice(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border-2 font-medium border-gray-300 focus:border-[#18383D] focus:ring-2 focus:ring-[#18383D] focus:ring-opacity-20 outline-none transition-all text-right bg-white"
-                >
-                  <option value="">اختر المكتب</option>
-                  {filteredOffices.map((office) => (
-                    <option key={office.Id} value={office.Id}>
-                      {office.OfficeName}
-                    </option>
-                  ))}
-                </select>
+                {isOfficeFromRoute ? (
+                  <div className="w-full px-4 py-3 rounded-lg border-2 font-medium border-gray-300 bg-gray-50 text-right">
+                    {officeName || selectedOffice}
+                    <p className="text-sm text-gray-600 mt-2 font-normal">
+                      تم تحديد هذا المكتب مسبقاً. يمكنك اختيار أنواع الأضاحي والكميات.
+                    </p>
+                  </div>
+                ) : (
+                  <select
+                    value={selectedOffice}
+                    onChange={(e) => setSelectedOffice(e.target.value)}
+                    className="w-full px-4 py-3 rounded-lg border-2 font-medium border-gray-300 focus:border-[#18383D] focus:ring-2 focus:ring-[#18383D] focus:ring-opacity-20 outline-none transition-all text-right bg-white"
+                  >
+                    <option value="">اختر المكتب</option>
+                    {filteredOffices.map((office) => (
+                      <option key={office.Id} value={office.Id}>
+                        {office.OfficeName}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
           </div>
