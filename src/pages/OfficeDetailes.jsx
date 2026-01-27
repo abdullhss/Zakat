@@ -15,7 +15,6 @@ import officeBanner from "../../public/header backgrounds/Maktab.png"
 import { useImageContext } from '../Context/imageContext.jsx';
 import PropTypes from 'prop-types';
 
-
 import { useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import ServiceCard from '../components/ServiceCard'
@@ -27,37 +26,90 @@ import DonateRequest from "../public/SVGs/DonateRequest.svg";
 import rememberIcon from "../../public/remember-1-svgrepo-com.svg" 
 import food from "../../public/food-svgrepo-com.svg" 
 
-
 const OfficeDetailes = () => {
   const [activeTab, setActiveTab] = useState('opportunities');
   const [currentView, setCurrentView] = useState({ type: 'main', data: null });
   const [officeData, setOfficeData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
-  const [statisticalData , setStatisticalData] = useState(null);
+  const [statisticalData, setStatisticalData] = useState(null);
   const { images } = useImageContext();
+
+  // Extract office ID from URL
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const dataParam = urlParams.get('data');
-    
-    if (dataParam) {
-      try {
-        const decodedData = decodeURIComponent(dataParam);
-        const parsedData = JSON.parse(decodedData);
-        setOfficeData(parsedData);
-      } catch (error) {
-        console.error('Error parsing office data from URL:', error);
+    const getOfficeIdFromUrl = () => {
+      const urlParams = new URLSearchParams(location.search);
+      
+      // Try to get office ID from the new format (officeId parameter)
+      let officeId = urlParams.get('officeId');
+      
+      // If not found in new format, try the old format with data parameter
+      if (!officeId) {
+        const dataParam = urlParams.get('data');
+        if (dataParam) {
+          try {
+            const decodedData = decodeURIComponent(dataParam);
+            const parsedData = JSON.parse(decodedData);
+            // Extract ID from the old format
+            officeId = parsedData.Id || parsedData.id;
+          } catch (error) {
+            console.error('Error parsing office data from URL:', error);
+          }
+        }
       }
+      
+      return officeId;
+    };
+
+    const officeId = getOfficeIdFromUrl();
+    
+    if (officeId) {
+      fetchOfficeData(officeId);
+    } else {
+      console.error('No office ID found in URL');
+      setLoading(false);
     }
   }, [location]);
 
-  useEffect(() => {
-    const fetchStatisticalData = async () => {
-      const response = await executeProcedure("Pnl2I5yvrTFeVH96QlzAsUDfACCXKoNvDpsIS2YJ77E=" , `${officeData.Id}#0`)
-      console.log(response);
-      setStatisticalData(response.decrypted) ;
-    };
-    fetchStatisticalData() ;
-  }, [officeData])
+  // Fetch office data from API
+  const fetchOfficeData = async (officeId) => {
+    setLoading(true);
+    try {
+      const response = await executeProcedure(
+        "5xJLdRhPAVFesIaSW5zQItZrXcRd4zmEDhXFi9diKCA=",
+        `${officeId}`
+      );
+      
+      const officeDataArray = JSON.parse(response.decrypted.OfficeData);
+      if (officeDataArray && officeDataArray.length > 0) {
+        setOfficeData(officeDataArray[0]);
+        
+        // Fetch statistical data after office data is loaded
+        fetchStatisticalData(officeId);
+      } else {
+        console.error('No office data found');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error fetching office data:', error);
+      setLoading(false);
+    }
+  };
+
+  // Fetch statistical data
+  const fetchStatisticalData = async (officeId) => {
+    try {
+      const response = await executeProcedure(
+        "Pnl2I5yvrTFeVH96QlzAsUDfACCXKoNvDpsIS2YJ77E=",
+        `${officeId}#0`
+      );
+      setStatisticalData(response.decrypted);
+    } catch (error) {
+      console.error('Error fetching statistical data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOpenOpportunityDetail = (opportunityId) => {
     setCurrentView({ type: 'opportunityDetail', data: opportunityId });
@@ -87,7 +139,7 @@ const OfficeDetailes = () => {
     return `${baseClass} ${activeTab === tabName ? activeClass : inactiveClass}`;
   };
 
-  if (!officeData) {
+  if (loading) {
     return (
       <div 
         className="min-h-screen flex justify-center items-center"
@@ -98,6 +150,21 @@ const OfficeDetailes = () => {
         }}
       >
         <div className="text-lg">جاري تحميل بيانات المكتب...</div>
+      </div>
+    );
+  }
+
+  if (!officeData) {
+    return (
+      <div 
+        className="min-h-screen flex justify-center items-center"
+        style={{
+          backgroundImage: "url('/background pattern.png')",
+          backgroundRepeat: "repeat",
+          backgroundSize: "auto",
+        }}
+      >
+        <div className="text-lg text-red-500">حدث خطأ في تحميل بيانات المكتب</div>
       </div>
     );
   }
@@ -184,16 +251,6 @@ const OfficeDetailes = () => {
               backgroundSize: "auto",
             }}
           ></div>
-          {/* <div className="absolute bottom-0 left-0 w-40 h-40 z-30">
-            <div className="absolute bottom-[-25rem] left-[8rem] w-[30rem] h-[30rem] rounded-full bg-[#000]/20"></div>
-            <div className="absolute bottom-[-20rem] left-[0rem] w-[30rem] h-[30rem] rounded-full bg-[#000]/30"></div>
-          </div>
-
-          <div className="absolute top-0 right-0 w-40 h-40 z-30">
-            <div className="absolute top-[-15rem] right-[5rem] w-[30rem] h-[30rem] rounded-full bg-[#000]/20"></div>
-            <div className="absolute top-[-18rem] right-[-10rem] w-[30rem] h-[30rem] rounded-full bg-[#000]/30"></div>
-          </div> */}
-          
         </motion.section>
         
         {/* Title */}
@@ -368,10 +425,6 @@ const Services = ({ Officeid, officeName }) => {
           </div>
           الخدمات
         </div>
-
-        {/* <span className="text-xl text-[#16343A] cursor-pointer hover:text-[#24645E] transition-colors">
-          المزيد
-        </span> */}
       </div>
 
       {/* Services Cards with Horizontal Scroll */}
@@ -430,6 +483,7 @@ const Services = ({ Officeid, officeName }) => {
     </motion.div>
   )
 }
+
 Services.propTypes = {
   Officeid: PropTypes.string.isRequired,
   officeName: PropTypes.string.isRequired,

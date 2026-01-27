@@ -277,10 +277,10 @@ const PaySadaka = ({
           <div className="flex-1 flex flex-col">
             <label className="block mb-2 text-gray-700 font-medium">نوع الصدقة</label>
 
-            <div className="flex mt-2 gap-4 justify-around font-semibold">
+            <div className="flex mt-2 gap-4 font-semibold">
               {/* زرار صدقة عامة */}
               <label
-                className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
+                className={`flex items-center w-full h-fit gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
                   ${sadakaType === "G"
                     ? "text-white border-transparent"
                     : "text-gray-700 border-gray-300"
@@ -300,12 +300,12 @@ const PaySadaka = ({
                   onChange={(e) => setSadakaType(e.target.value)}
                   className="hidden"
                 />
-                <span>صدقة عامة</span>
+                <span className="w-full text-center">صدقة عامة</span>
               </label>
 
               {/* زرار صدقة جارية */}
               <label
-                className={`flex items-center gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
+                className={`flex items-center w-full h-fit gap-2 cursor-pointer px-4 py-2 rounded-lg border transition-all  
                   ${sadakaType === "R"
                     ? "text-white border-transparent"
                     : "text-gray-700 border-gray-300"
@@ -325,7 +325,7 @@ const PaySadaka = ({
                   onChange={(e) => setSadakaType(e.target.value)}
                   className="hidden"
                 />
-                <span>صدقة جارية</span>
+                <span className="w-full text-center">صدقة جارية</span>
               </label>
             </div>
           </div>

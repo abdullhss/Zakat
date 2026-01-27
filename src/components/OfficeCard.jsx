@@ -51,7 +51,7 @@ const OfficeCard = ({ office }) => {
 
             {/* Action Button */}
             <Link
-                to={`/office?data=${encodeURIComponent(JSON.stringify(office))}`}
+                to={`/office?data=${encodeURIComponent(JSON.stringify({Id : office.Id}))}`}
                 className="font-semibold text-center text-white text-base py-3 rounded-xl w-full bg-gradient-to-b from-[#2B7C73] to-[#18383D] hover:brightness-110 transition-all relative z-10"
             >
                 عرض التفاصيل

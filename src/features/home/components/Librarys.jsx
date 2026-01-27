@@ -145,7 +145,7 @@ const Librarys = ({ data }) => {
                 title={office.OfficeName}
                 description={`${office.Address} - ${office.PhoneNum}`}
                 className="w-[320px]"
-                onClick={()=>{navigate(`/office?data=${encodeURIComponent(JSON.stringify(office))}`)}}
+                onClick={()=>{navigate(`/office?data=${encodeURIComponent(JSON.stringify({Id : office.Id}))}`)}}
               />
             </div>
           ))}
