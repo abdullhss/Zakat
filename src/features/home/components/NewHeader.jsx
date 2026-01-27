@@ -62,7 +62,7 @@ const NewHeader = ({backgroundImage , officeName}) => {
         src={donationRequest}
         alt="donation request"
         onClick={handleDonationRequest}
-        className="cursor-pointer absolute left-1 md:left-1/4 bottom-0 w-[120px] sm:w-[160px] md:w-[200px] lg:w-[250px] transition-transform duration-200 hover:scale-105"
+        className="cursor-pointer absolute left-1 md:left-1/4 bottom-0 w-[120px] sm:w-[160px] md:w-[200px] transition-transform duration-200 hover:scale-105"
       />
 
       <img
