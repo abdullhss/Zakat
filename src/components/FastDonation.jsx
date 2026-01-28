@@ -386,8 +386,7 @@ const FastDonation = () => {
             onFocus={handleAmountFocus}
             onBlur={handleAmountBlur}
             placeholder={
-              selectedOffice ? "يرجى إدخال المبلغ
-المدفوع (مثال: 1,000.50)" : "يرجى اختيار مكتب أولاً"
+              selectedOffice ? "يرجى إدخال المبلغ المدفوع (مثال: 1,000.50)" : "يرجى اختيار مكتب أولاً"
             }
             className={`w-full pl-10 pr-3 py-3 border-2 rounded-lg text-sm md:text-base text-left
               focus:outline-none focus:ring-2 focus:ring-emerald-600

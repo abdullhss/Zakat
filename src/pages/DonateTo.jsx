@@ -319,8 +319,7 @@ const DonateTo = () => {
             value={donationAmount}
             onChange={handleAmountChange}
             placeholder={
-              selectedOffice ? "يرجى إدخال المبلغ
-المدفوع" : "يرجى اختيار مكتب أولاً"
+              selectedOffice ? "يرجى إدخال المبلغ المدفوع" : "يرجى اختيار مكتب أولاً"
             }
             className={`w-full pl-10 pr-3 py-3 border-2 rounded-lg text-sm md:text-base
               focus:outline-none focus:ring-2 focus:ring-emerald-600
