@@ -4,13 +4,16 @@ import PropTypes from 'prop-types';
 import moenyWhite from "../public/SVGs/moneyWhite.svg";
 import { executeProcedure, DoTransaction } from "../services/apiServices";
 import { HandelFile } from "./HandelFile";
-import { setShowPopup, closeAllPopups } from "../features/PaySlice/PaySlice";
+import { setShowPopup, closeAllPopups, setPopupComponent } from "../features/PaySlice/PaySlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import cartReducer, { setCartData } from "../features/CartSlice/CartSlice";
 import { useNavigate } from "react-router-dom";
 import { toArabicWord } from 'number-to-arabic-words/dist/index-node.js';
 import { motion, AnimatePresence } from "framer-motion";
+import ZakatWasl from "./ZakatWasl";
+import { jsPDF } from 'jspdf'
+import * as htmlToImage from 'html-to-image'
 
 const PAYMENT_GATEWAY_URL = "https://moaamalat.almedadsoft.com";
 
@@ -25,7 +28,8 @@ const PayComponent = ({
   SubventionType_Id = "0",
   Project_Id = "0",
   PaymentDesc = "",
-  Salla = false
+  Salla = false ,
+  donationNameForLover = ""
 }) => {
   const [donationType, setDonationType] = useState(null);
   const [localMethod, setLocalMethod] = useState(null);
@@ -47,7 +51,11 @@ const PayComponent = ({
   const [showIframe, setShowIframe] = useState(false);
   const [iframeKey, setIframeKey] = useState(0);
   const [paymentData, setPaymentData] = useState(null); // Store payment data to send to iframe
-  
+  const waslRef = useRef(null)
+  const [donationDate, setDonationDate] = useState("");
+  const [donationId, setDonationId] = useState("");
+  const [donationAmountInWords, setDonationAmountInWords] = useState("");
+
   const afterSaveElectronicPaymentIdRef = useRef(null);
   const fileRef = useRef(null);
   const iframeRef = useRef(null);
@@ -126,6 +134,8 @@ const PayComponent = ({
       
       // Show success message
       toast.success('تم الدفع بنجاح');
+      await downloadWaslPDF();
+
       
       // Reset all states
       resetForm();
@@ -217,6 +227,9 @@ const PayComponent = ({
     setUploadedFileName("");
     setFileError("");
     setPaymentData(null);
+    setDonationDate("");
+    setDonationId("");
+    setDonationAmountInWords("");
   };
 
   // Open payment gateway in iframe
@@ -332,6 +345,47 @@ const PayComponent = ({
       setIsUploading(false);
     }
   };
+  const downloadWaslPDF = async () => {
+    if (!waslRef.current) return;
+    
+    // Wait for next tick to ensure content is rendered
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Ensure element is visible for capture
+    const waslElement = waslRef.current;
+    const originalStyle = waslElement.getAttribute('style');
+    waslElement.setAttribute('style', 'position: absolute; top: 0; left: 0; width: 800px; background: white; padding: 24px; visibility: visible; opacity: 1;');
+    
+    try {
+      const dataUrl = await htmlToImage.toPng(waslElement, {
+        quality: 1,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left'
+        }
+      });
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(dataUrl);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`zakat-wasl-${Date.now()}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('فشل في إنشاء PDF');
+    } finally {
+      // Restore original style
+      if (originalStyle) {
+        waslElement.setAttribute('style', originalStyle);
+      } else {
+        waslElement.removeAttribute('style');
+      }
+    }
+  };
   
   const callPaymentProcedure = async (saveElectronicDataBeforePayment) => {
     if (!uploadedFileId && (donationType === "international" || localMethod === "bank")) {
@@ -339,7 +393,7 @@ const PayComponent = ({
     }
     
     setIsProcessing(true);
-
+  
     try {
       let paymentWayId = "2";
       let paymentMethodIdValue = "1";
@@ -351,13 +405,20 @@ const PayComponent = ({
         paymentWayId = "2";
         paymentMethodIdValue = localMethod === "electronic" ? "1" : "2";
       }
-
+  
       const currentDate = new Date();
       const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
-
+      
+      // Save the donation date to state
+      setDonationDate(formattedDate);
+      
+      // Calculate Arabic words for amount
+      const amountInWords = `${toArabicWord(totalAmount)} دينار ليبي فقط لا غير`;
+      setDonationAmountInWords(amountInWords);
+  
       let accountNum = "";
       let bankId = "0";
-
+  
       if (donationType === "international") {
         accountNum = selectedInternationalAccountNumber;
         const selectedAccount = JSON.parse(selectedInternationalAccount);
@@ -367,7 +428,7 @@ const PayComponent = ({
         const selectedAccount = JSON.parse(selectedLocalAccount);
         bankId = selectedAccount.Bank_Id || "0";
       }
-
+  
       const params = [
         "0",
         formattedDate,
@@ -390,15 +451,22 @@ const PayComponent = ({
         "",
         ""
       ].join("#");
-
+  
       const response = await DoTransaction("rCSWIwrXh3HGKRYh9gCA8g==", params);
       console.log("Payment procedure response:", response);
       
+      // Save the donation ID to state
+      setDonationId(response.id);
       afterSaveElectronicPaymentIdRef.current = response.id;
-
+  
       if (response?.success) {
         if (paymentMethodIdValue != 1) {
           toast.success("تم الدفع بنجاح");
+          
+          // Now we can safely download the PDF since we have all the data
+          await downloadWaslPDF();
+  
+          dispatch(setShowPopup(true));
           resetForm();
           dispatch(setShowPopup(false));
           dispatch(closeAllPopups());
@@ -420,7 +488,7 @@ const PayComponent = ({
           }
         }
       }
-
+  
     } catch (error) {
       console.error("Error calling payment procedure:", error);
       toast.error("حدث خطأ أثناء معالجة الدفع");
@@ -526,10 +594,7 @@ const PayComponent = ({
               <div className="flex items-center justify-between p-4 border-b">
                 <h3 className="text-lg font-semibold">بوابة الدفع الإلكتروني</h3>
                 <button
-                  onClick={() => {
-                    setShowIframe(false);
-                    setIsOpeningGateway(false);
-                  }}
+                  onClick={() => setShowIframe(false)}
                   className="p-1 hover:bg-gray-100 rounded-full"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -881,6 +946,31 @@ const PayComponent = ({
           )}
         </button>
       </div>
+      
+      <div
+        ref={waslRef}
+        style={{
+          position: 'fixed',
+          top: '-9999px',
+          left: '-9999px',
+          width: '800px',
+          background: 'white',
+          padding: '24px'
+        }}
+      >
+          <ZakatWasl
+            officeName={officeName}
+            officeId={officeId}
+            donationDate={donationDate}
+            donationId={donationId}
+            donationAmount={totalAmount}
+            donationAmountInWords={donationAmountInWords}
+            donationPhone={JSON.parse(localStorage.getItem("UserData"))?.Phone || "مجهول"}
+            donationName={JSON.parse(localStorage.getItem("UserData"))?.Name || "مجهول"}
+            donationType={actionID}
+            donationNameForLover={donationNameForLover || "مجهول"}
+          />
+      </div>
     </div>
   );
 };
@@ -896,7 +986,8 @@ PayComponent.propTypes = {
   SubventionType_Id:PropTypes.string,
   Project_Id:PropTypes.string,
   PaymentDesc:PropTypes.string,
-  Salla : PropTypes.bool
+  Salla : PropTypes.bool,
+  donationNameForLover: PropTypes.string
 };
 
 export default PayComponent;

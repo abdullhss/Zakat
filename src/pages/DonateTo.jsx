@@ -227,6 +227,7 @@ const DonateTo = () => {
             Project_Id='0'
             actionID={10}
             PaymentDesc={paymentDescription}
+            donationNameForLover={donorName}
           />
         )
       })
