@@ -20,7 +20,7 @@ const Sacrifice = () => {
     {
       id: 'sadaka',
       title: 'صدقة',
-      description: 'اطعام وخير وقربه الى الله عز وجل',
+      description: 'إطعام وخير وقربة إلى الله عز وجل',
       items: []
     },
     {
@@ -398,7 +398,7 @@ const Sacrifice = () => {
         </div>
 
         <h2 className='font text-center md:text-right text-lg font-medium p-2'>
-          خدمة لتوكيل ذبح الأضاحي و توزيعها علي مستحقيها
+          خدمة لتوكيل ذبح الأضاحي و توزيعها على مستحقيها
         </h2>
 
 

@@ -277,18 +277,18 @@ const DonateTo = () => {
               {getCurrentOfficeName()}
             </div>
             <p className='text-sm text-gray-600 text-right'>
-              تم تحديد هذا المكتب مسبقاً. يمكنك اختيار نوع الاعانة والمبلغ المراد التبرع به.
+              تم تحديد هذا المكتب مسبقاً. يمكنك اختيار نوع الإعانة والمبلغ المراد التبرع به.
             </p>
           </div>
         )}
 
         {/* Subvention Types Dropdown */}
         <div className='flex flex-col gap-4'>
-          <span className='font-bold text-lg'>الاعانات</span>
+          <span className='font-bold text-lg'>الإعانات</span>
           {loading.subventionTypes ? (
-            <div className='py-3 border-1 text-center'>جاري تحميل الاعانات...</div>
+            <div className='py-3 border-1 text-center'>جاري تحميل الإعانات...</div>
           ) : error.subventionTypes ? (
-            <div className='py-3 border-1 text-center text-red-500'>خطأ في تحميل الاعانات: {error.subventionTypes}</div>
+            <div className='py-3 border-1 text-center text-red-500'>خطأ في تحميل الإعانات: {error.subventionTypes}</div>
           ) : (
             <select 
               className='py-3 border-2 rounded-md border-[#B7B7B7]'
@@ -296,7 +296,7 @@ const DonateTo = () => {
               onChange={handleSubventionChange}
               disabled={!selectedOffice}
             >
-              <option value="">اختر اعانة</option>
+              <option value="">اختر إعانة</option>
               {subventionTypes.map((subvention) => (
                 <option key={subvention.Id} value={subvention.Id}>
                   {subvention.SubventionTypeName}

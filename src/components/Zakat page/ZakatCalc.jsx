@@ -25,8 +25,7 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
   const [showReceipt, setShowReceipt] = useState(false);
   
   const categories = [
-    { id: 'cash', label: 'زكاة المال', placeholder: 'يرجى إدخال المبلغ
-المدفوع', kindId: 1 },
+    { id: 'cash', label: 'زكاة المال', placeholder: 'يرجى إدخال المبلغ المدفوع', kindId: 1 },
     { id: 'gold', label: 'زكاة الذهب', placeholder: 'يرجى إدخال عدد الجرامات', kindId: 2 },
     { id: 'silver', label: 'زكاة الفضة', placeholder: 'يرجى إدخال عدد الجرامات', kindId: 3 }
   ];
@@ -328,7 +327,7 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
         <div className="mt-6 w-full px-6 mx-auto h-px bg-gray-300"></div>
         <div className="py-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="font-medium">إجمالي مستحق الزكاة</span>
+            <span className="font-medium">إجمالي الزكاة المستحقة </span>
             <span className="text-2xl font-bold">
               {zakatResult !== null ? zakatResult.toLocaleString() : '0'}
             </span>
