@@ -159,7 +159,7 @@ const HelpRequestComponent = () => {
                     طلبات الإعانة
                   </h2>
                   <p className="text-base md:text-lg text-gray-600 leading-relaxed">
-                    يمكنك الآن طلب إعانة وسيتوفر لك المنصة احتياجاتك
+                    اطلب إعانتك الآن، ونحن نلبّي احتياجك
                   </p>
                 </div>
               </div>

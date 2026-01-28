@@ -40,7 +40,7 @@ const Charity = () => {
           <div>
             <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
           </div>
-          احسانكم
+          إحسانكم
         </div>
       </div>
 

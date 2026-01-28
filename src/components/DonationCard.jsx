@@ -126,7 +126,7 @@ const DonationCard = ({
           `}
         >
           <img src={money} width={30} />
-          {remaining <= 0 ? "المشروع مكتمل" : "ادفع الان"}
+          {remaining <= 0 ? "المشروع مكتمل" : "ادفع الآن"}
         </Link>
       </div>
       {showShareModal && (

@@ -40,7 +40,7 @@ const Zema = () => {
       
         dispatch(
           openPopup({
-            title: "ابراء الذمة",
+            title: "إبراء الذمة",
             component: <GetZemaPayData />,
           })
         );
@@ -131,7 +131,7 @@ const Zema = () => {
       <div className="flex items-center justify-between pl-12">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
           <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
-          ابراء الذمة
+          إبراء الذمة
         </div>
 
       </div>
@@ -175,10 +175,10 @@ const Zema = () => {
                   <path d="M35.9526 71.9196C38.2651 71.9143 40.2109 73.8419 40.2371 76.1622C40.2633 78.5035 38.2625 80.4991 35.9185 80.4703C33.6008 80.4415 31.6733 78.4852 31.6838 76.1779C31.6969 73.8628 33.6375 71.9248 35.9526 71.9196Z" fill="white"/>
                 </svg>
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
-                   ابراء الذمة
+                   إبراء الذمة
                   </h2>
                   <p className="text-base md:text-lg text-gray-600 leading-relaxed">
-                    يمكنك الآن ابراء ذمتك وستوفر لك المنصة احتياجاتك
+                    أبرء ذمتك واستفد من خدماتنا
                   </p>
                 </div>
               </div>

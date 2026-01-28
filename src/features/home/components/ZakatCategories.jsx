@@ -241,7 +241,7 @@ const ZakatCategories = () => {
                   whileHover="hover"
                   whileTap="tap"
                 >
-                  ادفع الان
+                  ادفع الآن
                 </motion.button>
               </Link>
             </motion.div>

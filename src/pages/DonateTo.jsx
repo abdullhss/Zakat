@@ -319,7 +319,8 @@ const DonateTo = () => {
             value={donationAmount}
             onChange={handleAmountChange}
             placeholder={
-              selectedOffice ? "رجاء ادخال المبلغ المدفوع" : "يرجى اختيار مكتب أولاً"
+              selectedOffice ? "يرجى إدخال المبلغ
+المدفوع" : "يرجى اختيار مكتب أولاً"
             }
             className={`w-full pl-10 pr-3 py-3 border-2 rounded-lg text-sm md:text-base
               focus:outline-none focus:ring-2 focus:ring-emerald-600
@@ -381,7 +382,7 @@ const DonateTo = () => {
           }}
         >
           <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-          <span>ادفع الان</span>
+          <span>ادفع الآن</span>
         </button>
       </div>
     </>

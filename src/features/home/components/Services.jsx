@@ -23,7 +23,7 @@ const Services = () => {
       icon: <img src={speaker} alt="Speaker" />,
       title: "الحملات",
       link:"/services/campaigns",
-      description: "خدمة تتيح لك إنشاء حملة لجمع التبرعات في مختلف المجالات الخيرية و نشرها ليصل أثرها إلي مستحقيها"
+      description: "خدمة تتيح لك إنشاء حملة لجمع التبرعات في مختلف المجالات الخيرية و نشرها ليصل أثرها إلى مستحقيها"
     },
     {
       icon: <img src={zakat} alt="Zakat" />,
@@ -39,7 +39,7 @@ const Services = () => {
     },
     {
       icon: <img src={DonateRequest} alt="Speaker" />,
-      title: "طلبات الاعانة",
+      title: "طلبات الإعانة",
       link:"/DonationRequester",
       description: "خدمة تتيح لك تقديم طلبات للتبرع في مختلف الأبواب الخيرية، ليتم مراجعتها ونشرها لمن يرغب في المساهمة."
     },

@@ -384,7 +384,8 @@ const PaySadaka = ({
               onFocus={handleAmountFocus}
               onBlur={handleAmountBlur}
               placeholder={
-                selectedOffice ? "رجاء ادخال المبلغ المدفوع (مثال: 1,000.50)" : "يرجى اختيار مكتب أولاً"
+                selectedOffice ? "يرجى إدخال المبلغ
+المدفوع (مثال: 1,000.50)" : "يرجى اختيار مكتب أولاً"
               }
               className={`w-full pl-10 pr-3 py-2 border-2 rounded-lg text-sm md:text-base text-left
                   focus:outline-none focus:ring-2 focus:ring-emerald-600
@@ -410,7 +411,7 @@ const PaySadaka = ({
           >
             <div className="flex gap-2 items-center">
               <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-              <span>ادفع الان</span>
+              <span>ادفع الآن</span>
             </div>
           </button>
 

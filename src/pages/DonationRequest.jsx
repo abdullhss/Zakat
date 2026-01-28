@@ -299,7 +299,7 @@ const DonationRequest = () => {
       <div className="flex flex-col lg:flex-row justify-between sm:px-6 lg:pr-0 lg:pl-12 mt-24 lg:mt-28 gap-4">
         <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl lg:text-2xl px-10 sm:px-8 py-2 w-fit text-center">
           <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4 shadow-xl" />
-          طلبات الاعانة
+          طلبات الإعانة
         </div>
         
         <div className='w-full lg:w-auto flex flex-col sm:flex-row items-center justify-between gap-4'>

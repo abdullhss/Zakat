@@ -25,9 +25,10 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
   const [showReceipt, setShowReceipt] = useState(false);
   
   const categories = [
-    { id: 'cash', label: 'زكاة المال', placeholder: 'رجاء ادخال المبلغ المدفوع', kindId: 1 },
-    { id: 'gold', label: 'زكاة الذهب', placeholder: 'برجاء ادخال عدد الجرامات', kindId: 2 },
-    { id: 'silver', label: 'زكاة الفضة', placeholder: 'برجاء ادخال عدد الجرامات', kindId: 3 }
+    { id: 'cash', label: 'زكاة المال', placeholder: 'يرجى إدخال المبلغ
+المدفوع', kindId: 1 },
+    { id: 'gold', label: 'زكاة الذهب', placeholder: 'يرجى إدخال عدد الجرامات', kindId: 2 },
+    { id: 'silver', label: 'زكاة الفضة', placeholder: 'يرجى إدخال عدد الجرامات', kindId: 3 }
   ];
 
   const handleToggle = (id) => {

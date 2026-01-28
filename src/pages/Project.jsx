@@ -697,7 +697,8 @@ const Project = () => {
                                         onChange={handleAmountChange}
                                         onFocus={handleAmountFocus}
                                         onBlur={handleAmountBlur}
-                                        placeholder="رجاء ادخال المبلغ المدفوع (مثال: 1,000.50)"
+                                        placeholder="يرجى إدخال المبلغ
+المدفوع (مثال: 1,000.50)"
                                         className="w-full pl-9 sm:pl-10 pr-3 py-3 border-2 rounded-lg text-sm text-left focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder:font-medium placeholder:text-right border-[#979797] bg-transparent"
                                     />
                                 </div>
@@ -774,7 +775,7 @@ const Project = () => {
                                             }`}
                                     >
                                         <img src={money} alt="donate icon" />
-                                        ادفع الان
+                                        ادفع الآن
                                     </motion.button>
                                     <motion.button
                                         whileHover="hover"

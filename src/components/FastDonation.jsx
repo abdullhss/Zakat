@@ -386,7 +386,8 @@ const FastDonation = () => {
             onFocus={handleAmountFocus}
             onBlur={handleAmountBlur}
             placeholder={
-              selectedOffice ? "رجاء ادخال المبلغ المدفوع (مثال: 1,000.50)" : "يرجى اختيار مكتب أولاً"
+              selectedOffice ? "يرجى إدخال المبلغ
+المدفوع (مثال: 1,000.50)" : "يرجى اختيار مكتب أولاً"
             }
             className={`w-full pl-10 pr-3 py-3 border-2 rounded-lg text-sm md:text-base text-left
               focus:outline-none focus:ring-2 focus:ring-emerald-600
@@ -410,7 +411,7 @@ const FastDonation = () => {
               onClick={handleCalcZakat}
               style={{ background: "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)" }}
             >
-              احسب الأن
+              احسب الآن
             </button>
           </div>
         }
@@ -427,7 +428,7 @@ const FastDonation = () => {
           }}
         >
           <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-          <span>ادفع الان</span>
+          <span>ادفع الآن</span>
         </button>
       </div>
 

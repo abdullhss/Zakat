@@ -160,7 +160,7 @@ const Zema = () => {
                     تبرع لمن تحب
                   </h2>
                   <p className="text-base md:text-lg text-gray-600 leading-relaxed">
-                    يمكنك الآن التبرع لاحبابك لمزيد من الاجر لك ولهم
+                    تبرع، وضاعف أجرك وأجر أحبابك
                   </p>
                 </div>
               </div>

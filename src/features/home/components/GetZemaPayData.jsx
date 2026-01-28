@@ -57,7 +57,7 @@ const GetZemaPayData = () => {
             background: "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)",
             }}
         >
-            ادفع الان
+            ادفع الآن
         </button>
     </div>
   )

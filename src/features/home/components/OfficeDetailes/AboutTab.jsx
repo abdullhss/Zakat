@@ -65,7 +65,7 @@ const AboutTab = ({ officeData }) => {
           onClick={handleOpenMap}
         >
           <MapPin color='#17343B'/>
-          الانتقال الى الخريطة
+          الآنتقال الى الخريطة
         </button>
       </div>
 
