@@ -526,7 +526,10 @@ const PayComponent = ({
               <div className="flex items-center justify-between p-4 border-b">
                 <h3 className="text-lg font-semibold">بوابة الدفع الإلكتروني</h3>
                 <button
-                  onClick={() => setShowIframe(false)}
+                  onClick={() => {
+                    setShowIframe(false);
+                    setIsOpeningGateway(false);
+                  }}
                   className="p-1 hover:bg-gray-100 rounded-full"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -316,6 +316,7 @@ const KafaraAndNozor = () => {
         backgroundImage: "url('/background pattern.png')",
         backgroundRepeat: "repeat",
         backgroundSize: "auto",
+        backgroundPosition: "center",
       }}
     >
       <div className='mt-20'>

@@ -283,6 +283,7 @@ const DonationRequest = () => {
       backgroundImage: "url('/background pattern.png')",
       backgroundRepeat: "repeat",
       backgroundSize: "auto",
+      backgroundPosition: "center",
     }}
   >
      {!canSendRequest ? (
@@ -293,6 +294,7 @@ const DonationRequest = () => {
         backgroundImage: "url('/background pattern.png')",
         backgroundRepeat: "repeat",
         backgroundSize: "auto",
+        backgroundPosition: "center",
       }}
     >
       {/* Header Section */}

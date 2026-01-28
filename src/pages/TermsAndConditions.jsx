@@ -67,9 +67,9 @@ const TermsAndConditions = () => {
 
     const formatDate = (dateString) => {
         const date = new Date(dateString)
-        return date.toLocaleDateString('ar-EG', {
+        return date.toLocaleDateString('en-US', {
             year: 'numeric',
-            month: 'long',
+            month: 'short',
             day: 'numeric'
         })
     }
@@ -102,6 +102,7 @@ const TermsAndConditions = () => {
                 backgroundImage: "url('/background pattern.png')",
                 backgroundRepeat: "repeat",
                 backgroundSize: "auto",
+                backgroundPosition: "center",
             }}
         >
             <div className="flex items-center justify-between pl-12 mt-28">

@@ -120,6 +120,7 @@ const UrgentProjects = () => {
         backgroundImage: "url('/background pattern.png')",
         backgroundRepeat: "repeat",
         backgroundSize: "auto",
+        backgroundPosition: "center",
       }}
     >
       <div className="flex items-center justify-between px-4 sm:pl-12 mt-24 md:mt-28">

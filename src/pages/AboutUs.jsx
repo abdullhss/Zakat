@@ -46,6 +46,7 @@ const AboutUs = () => {
             backgroundImage: "url('/background pattern.png')",
             backgroundRepeat: "repeat",
             backgroundSize: "auto",
+            backgroundPosition: "center",
           }}
           >
       <motion.h1

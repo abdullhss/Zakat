@@ -283,6 +283,7 @@ useEffect(() => {
                 backgroundImage: "url('/background pattern.png')",
                 backgroundRepeat: "repeat",
                 backgroundSize: "auto",
+                backgroundPosition: "center",
             }}
             >
                 <div className="flex items-center justify-between pl-12 mt-28">

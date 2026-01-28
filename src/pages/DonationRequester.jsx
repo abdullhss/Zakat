@@ -144,6 +144,7 @@ const DonationRequester = () => {
                 backgroundImage: "url('/background pattern.png')",
                 backgroundRepeat: "repeat",
                 backgroundSize: "auto",
+                backgroundPosition: "center",
             }}
         >
             <div className="z-10 mx-auto px-4 flex flex-col gap-4">
