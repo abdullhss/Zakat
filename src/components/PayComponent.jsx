@@ -600,7 +600,7 @@ const PayComponent = ({
             {/* Upload UI with Progress */}
             <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
               <p className="text-green-700 font-semibold">
-                يتم الدفع من خارج ليبيا على الحسابات المخصصة للدفع الدولي مع ارفاق صورة ايصال الدفع
+                يتم الدفع من خارج ليبيا على الحسابات المخصصة للدفع الدولي مع إرفاق صورة ايصال الدفع
               </p>
             </div>
 
@@ -689,7 +689,7 @@ const PayComponent = ({
         {donationType === "local" && (
           <div className="mt-6 space-y-4">
             <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
-              <p className="text-green-700 font-semibold">يتم الدفع من داخل ليبيا إما عن طريق طرق الدفع الالكتروني أو عن طريق حوالة بنكية على الحسابات المخصصة </p>
+              <p className="text-green-700 font-semibold">يتم الدفع من داخل ليبيا إما عن طريق طرق الدفع الإلكتروني أو عن طريق حوالة بنكية على الحسابات المخصصة </p>
             </div>
             <p className="text-lg font-semibold">طريقة الدفع</p>
             <div className="flex items-center gap-3">
@@ -732,7 +732,7 @@ const PayComponent = ({
               <div className="mt-4 space-y-4">
                 <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
                   <p className="text-green-700 font-semibold">
-                  يتم التحويل على احدى الحسابات المخصصة مع ارفاق صورة ايصال الدفع
+                  يتم التحويل على احدى الحسابات المخصصة مع إرفاق صورة ايصال الدفع
                   </p>
                 </div>
                 {/* Upload UI with Progress */}
@@ -821,7 +821,7 @@ const PayComponent = ({
             {localMethod === "electronic" && (
               <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
                 <p className="text-green-700 font-semibold">
-                  يتم الدفع عن طريق احدى طرق الدفع الالكتروني المحددة في التطبيق
+                  يتم الدفع عن طريق احدى طرق الدفع الإلكتروني المحددة في التطبيق
                 </p>
               </div>
             )}

@@ -366,7 +366,7 @@ const PaySadaka = ({
 
         <div className="w-full flex flex-col gap-4">
           <div className="flex items-center justify-between font-medium text-lg my-4">
-            <span>الاجمالي</span>
+            <span>الإجمالي</span>
             <span className="font-bold text-[#16343A]">{getFormattedTotal()} د.ل</span>
           </div>
           <div className="relative w-full">

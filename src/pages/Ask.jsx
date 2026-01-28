@@ -251,7 +251,7 @@ const Ask = () => {
                     disabled={!questionText.trim()}
                     className="w-full bg-gradient-to-l from-[#24645E] to-[#17343B] text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    ارسل السؤال
+                    أرسل السؤال
                 </button>
             </div>
 
