@@ -16,7 +16,7 @@ export const getBase64 = (file) => {
 const CONFIG = {
   API_TOKEN: "TTRgG@i$$ol@m$Wegh77",
   DATA_TOKEN: "Zakat",
-  BASE_URL: "https://api.wasl.zakatfund.gov.ly/emsserver.dll/ERPDatabaseWorkFunctions/",
+  BASE_URL: "https://framework.md-license.com:8093/emsserver.dll/ERPDatabaseWorkFunctions/",
 };
 
 export class HandelFile {
