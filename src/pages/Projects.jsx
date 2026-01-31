@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Diamond from '../components/Diamond'
 import filter from "../public/SVGs/fillter.svg"
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -8,6 +9,11 @@ import headerBackground from "../../public/header backgrounds/projects.png"
 import NewHeader from '../features/home/components/NewHeader.jsx'
 import { useImageContext } from '../Context/imageContext.jsx';
 const Projects = () => {
+  const [searchParams] = useSearchParams();
+  const officeIdFromUrl = searchParams.get('officeId');
+  const officeNameFromUrl = searchParams.get('officeName');
+  const isOfficeFromRoute = Boolean(officeIdFromUrl && officeNameFromUrl);
+
   const [activeFilter, setActiveFilter] = useState(0)
   const [filters, setFilters] = useState([])
   const [donationCards, setDonationCards] = useState([])
@@ -100,14 +106,16 @@ const Projects = () => {
 
       try {
         const startNum = (currentPage - 1) * itemsPerPage + 1;
+        // When coming from office page, filter by that office; otherwise "O" = all offices
+        const officeParam = isOfficeFromRoute && officeIdFromUrl ? officeIdFromUrl : "O";
 
-        let params = `O#${activeFilter}#${debouncedSearch}#${startNum}#${itemsPerPage}`;
+        let params = `${officeParam}#${activeFilter}#${debouncedSearch}#${startNum}#${itemsPerPage}`;
 
         let procId = "";
         
         if (debouncedSearch.trim() !== "") {
           procId = "OwBwBZyz7Wyd8C76lm99aOA6Lmymo9ZxZe1GvF6U6QA=";
-          params = `O#${activeFilter}#${debouncedSearch}#${startNum}#${itemsPerPage}`;
+          params = `${officeParam}#${activeFilter}#${debouncedSearch}#${startNum}#${itemsPerPage}`;
         }
         else {
           // الوضع الطبيعي بدون سيرش
@@ -143,7 +151,7 @@ const Projects = () => {
     };
 
     fetchDonationCards();
-  }, [activeFilter, currentPage, itemsPerPage, debouncedSearch]);
+  }, [activeFilter, currentPage, itemsPerPage, debouncedSearch, isOfficeFromRoute, officeIdFromUrl]);
 
   const handleFilterChange = (filterId) => {
     setActiveFilter(filterId)
@@ -183,7 +191,9 @@ const Projects = () => {
       >
           <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl md:text-2xl px-6 sm:px-8 py-2">
               <Diamond className="absolute  -right-4 shadow-lg top-1/2 -translate-y-1/2 translate-x-1/4" />
-              المشاريع
+              {isOfficeFromRoute && officeNameFromUrl
+                ? `المشاريع - ${decodeURIComponent(officeNameFromUrl)}`
+                : "المشاريع"}
           </div>
       </div>
 

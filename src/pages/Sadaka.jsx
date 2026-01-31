@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import PayZakat from '../components/Zakat page/PayZakat'
 import Opportunities from '../components/Zakat page/Opportunities'
 import { executeProcedure } from "../services/apiServices";
@@ -6,6 +7,11 @@ import PaySadaka from '../components/Sadaka page/PaySadaka';
 import NewHeader from '../features/home/components/NewHeader'
 import headerBackground from "../../public/header backgrounds/Sadaka.png"
 const Sadaka = () => {
+  const [searchParams] = useSearchParams();
+  const officeIdFromUrl = searchParams.get('officeId');
+  const officeNameFromUrl = searchParams.get('officeName');
+  const isOfficeFromRoute = Boolean(officeIdFromUrl && officeNameFromUrl);
+
   const [offices, setOffices] = useState([]);
   const [zakatTypes, setZakatTypes] = useState([]);
   const [donations, setDonations] = useState([]);
@@ -88,6 +94,19 @@ const Sadaka = () => {
 
     fetchData();
   }, []);
+
+  // When officeId + officeName come from URL, set selected office (locked to this office)
+  useEffect(() => {
+    if (isOfficeFromRoute && officeIdFromUrl) {
+      const idStr = officeIdFromUrl.toString();
+      if (offices.length > 0) {
+        const exists = offices.some(o => o.Id?.toString() === idStr || o.id?.toString() === idStr);
+        if (exists) setSelectedOffice(idStr);
+      } else {
+        setSelectedOffice(idStr);
+      }
+    }
+  }, [isOfficeFromRoute, officeIdFromUrl, offices]);
 
   // Debounce search input - updates after 500ms of inactivity
   useEffect(() => {
@@ -265,6 +284,7 @@ const Sadaka = () => {
             setDonationValue={setDonationValue}
             setSadakaType={setSadakaType}
             sadakaType={sadakaType}
+            officeLocked={isOfficeFromRoute}
           />
           <Opportunities 
             donations={donations}

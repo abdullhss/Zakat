@@ -32,7 +32,8 @@ const PayZakat = ({
   onOfficeChange,
   onAidChange,
   onCategoryChange,
-  setDonationValue
+  setDonationValue,
+  officeLocked = false
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
   const [zakatPopUp, setZakatPopUp] = useState(false);
@@ -275,7 +276,7 @@ const PayZakat = ({
               value={selectedOffice}
               onChange={handleOfficeChange}
               className="w-full border-2 border-gray-300 rounded-lg p-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold"
-              disabled={loading}
+              disabled={loading || officeLocked}
             >
               <option className="bg-white text-black" value="">
                 {loading ? "جاري تحميل المكاتب..." : "اختر مكتب"}
@@ -461,7 +462,8 @@ PayZakat.propTypes = {
   onOfficeChange: PropTypes.func,
   onAidChange: PropTypes.func,
   onCategoryChange: PropTypes.func,
-  setDonationValue: PropTypes.func
+  setDonationValue: PropTypes.func,
+  officeLocked: PropTypes.bool
 };
 
 PayZakat.defaultProps = {
@@ -476,7 +478,8 @@ PayZakat.defaultProps = {
   onOfficeChange: () => { },
   onAidChange: () => { },
   onCategoryChange: () => { },
-  setDonationValue: () => { }
+  setDonationValue: () => { },
+  officeLocked: false
 };
 
 export default PayZakat;

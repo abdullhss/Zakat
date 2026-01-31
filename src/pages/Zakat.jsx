@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import PayZakat from '../components/Zakat page/PayZakat'
 import Opportunities from '../components/Zakat page/Opportunities'
 import { executeProcedure } from "../services/apiServices";
 import NewHeader from '../features/home/components/NewHeader';
 import headerBackground from "../../public/header backgrounds/Zakat.png"
 const Zakat = () => {
+  const [searchParams] = useSearchParams();
+  const officeIdFromUrl = searchParams.get('officeId');
+  const officeNameFromUrl = searchParams.get('officeName');
+  const isOfficeFromRoute = Boolean(officeIdFromUrl && officeNameFromUrl);
+
   const [offices, setOffices] = useState([]);
   const [zakatTypes, setZakatTypes] = useState([]);
   const [donations, setDonations] = useState([]);
@@ -89,6 +95,19 @@ const Zakat = () => {
 
     fetchData();
   }, []);
+
+  // When officeId + officeName come from URL, set selected office (locked to this office)
+  useEffect(() => {
+    if (isOfficeFromRoute && officeIdFromUrl) {
+      const idStr = officeIdFromUrl.toString();
+      if (offices.length > 0) {
+        const exists = offices.some(o => o.Id?.toString() === idStr || o.id?.toString() === idStr);
+        if (exists) setSelectedOffice(idStr);
+      } else {
+        setSelectedOffice(idStr);
+      }
+    }
+  }, [isOfficeFromRoute, officeIdFromUrl, offices]);
 
   // Debounce search input - updates after 500ms of inactivity
   useEffect(() => {
@@ -255,6 +274,7 @@ const Zakat = () => {
             onOfficeChange={handleOfficeChange}
             onAidChange={handleAidChange}
             onCategoryChange={handleCategoryChange}
+            officeLocked={isOfficeFromRoute}
           />
           
           {/* Only show Opportunities if category is "الفقراء والمساكين" (ID: 1) */}

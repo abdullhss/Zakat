@@ -33,7 +33,8 @@ const PaySadaka = ({
   onCategoryChange,
   setDonationValue,
   setSadakaType,
-  sadakaType
+  sadakaType,
+  officeLocked = false
 }) => {
   const [donationAmount, setDonationAmount] = useState("");
   const [isAmountFocused, setIsAmountFocused] = useState(false);
@@ -266,7 +267,7 @@ const PaySadaka = ({
               value={selectedOffice}
               onChange={handleOfficeChange}
               className="w-full border-2 border-gray-300 rounded-lg p-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold"
-              disabled={loading}
+              disabled={loading || officeLocked}
             >
               <option className="bg-white text-black" value="">
                 {loading ? "جاري تحميل المكاتب..." : "اختر مكتب"}
@@ -444,7 +445,8 @@ PaySadaka.propTypes = {
   onCategoryChange: PropTypes.func,
   setDonationValue: PropTypes.func,
   setSadakaType: PropTypes.func,
-  sadakaType: PropTypes.string
+  sadakaType: PropTypes.string,
+  officeLocked: PropTypes.bool
 };
 
 PaySadaka.defaultProps = {
@@ -460,7 +462,8 @@ PaySadaka.defaultProps = {
   onAidChange: () => { },
   onCategoryChange: () => { },
   setSadakaType: () => { },
-  sadakaType: "G"
+  sadakaType: "G",
+  officeLocked: false
 };
 
 export default PaySadaka;

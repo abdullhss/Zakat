@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Diamond from '../components/Diamond'
 import { executeProcedure } from '../services/apiServices'
 import moneyGreen from "../public/SVGs/moneyGreen.svg"
@@ -15,6 +16,11 @@ import {
 } from "../utils/amountUtils";
 
 const KafaraAndNozor = () => {
+  const [searchParams] = useSearchParams();
+  const officeIdFromUrl = searchParams.get('officeId');
+  const officeNameFromUrl = searchParams.get('officeName');
+  const isOfficeFromRoute = Boolean(officeIdFromUrl && officeNameFromUrl);
+
   const [activeTab, setActiveTab] = useState('kafara'); // 'kafara', 'nothor', or 'fedya'
   const [offices, setOffices] = useState([]);
   const [kafaraValue, setKafaraValue] = useState(0);
@@ -43,9 +49,11 @@ const KafaraAndNozor = () => {
   
   const dispatch = useDispatch();
 
-  // Get selected office name
-  const selectedOfficeData = offices.find(office => office.Id.toString() === selectedOffice);
-  const officeName = selectedOfficeData ? selectedOfficeData.OfficeName : '';
+  // Get selected office name (use URL name when locked)
+  const selectedOfficeData = offices.find(office => office.Id?.toString() === selectedOffice || office.id?.toString() === selectedOffice);
+  const officeName = isOfficeFromRoute && officeNameFromUrl
+    ? decodeURIComponent(officeNameFromUrl)
+    : (selectedOfficeData ? selectedOfficeData.OfficeName : '');
 
   // Validation for Pay Now button
   const isPayNowValid = selectedOffice && (
@@ -127,6 +135,19 @@ const KafaraAndNozor = () => {
 
     fetchData();
   }, []);
+
+  // When officeId + officeName come from URL, set selected office (locked to this office)
+  useEffect(() => {
+    if (isOfficeFromRoute && officeIdFromUrl) {
+      const idStr = officeIdFromUrl.toString();
+      if (offices.length > 0) {
+        const exists = offices.some(o => o.Id?.toString() === idStr || o.id?.toString() === idStr);
+        if (exists) setSelectedOffice(idStr);
+      } else {
+        setSelectedOffice(idStr);
+      }
+    }
+  }, [isOfficeFromRoute, officeIdFromUrl, offices]);
 
   // Fetch kafara value data
   useEffect(() => {
@@ -377,7 +398,7 @@ const KafaraAndNozor = () => {
                   value={selectedOffice}
                   onChange={handleOfficeChange}
                   className="w-full border-2 border-gray-300 rounded-lg p-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold"
-                  disabled={loading.offices}
+                  disabled={loading.offices || isOfficeFromRoute}
                 >
                   <option className="bg-white text-black" value="">
                     {loading.offices ? "جاري تحميل المكاتب..." : "اختر مكتب"}
@@ -448,7 +469,7 @@ const KafaraAndNozor = () => {
                   value={selectedOffice}
                   onChange={handleOfficeChange}
                   className="w-full border-2 border-gray-300 rounded-lg p-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold"
-                  disabled={loading.offices}
+                  disabled={loading.offices || isOfficeFromRoute}
                 >
                   <option className="bg-white text-black" value="">
                     {loading.offices ? "جاري تحميل المكاتب..." : "اختر مكتب"}
@@ -551,7 +572,7 @@ const KafaraAndNozor = () => {
                   value={selectedOffice}
                   onChange={handleOfficeChange}
                   className="w-full border-2 border-gray-300 rounded-lg p-3 bg-transparent focus:outline-none focus:ring-2 focus:ring-emerald-600 font-semibold"
-                  disabled={loading.offices}
+                  disabled={loading.offices || isOfficeFromRoute}
                 >
                   <option className="bg-white text-black" value="">
                     {loading.offices ? "جاري تحميل المكاتب..." : "اختر مكتب"}

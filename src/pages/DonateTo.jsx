@@ -24,6 +24,7 @@ const DonateTo = () => {
   const [donorName, setDonorName] = useState("");
   const [donorPhone, setDonorPhone] = useState("09");
   const [phoneError, setPhoneError] = useState("");
+  const [donorNameForLover, setDonorNameForLover] = useState("");
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -200,6 +201,9 @@ const DonateTo = () => {
     }
   };
 
+  const handleDonorNameForLoverChange = (e) => {
+    setDonorNameForLover(e.target.value);
+  };
 
   const handlePayNow = () => {
     if (!selectedOffice || !donationAmount || !donorName || !donorPhone) {
@@ -213,7 +217,7 @@ const DonateTo = () => {
       : offices.find(office => office.Id == selectedOffice)?.OfficeName || '';
 
     // Create description with name and phone
-    const paymentDescription = `${donorName} - ${donorPhone}`;
+    const paymentDescription = `${donorName} - ${donorPhone} - ${donorNameForLover}`;
     
     dispatch(
       openPopup({
@@ -330,6 +334,17 @@ const DonateTo = () => {
                 : "border-gray-300 bg-gray-100"
             }`}
             disabled={!selectedOffice}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className='font-bold text-lg'>اسم المتبرع</span>
+          <input
+            type="text"
+            value={donorNameForLover}
+            onChange={handleDonorNameForLoverChange}
+            placeholder="أدخل اسم المتبرع"
+            className="w-full px-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600"
           />
         </div>
 

@@ -965,8 +965,8 @@ const PayComponent = ({
             donationId={donationId}
             donationAmount={totalAmount}
             donationAmountInWords={donationAmountInWords}
-            donationPhone={JSON.parse(localStorage.getItem("UserData"))?.Phone || "مجهول"}
-            donationName={JSON.parse(localStorage.getItem("UserData"))?.Name || "مجهول"}
+            donationPhone={JSON.parse(localStorage.getItem("UserData"))?.Phone || PaymentDesc.split(" - ")[1] || "مجهول"}
+            donationName={JSON.parse(localStorage.getItem("UserData"))?.Name || PaymentDesc.split(" - ")[2] || "مجهول"}
             donationType={actionID}
             donationNameForLover={donationNameForLover || "مجهول"}
           />

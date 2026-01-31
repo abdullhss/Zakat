@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Diamond from "../../../components/Diamond";
@@ -9,7 +10,7 @@ import sadaqatIcon from "../../../../public/icons/sadaqat icon.png"
 import kafaratIcon from "../../../../public/icons/kafarat icon.png"
 import projectsIcon from "../../../../public/icons/projects icon.png"
 
-const ZakatCategories = () => {
+const ZakatCategories = ({ officeId, officeName }) => {
   const [isInView, setIsInView] = useState(false);
   
   const handleDonateClick = (category) => {
@@ -20,28 +21,28 @@ const ZakatCategories = () => {
     {
       id: 1,
       title: "أخرج زكاتك",
-      link:"/services/zakat",
+      link:`/services/zakat${officeId ? `?officeId=${officeId}&officeName=${encodeURIComponent(officeName)}` : ''}`,
       bgColor: "bg-gray-200",
       icon:zakatIcon
     },
     {
       id: 3,
       title: "الصدقات",
-      link:"/services/sadaka",
+      link:`/services/sadaka${officeId ? `?officeId=${officeId}&officeName=${encodeURIComponent(officeName)}` : ''}`,
       bgColor: "bg-gray-200",
       icon:sadaqatIcon
     },
     {
       id: 2,
       title: "الكفارات والفدية والنذور",
-      link:"/services/karfaraAndNozor",
+      link:`/services/karfaraAndNozor${officeId ? `?officeId=${officeId}&officeName=${encodeURIComponent(officeName)}` : ''}`,
       bgColor: "bg-gray-200",
       icon:kafaratIcon
     },
     {
       id: 4,
       title: "المشاريع",
-      link:"/opportunities/projects",
+      link:`/opportunities/projects${officeId ? `?officeId=${officeId}&officeName=${encodeURIComponent(officeName)}` : ''}`,
       bgColor: "bg-gray-200",
       icon:projectsIcon
     },

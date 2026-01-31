@@ -25,6 +25,7 @@ import speaker from "../public/SVGs/Speaker.svg"
 import DonateRequest from "../public/SVGs/DonateRequest.svg";
 import rememberIcon from "../../public/remember-1-svgrepo-com.svg" 
 import food from "../../public/food-svgrepo-com.svg" 
+import ZakatCategories from '../features/home/components/ZakatCategories.jsx';
 
 const OfficeDetailes = () => {
   const [activeTab, setActiveTab] = useState('opportunities');
@@ -252,6 +253,8 @@ const OfficeDetailes = () => {
             }}
           ></div>
         </motion.section>
+        
+        <ZakatCategories officeId={officeData.Id} officeName={officeData.OfficeName} />
         
         {/* Title */}
         <div className='mt-8'>
