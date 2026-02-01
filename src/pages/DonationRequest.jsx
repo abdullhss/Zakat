@@ -247,7 +247,7 @@ const DonationRequest = () => {
       // Validate required fields including address
       if (!formData.address.trim()) {
         toast.error("الرجاء إدخال العنوان أو تحديده على الخريطة");
-        return;
+        return; 
       }
 
       const currentDate = new Date();
