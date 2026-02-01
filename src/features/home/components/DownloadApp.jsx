@@ -3,8 +3,22 @@ import googlePlay from "../../../../public/GooglePlay.svg";
 import AppleStore from "../../../../public/AppleStore.svg";
 import Mobile from "../../../../public/mobiles.png";
 import Union from "../../../../public/Union.png";
+import PropTypes from "prop-types";
 
-const DownloadApp = () => {
+const DownloadApp = ({ appsURLS = [] }) => {
+  // Extract URLs from the appsURLS array
+  const iosUrl = appsURLS.find(app => app.Type === "IOS")?.UpdateLink || "#";
+  const androidUrl = appsURLS.find(app => app.Type === "Andriod")?.UpdateLink || "#";
+
+  // Handle opening app store URLs
+  const handleOpenAppStore = (url) => {
+    if (url && url !== "#") {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      console.warn("No valid URL provided");
+    }
+  };
+
   return (
     <div className=" py-8 md:py-24">
       <div className="relative flex flex-col w-full md:flex-row px-4 md:px-28 items-center justify-between py-8 md:py-16 bg-[#ececec] ">
@@ -52,14 +66,23 @@ const DownloadApp = () => {
           
           {/* Download buttons - stacked vertically on mobile */}
           <div className="flex flex-col w-full gap-4 px-4">
-            <button className="bg-black text-white flex items-center justify-center rounded-lg gap-3 px-6 py-4 w-full">
+            {/* Apple Store Button */}
+            <button 
+              onClick={() => handleOpenAppStore(iosUrl)}
+              className="bg-black text-white flex items-center justify-center rounded-lg gap-3 px-6 py-4 w-full hover:opacity-90 transition-opacity"
+            >
               <img src={AppleStore} alt="Apple Store" className="w-8 h-8" />
               <div className="flex flex-col items-start">
                 <span className="text-xs opacity-80">تنزيل من</span>
                 <span className="text-sm font-semibold">Apple Store</span>
               </div>
             </button>
-            <button className="bg-black text-white flex items-center justify-center rounded-lg gap-3 px-6 py-4 w-full">
+            
+            {/* Google Play Button */}
+            <button 
+              onClick={() => handleOpenAppStore(androidUrl)}
+              className="bg-black text-white flex items-center justify-center rounded-lg gap-3 px-6 py-4 w-full hover:opacity-90 transition-opacity"
+            >
               <img src={googlePlay} alt="Google Play" className="w-8 h-8" />
               <div className="flex flex-col items-start">
                 <span className="text-xs opacity-80">احصل عليه من</span>
@@ -73,19 +96,28 @@ const DownloadApp = () => {
         <div className="hidden md:flex relative z-20 flex-col items-start justify-center gap-6">
           <p className="text-xl md:text-3xl font-bold">حمل تطبيق وصل</p>
           <div className="flex w-full justify-between gap-8 mt-12 md:mt-0">
-            <button className="bg-black text-white flex flex-col md:flex-row items-center rounded-lg gap-2 px-4 py-2">
-              <div className="flex flex-col gap-1">
-                <span>تنزيل من</span>
-                <span>Apple Store</span>
+            {/* Apple Store Button */}
+            <button 
+              onClick={() => handleOpenAppStore(iosUrl)}
+              className="bg-black text-white flex flex-col md:flex-row items-center rounded-lg gap-2 px-4 py-2 hover:opacity-90 transition-opacity"
+            >
+              <div className="flex flex-col gap-1 items-end md:items-start">
+                <span className="text-xs">تنزيل من</span>
+                <span className="text-sm font-semibold">Apple Store</span>
               </div>
-              <img src={AppleStore} alt="" />
+              <img src={AppleStore} alt="Apple Store" />
             </button>
-            <button className="bg-black text-white flex flex-col md:flex-row items-center rounded-lg gap-2 px-4 py-2">
-              <div className="flex flex-col gap-1">
-                <span>احصل عليه من</span>
-                <span>Google Play</span>
+            
+            {/* Google Play Button */}
+            <button 
+              onClick={() => handleOpenAppStore(androidUrl)}
+              className="bg-black text-white flex flex-col md:flex-row items-center rounded-lg gap-2 px-4 py-2 hover:opacity-90 transition-opacity"
+            >
+              <div className="flex flex-col gap-1 items-end md:items-start">
+                <span className="text-xs">احصل عليه من</span>
+                <span className="text-sm font-semibold">Google Play</span>
               </div>
-              <img src={googlePlay} alt="" />
+              <img src={googlePlay} alt="Google Play" />
             </button>
           </div>
         </div>
@@ -95,6 +127,7 @@ const DownloadApp = () => {
           <img
             src={Mobile}
             className="absolute w-40 top-0 left-4 md:w-80 md:-top-1/2 md:left-28 z-20"
+            alt="Mobile App"
           />
         </div>
       </div>
@@ -103,3 +136,18 @@ const DownloadApp = () => {
 };
 
 export default DownloadApp;
+
+DownloadApp.propTypes = {
+  appsURLS: PropTypes.arrayOf(
+    PropTypes.shape({
+      Id: PropTypes.number,
+      Type: PropTypes.string,
+      ServerVersion: PropTypes.number,
+      UpdateLink: PropTypes.string,
+    })
+  ),
+};
+
+DownloadApp.defaultProps = {
+  appsURLS: [],
+};

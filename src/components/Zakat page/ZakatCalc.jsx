@@ -4,7 +4,7 @@ import money from "../../public/SVGs/moneyGreen.svg"
 import PropTypes from "prop-types";
 import { executeProcedure } from '../../services/apiServices';
 
-export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDonationValue }) {
+export default function ZakatCalc({ closeZakatCalc, setDonationAmount, setDonationValue }) {
   const [openToggles, setOpenToggles] = useState({
     cash: false,
     gold: false,
@@ -23,7 +23,8 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
   const [zakatResult, setZakatResult] = useState(null);
   const [calculationDetails, setCalculationDetails] = useState([]);
   const [showReceipt, setShowReceipt] = useState(false);
-  
+  const [cashStandard, setCashStandard] = useState('1'); // Default to gold (1)
+
   const categories = [
     { id: 'cash', label: 'زكاة المال', placeholder: 'يرجى إدخال المبلغ المدفوع', kindId: 1 },
     { id: 'gold', label: 'زكاة الذهب', placeholder: 'يرجى إدخال عدد الجرامات', kindId: 2 },
@@ -51,16 +52,18 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
       // Prepare all zakat calculations
       const calculations = [];
       const details = [];
-      
-      // Cash Zakat (مال) - always send if toggle is open, use 0 if no value
+
+      // Cash Zakat (مال) - always send if toggle is open
       if (openToggles.cash) {
         const cashAmount = values.cash && parseFloat(values.cash) > 0 ? values.cash : '0';
-        const cashParams = `1#0#${cashAmount}`;
+        // Use the selected standard (1 for gold, 2 for silver) as the fourth parameter
+        const cashParams = `1#0#${cashAmount}#${cashStandard}`;
         calculations.push({
           promise: executeProcedure("j2SYWVFNaSQEOaJaPQgHKg==", cashParams),
           type: 'cash',
           amount: cashAmount,
-          label: 'زكاة المال',
+          label: cashStandard === '1' ? 'زكاة المال (نصاب ذهب)' : 'زكاة المال (نصاب فضة)',
+          standard: cashStandard,
           wasEmpty: !values.cash || parseFloat(values.cash) <= 0
         });
       }
@@ -103,15 +106,15 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
 
       // Execute all calculations
       const results = await Promise.all(calculations.map(calc => calc.promise));
-      
+
       // Process results and create details
       let totalZakat = 0;
       results.forEach((result, index) => {
         const calc = calculations[index];
-        
+
         if (result && result.decrypted) {
           const zakaValue = parseFloat(result.decrypted.ZakaValue) || 0;
-          
+
           // If the input was empty or 0, show "المبلغ اقل من النصاب"
           if (calc.wasEmpty) {
             details.push({
@@ -136,17 +139,14 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
               status: 'below_threshold'
             });
           }
-          
-          
         }
       });
 
-      
-      setDonationAmount(totalZakat)
+      setDonationAmount(totalZakat);
       setZakatResult(totalZakat);
       setCalculationDetails(details);
       setShowReceipt(true);
-      setDonationValue(totalZakat)
+      setDonationValue(totalZakat);
 
     } catch (error) {
       console.error('Error calculating zakat:', error);
@@ -163,14 +163,11 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
           "+gN72EWKhIINeJxnT9fpTxvlC+rWIXioQ20N7cIWsx4=",
           "0"
         );
-        
-        
-        
 
         if (response.decrypted && response.decrypted.ZakatGoldValues) {
           // Parse the ZakatGoldValues string into an array
           const goldData = JSON.parse(response.decrypted.ZakatGoldValues);
-          
+
           // Transform the data for dropdown options
           const options = goldData.map(item => ({
             id: item.Id, // This is the ID we need for the second API
@@ -179,9 +176,9 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
             percentage: item.GoldPercentage,
             price: item.GoldPrice
           }));
-          
+
           setGoldOptions(options);
-          
+
         }
       } catch (error) {
         console.error("Error fetching gold data:", error);
@@ -212,8 +209,8 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
       setShowReceipt(false);
       setCalculationDetails([]);
     }
-  }, [values.cash, values.gold, values.silver, goldKarat, openToggles]);
-  
+  }, [values.cash, values.gold, values.silver, goldKarat, openToggles, cashStandard]);
+
   return (
     <div className="bg-white rounded-lg shadow-sm flex flex-col" dir="rtl">
       {/* Header */}
@@ -254,7 +251,7 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
                   {/* Divider Line */}
                   <div className="w-full mx-auto h-px bg-gray-300"></div>
 
-                  {/* Gold Karat Selector */}
+                  {/* Gold Karat Selector for gold category */}
                   {category.id === 'gold' && (
                     <div className="relative">
                       <select
@@ -277,6 +274,37 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
                         )}
                       </select>
                       <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                    </div>
+                  )}
+
+                  {/* Standard Selector for cash category */}
+                  {category.id === 'cash' && (
+                    <div className="space-y-3">
+                      <div className="text-sm font-medium text-gray-700">حساب النصاب على:</div>
+                      <div className="flex items-center space-x-6 space-x-reverse">
+                        <label className="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                          <input
+                            type="radio"
+                            name="cashStandard"
+                            value="1"
+                            checked={cashStandard === '1'}
+                            onChange={(e) => setCashStandard(e.target.value)}
+                            className="w-4 h-4 text-teal-600 focus:ring-teal-500 accent-green-800 border-gray-300"
+                          />
+                          <span className="text-sm">الذهب</span>
+                        </label>
+                        <label className="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                          <input
+                            type="radio"
+                            name="cashStandard"
+                            value="2"
+                            checked={cashStandard === '2'}
+                            onChange={(e) => setCashStandard(e.target.value)}
+                            className="w-4 h-4 text-teal-600 focus:ring-teal-500 accent-green-800 border-gray-300"
+                          />
+                          <span className="text-sm">الفضة</span>
+                        </label>
+                      </div>
                     </div>
                   )}
 
@@ -309,6 +337,11 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
                   <div className="flex-1">
                     <div className="font-medium text-sm">{detail.label}</div>
                     <div className="text-xs text-gray-500">المبلغ: {detail.amount}</div>
+                    {detail.type === 'cash' && detail.standard && (
+                      <div className="text-xs text-gray-500">
+                        {detail.standard === '1' ? 'نصاب الذهب' : 'نصاب الفضة'}
+                      </div>
+                    )}
                   </div>
                   <div className="text-left">
                     {detail.status === 'below_threshold' ? (
@@ -364,7 +397,7 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
 
       {/* Calculate Button fixed at bottom */}
       <div className="p-4 border-t">
-        <button 
+        <button
           onClick={calculateZakat}
           disabled={calculating}
           className="w-full bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white py-4 rounded-lg font-medium hover:bg-teal-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -378,6 +411,6 @@ export default function ZakatCalc({ closeZakatCalc , setDonationAmount , setDona
 
 ZakatCalc.propTypes = {
   closeZakatCalc: PropTypes.any,
-  setDonationAmount : PropTypes.any,
-  setDonationValue : PropTypes.any
+  setDonationAmount: PropTypes.any,
+  setDonationValue: PropTypes.any
 }

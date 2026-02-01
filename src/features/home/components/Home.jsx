@@ -17,6 +17,7 @@ function Home() {
   const [mainScreenData, setMainScreenData] = useState(null);
   const [mianScreeUrgentProjects, setMianScreeUrgentProjects] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [appsURLS , setAppsURLS] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,6 +31,25 @@ function Home() {
         setMainScreenData(response);
         
         
+      } catch (error) {
+        console.error("Error fetching main screen data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+    useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await executeProcedure(
+          "I0uFFxOqnfWgAy1EbMHIi+epTgwWrmYV51/bDxo0U0s=",
+          "3"
+        );
+        setAppsURLS(response.decrypted.AppData?JSON.parse(response.decrypted.AppData):[]);
       } catch (error) {
         console.error("Error fetching main screen data:", error);
       } finally {
@@ -102,7 +122,7 @@ function Home() {
           )}
           <Services/>
           <Charity />
-          <DownloadApp />
+          <DownloadApp appsURLS={appsURLS} />
           <Footer />
         </div>
 
