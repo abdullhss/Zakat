@@ -9,6 +9,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { MapContainer, Marker, Popup, TileLayer, useMapEvents , useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import PropTypes from "prop-types";
+import NewHeader from "../features/home/components/NewHeader";
+import headerBackground from "../../public/header backgrounds/taleb23ana.png" ;
 
 // Fix for default markers in react-leaflet
 import L from 'leaflet';
@@ -286,6 +288,9 @@ const DonationRequest = () => {
       backgroundPosition: "center",
     }}
   >
+    <div className='mt-20'>
+      <NewHeader backgroundImage={headerBackground}/>
+    </div>
      {!canSendRequest ? (
       <BlockedRequest />
     ) : (

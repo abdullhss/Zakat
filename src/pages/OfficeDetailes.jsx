@@ -188,6 +188,7 @@ const OfficeDetailes = () => {
           backgroundImage: "url('/background pattern.png')",
           backgroundRepeat: "repeat",
           backgroundSize: "auto",
+          backgroundPosition: "center",
         }}
       >
         {/* Header Section */}

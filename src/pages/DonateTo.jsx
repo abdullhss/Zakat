@@ -6,7 +6,8 @@ import money from "../public/SVGs/moneyWhite.svg"
 import { setShowPopup, setPopupComponent, setPopupTitle, openPopup } from "../features/PaySlice/PaySlice";
 import { useLocation, useSearchParams } from 'react-router-dom';
 import PayComponent from '../components/PayComponent';
-
+import NewHeader from '../features/home/components/NewHeader';
+import headerBackground from "../../public/header backgrounds/donateForLover.png";
 const DonateTo = () => {
   const [offices, setOffices] = useState([]);
   const [subventionTypes, setSubventionTypes] = useState([]);
@@ -248,157 +249,162 @@ const DonateTo = () => {
 
   return (
     <>
-      <div  className='flex flex-col gap-4 m-8'>
-        {/* Office Selection - Only show if not from route */}
-        {!isOfficeFromRoute && (
+      <div  className='flex flex-col gap-4'>
+        <div className='mt-20'>
+          <NewHeader backgroundImage={headerBackground}/>
+        </div>
+        <div className='flex flex-col gap-4 m-8'>
+          {/* Office Selection - Only show if not from route */}
+          {!isOfficeFromRoute && (
+            <div className='flex flex-col gap-4'>
+              <span className='font-bold text-lg'>المكاتب</span>
+              {loading.offices ? (
+                <div className='py-3 border-1 text-center'>جاري تحميل المكاتب...</div>
+              ) : error.offices ? (
+                <div className='py-3 border-1 text-center text-red-500'>خطأ في تحميل المكاتب: {error.offices}</div>
+              ) : (
+                <select 
+                  className='py-3 border-2 rounded-md border-[#B7B7B7]'
+                  value={selectedOffice}
+                  onChange={handleOfficeChange}
+                >
+                  <option value="">اختر مكتب</option>
+                  {offices.map((office) => (
+                    <option key={office.Id} value={office.Id}>
+                      {office.OfficeName}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
+
+          {/* Show current office info when from route */}
+          {isOfficeFromRoute && selectedOffice && (
+            <div className='flex flex-col gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+              <span className='font-bold text-lg'>المكتب المحدد</span>
+              <div className='py-2 px-3 bg-white border border-gray-300 rounded-md'>
+                {getCurrentOfficeName()}
+              </div>
+              <p className='text-sm text-gray-600 text-right'>
+                تم تحديد هذا المكتب مسبقاً. يمكنك اختيار نوع الإعانة والمبلغ المراد التبرع به.
+              </p>
+            </div>
+          )}
+
+          {/* Subvention Types Dropdown */}
           <div className='flex flex-col gap-4'>
-            <span className='font-bold text-lg'>المكاتب</span>
-            {loading.offices ? (
-              <div className='py-3 border-1 text-center'>جاري تحميل المكاتب...</div>
-            ) : error.offices ? (
-              <div className='py-3 border-1 text-center text-red-500'>خطأ في تحميل المكاتب: {error.offices}</div>
+            <span className='font-bold text-lg'>الإعانات</span>
+            {loading.subventionTypes ? (
+              <div className='py-3 border-1 text-center'>جاري تحميل الإعانات...</div>
+            ) : error.subventionTypes ? (
+              <div className='py-3 border-1 text-center text-red-500'>خطأ في تحميل الإعانات: {error.subventionTypes}</div>
             ) : (
               <select 
                 className='py-3 border-2 rounded-md border-[#B7B7B7]'
-                value={selectedOffice}
-                onChange={handleOfficeChange}
+                value={selectedSubvention}
+                onChange={handleSubventionChange}
+                disabled={!selectedOffice}
               >
-                <option value="">اختر مكتب</option>
-                {offices.map((office) => (
-                  <option key={office.Id} value={office.Id}>
-                    {office.OfficeName}
+                <option value="">اختر إعانة</option>
+                {subventionTypes.map((subvention) => (
+                  <option key={subvention.Id} value={subvention.Id}>
+                    {subvention.SubventionTypeName}
                   </option>
                 ))}
               </select>
             )}
           </div>
-        )}
 
-        {/* Show current office info when from route */}
-        {isOfficeFromRoute && selectedOffice && (
-          <div className='flex flex-col gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-            <span className='font-bold text-lg'>المكتب المحدد</span>
-            <div className='py-2 px-3 bg-white border border-gray-300 rounded-md'>
-              {getCurrentOfficeName()}
-            </div>
-            <p className='text-sm text-gray-600 text-right'>
-              تم تحديد هذا المكتب مسبقاً. يمكنك اختيار نوع الإعانة والمبلغ المراد التبرع به.
-            </p>
-          </div>
-        )}
-
-        {/* Subvention Types Dropdown */}
-        <div className='flex flex-col gap-4'>
-          <span className='font-bold text-lg'>الإعانات</span>
-          {loading.subventionTypes ? (
-            <div className='py-3 border-1 text-center'>جاري تحميل الإعانات...</div>
-          ) : error.subventionTypes ? (
-            <div className='py-3 border-1 text-center text-red-500'>خطأ في تحميل الإعانات: {error.subventionTypes}</div>
-          ) : (
-            <select 
-              className='py-3 border-2 rounded-md border-[#B7B7B7]'
-              value={selectedSubvention}
-              onChange={handleSubventionChange}
+          {/* Donation Amount Input */}
+          <div className="relative w-full">
+            <img
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 md:w-6 md:h-6"
+              src={moneyGreen}
+              alt="Money"
+            />
+            <input
+              type="number"
+              min="1"
+              value={donationAmount}
+              onChange={handleAmountChange}
+              placeholder={
+                selectedOffice ? "يرجى إدخال المبلغ المدفوع" : "يرجى اختيار مكتب أولاً"
+              }
+              className={`w-full pl-10 pr-3 py-3 border-2 rounded-lg text-sm md:text-base
+                focus:outline-none focus:ring-2 focus:ring-emerald-600
+                placeholder:font-medium ${
+                  selectedOffice
+                  ? "border-[#979797]"
+                  : "border-gray-300 bg-gray-100"
+              }`}
               disabled={!selectedOffice}
-            >
-              <option value="">اختر إعانة</option>
-              {subventionTypes.map((subvention) => (
-                <option key={subvention.Id} value={subvention.Id}>
-                  {subvention.SubventionTypeName}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+            />
+          </div>
 
-        {/* Donation Amount Input */}
-        <div className="relative w-full">
-          <img
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-5 h-5 md:w-6 md:h-6"
-            src={moneyGreen}
-            alt="Money"
-          />
-          <input
-            type="number"
-            min="1"
-            value={donationAmount}
-            onChange={handleAmountChange}
-            placeholder={
-              selectedOffice ? "يرجى إدخال المبلغ المدفوع" : "يرجى اختيار مكتب أولاً"
-            }
-            className={`w-full pl-10 pr-3 py-3 border-2 rounded-lg text-sm md:text-base
-              focus:outline-none focus:ring-2 focus:ring-emerald-600
-              placeholder:font-medium ${
-                selectedOffice
-                ? "border-[#979797]"
-                : "border-gray-300 bg-gray-100"
+          <div className="flex flex-col gap-2">
+            <span className='font-bold text-lg'>اسم المتبرع</span>
+            <input
+              type="text"
+              value={donorNameForLover}
+              onChange={handleDonorNameForLoverChange}
+              placeholder="أدخل اسم المتبرع"
+              className="w-full px-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600"
+            />
+          </div>
+
+          {/* Donor Name Input */}
+          <div className="flex flex-col gap-2">
+            <span className='font-bold text-lg'>اسم المتبرع له</span>
+            <input
+              type="text"
+              value={donorName}
+              onChange={handleDonorNameChange}
+              placeholder="أدخل اسم المتبرع له"
+              className="w-full px-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600"
+            />
+          </div>
+
+          {/* Donor Phone Input */}
+          <div className="flex flex-col gap-2">
+            <span className='font-bold text-lg'>رقم هاتف المتبرع له </span>
+
+            <input
+              type="tel"
+              value={donorPhone}
+              onChange={handleDonorPhoneChange}
+              placeholder="أدخل رقم هاتف المتبرع له "
+              className={`w-full px-3 py-3 border-2 rounded-lg text-sm md:text-base 
+                focus:outline-none focus:ring-2 
+                ${phoneError ? "border-red-500 focus:ring-red-500" : "border-[#979797] focus:ring-emerald-600"}
+              `}
+            />
+
+            {phoneError && (
+              <span className="text-red-600 text-sm">{phoneError}</span>
+            )}
+          </div>
+
+          
+          <div className='flex-grow'></div>
+          
+          {/* Pay Now Button */}
+          <button
+            className={`w-full flex items-center justify-center gap-3 text-white font-semibold py-3 px-6 rounded-lg shadow-lg text-sm md:text-base ${
+              !selectedOffice || !donationAmount || !donorName || !donorPhone ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={!selectedOffice}
-          />
+            onClick={(e) => { e.preventDefault(); handlePayNow(); }}
+            disabled={
+              !selectedOffice || !donationAmount || !donorName || !donorPhone || phoneError
+            }
+            style={{
+              background: "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)",
+            }}
+          >
+            <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
+            <span>ادفع الآن</span>
+          </button>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <span className='font-bold text-lg'>اسم المتبرع</span>
-          <input
-            type="text"
-            value={donorNameForLover}
-            onChange={handleDonorNameForLoverChange}
-            placeholder="أدخل اسم المتبرع"
-            className="w-full px-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600"
-          />
-        </div>
-
-        {/* Donor Name Input */}
-        <div className="flex flex-col gap-2">
-          <span className='font-bold text-lg'>اسم المتبرع له</span>
-          <input
-            type="text"
-            value={donorName}
-            onChange={handleDonorNameChange}
-            placeholder="أدخل اسم المتبرع له"
-            className="w-full px-3 py-3 border-2 border-[#979797] rounded-lg text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-emerald-600"
-          />
-        </div>
-
-        {/* Donor Phone Input */}
-        <div className="flex flex-col gap-2">
-          <span className='font-bold text-lg'>رقم هاتف المتبرع له </span>
-
-          <input
-            type="tel"
-            value={donorPhone}
-            onChange={handleDonorPhoneChange}
-            placeholder="أدخل رقم هاتف المتبرع له "
-            className={`w-full px-3 py-3 border-2 rounded-lg text-sm md:text-base 
-              focus:outline-none focus:ring-2 
-              ${phoneError ? "border-red-500 focus:ring-red-500" : "border-[#979797] focus:ring-emerald-600"}
-            `}
-          />
-
-          {phoneError && (
-            <span className="text-red-600 text-sm">{phoneError}</span>
-          )}
-        </div>
-
-        
-        <div className='flex-grow'></div>
-        
-        {/* Pay Now Button */}
-        <button
-          className={`w-full flex items-center justify-center gap-3 text-white font-semibold py-3 px-6 rounded-lg shadow-lg text-sm md:text-base ${
-            !selectedOffice || !donationAmount || !donorName || !donorPhone ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          onClick={(e) => { e.preventDefault(); handlePayNow(); }}
-          disabled={
-            !selectedOffice || !donationAmount || !donorName || !donorPhone || phoneError
-          }
-          style={{
-            background: "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)",
-          }}
-        >
-          <img src={money} alt="تبرع" className="w-5 h-5 md:w-6 md:h-6" />
-          <span>ادفع الآن</span>
-        </button>
       </div>
     </>
   )

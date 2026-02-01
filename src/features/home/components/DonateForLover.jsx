@@ -4,7 +4,7 @@ import { useRef } from "react";
 import LogoWhite from "../../../../public/LogoWhite.png";
 import greenUnion from "../../../../public/UnionGreen.png";
 import Union from "../../../../public/Union.png";
-import Plant from "../../../../public/plant.webp";
+import Plant from "../../../../public/plant.png";
 import Diamond from "../../../components/Diamond";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -181,7 +181,7 @@ const Zema = () => {
               className="relative w-2/3 md:w-1/4 h-56 md:h-full overflow-hidden"
             >
               <img
-                src="/plant.webp"
+                src="/plant.png"
                 alt="plant"
                 className="w-full h-full object-cover"
               />
