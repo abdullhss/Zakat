@@ -1,6 +1,6 @@
 import React from 'react'
 import logo from '../../public/Logo.png'
-import zakatWaslheader from '../../public/zakatWaslheader.png'
+import zakatWaslheader from '../../public/zakatWaslHeader.png'
 import PropTypes from 'prop-types'
 import zakatWaslStamp from '../../public/5etm.png'
 const ZakatWasl = ({officeName , officeId , donationDate , donationId , donationAmount , donationAmountInWords , donationPhone , donationName , donationType , donationNameForLover ,  paymentDescription}) => {
