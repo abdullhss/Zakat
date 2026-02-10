@@ -32,9 +32,17 @@ const FitrZakat = () => {
 
   const handlePersonCountChange = (typeId, count) => {
     const numericCount = parseInt(count) || 0;
+    
+    // Find the type to get its AllowedQty
+    const type = fitrZakatTypes.find(t => t.Id === typeId);
+    const maxAllowed = type?.AllowedQty || 0;
+    
+    // Ensure count doesn't exceed AllowedQty
+    const finalCount = Math.min(numericCount, maxAllowed);
+    
     setPersonCounts(prev => ({
       ...prev,
-      [typeId]: numericCount
+      [typeId]: finalCount
     }));
   };
 
@@ -123,14 +131,23 @@ const FitrZakat = () => {
     const fetchdata = async () => {
       if (selectedOffice?.Id) {
         const response = await executeProcedure(
-          "jkE/EfUyfEzbwqK/HolgChI5O++hElNV6y+iDEMHKxo=",
+          "2u/Nn3DLlJ8eyKA5WyGE78euJIBOav2KZMzkAuo7aQc=",
           `${selectedOffice?.Id}#1#100`
         );
         const data = JSON.parse(response.decrypted.ZakatFitrItemsData);
-        setFitrZakatTypes(data || []);
+        
+        // Remap the data to match the expected structure
+        const remappedData = (data || []).map(item => ({
+          Id: item.ItemId,          
+          ItemName: item.ItemName,  
+          ItemValue: item.ItemValue, 
+          AllowedQty: item.AllowedQty
+        }));
+        
+        setFitrZakatTypes(remappedData);
       }
     };
-
+  
     fetchdata();
   }, [selectedOffice]);
 
@@ -149,6 +166,7 @@ const FitrZakat = () => {
 
 
   const handlePayment = () => {
+    const zakatFitrItms = fitrZakatTypes.map(type => ({...type , quantity: personCounts[type.Id]}));
     console.log(selectedOffice);
       const paymentDesc = buildPaymentDescription();
       
@@ -165,6 +183,7 @@ const FitrZakat = () => {
           totalAmount={totals.grandTotal}
           actionID={11}
           currency="دينار"
+          zakatFitrItms = {zakatFitrItms}
           />
         ));
         dispatch(setShowPopup(true))
@@ -188,7 +207,14 @@ const FitrZakat = () => {
             backgroundRepeat: "repeat",
             backgroundSize: "auto",
         }}
+        className='min-h-screen'
     >
+      
+        <div className='w-full flex justify-center items-center '>
+          <span className="text-2xl w-full text-center mt-8 bg bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] bg-clip-text text-transparent font-semibold">
+          المقدارُ بالصاعِ النبويِّ لجميعِ الأصنافِ هو كيلوجرامان ونصفُ الكيلوجرام (2.5 كجم).
+          </span>
+        </div>
         <div className="max-w-4xl mx-auto p-6"
         >
         {/* Office Selection */}
@@ -241,17 +267,23 @@ const FitrZakat = () => {
 
                     {/* Person Count Input */}
                     <div className="text-center">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         عدد الأشخاص
-                    </label>
-                    <input
+                      </label>
+                      <input
                         type="number"
                         min="0"
+                        max={type.AllowedQty || 0}
                         value={personCounts[type.Id] || ''}
                         onChange={(e) => handlePersonCountChange(type.Id, e.target.value)}
                         className="w-32 mx-auto border border-gray-300 rounded-lg p-2 text-center focus:outline-none focus:ring-2 focus:ring-emerald-600"
                         placeholder="0"
-                    />
+                      />
+                      {type.AllowedQty > 0 && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          الحد الأقصى: {type.AllowedQty}
+                        </p>
+                      )}
                     </div>
 
                     {/* Type Total */}

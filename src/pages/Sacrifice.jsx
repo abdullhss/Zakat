@@ -13,20 +13,20 @@ const Sacrifice = () => {
   const [accordions, setAccordions] = useState([
     {
       id: 'fedia',
-      title: 'فدية',
-      description: 'عند فعل محظور من محظورات الإحرام',
+      title: 'تبرع بأضحية',
+      description: 'نوصلها إلى مستحقيها وفق الشروط الشرعية.',
       items: []
     },
     {
       id: 'sadaka',
-      title: 'صدقة',
-      description: 'إطعام وخير وقربة إلى الله عز وجل',
+      title: 'صدقة اللحم',
+      description: 'إجعل من جودك مائدة للفقراء.',
       items: []
     },
     {
       id: 'akika',
       title: 'عقيقة',
-      description: 'شطر لله على المولود',
+      description: 'شكرٌ للواهب على المولود ؛ استقبل مولودك ببركة العطاء .',
       items: []
     }
   ])

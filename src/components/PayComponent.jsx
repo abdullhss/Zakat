@@ -2,7 +2,7 @@ import { ImagePlus, Loader2, CheckCircle, FileText, AlertCircle } from "lucide-r
 import { useState, useRef, useEffect } from "react";
 import PropTypes from 'prop-types';
 import moenyWhite from "../public/SVGs/moneyWhite.svg";
-import { executeProcedure, DoTransaction } from "../services/apiServices";
+import { executeProcedure, DoTransaction, DoMultiTransaction } from "../services/apiServices";
 import { HandelFile } from "./HandelFile";
 import { setShowPopup, closeAllPopups, setPopupComponent } from "../features/PaySlice/PaySlice";
 import { useDispatch } from "react-redux";
@@ -29,7 +29,8 @@ const PayComponent = ({
   Project_Id = "0",
   PaymentDesc = "",
   Salla = false ,
-  donationNameForLover = ""
+  donationNameForLover = "",
+  zakatFitrItms = []
 }) => {
   const [donationType, setDonationType] = useState(null);
   const [localMethod, setLocalMethod] = useState(null);
@@ -488,6 +489,26 @@ const PayComponent = ({
           }
         }
       }
+      if (actionID == 11) {
+        const tableName = "EHOuQy3M1MyrTQunV/qrDfNvGI0mh1DAqD1w/7TFA2Q=";
+      
+        const tablesString = Array(zakatFitrItms.length)
+          .fill(tableName)
+          .join('^');
+      
+        const dataString = zakatFitrItms
+          .map(item =>
+            `0#${JSON.parse(localStorage.getItem("UserData"))?.Id || 0}#` +
+            `${new Date().toLocaleDateString('en-GB').replace(/\//g, '-') + ' ' + new Date().toLocaleTimeString('en-GB')}#` +
+            `${item.Id}#${item.quantity}`
+          )
+          .join('^');
+      
+        console.log(tablesString, dataString);
+      
+        const response = await DoMultiTransaction(tablesString, dataString);
+        console.log(response);
+      }      
   
     } catch (error) {
       console.error("Error calling payment procedure:", error);
@@ -987,7 +1008,8 @@ PayComponent.propTypes = {
   Project_Id:PropTypes.string,
   PaymentDesc:PropTypes.string,
   Salla : PropTypes.bool,
-  donationNameForLover: PropTypes.string
+  donationNameForLover: PropTypes.string,
+  zakatFitrItms: PropTypes.array
 };
 
 export default PayComponent;
