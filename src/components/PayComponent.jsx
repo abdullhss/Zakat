@@ -500,7 +500,7 @@ const PayComponent = ({
           .map(item =>
             `0#${JSON.parse(localStorage.getItem("UserData"))?.Id || 0}#` +
             `${new Date().toLocaleDateString('en-GB').replace(/\//g, '/') + ' ' + new Date().toLocaleTimeString('en-GB')}#` +
-            `${item.Id}#${item.quantity}`
+            `${item.Id}#${item.quantity}#${officeId}`
           )
           .join('^');
       
