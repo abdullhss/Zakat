@@ -500,11 +500,11 @@ const PayComponent = ({
           .map(item =>
             `0#${JSON.parse(localStorage.getItem("UserData"))?.Id || 0}#` +
             `${new Date().toLocaleDateString('en-GB').replace(/\//g, '/') + ' ' + new Date().toLocaleTimeString('en-GB')}#` +
-            `${item.Id}#${item.quantity}#${officeId}`
+            `${item.Id}#${item.quantity||0}#${officeId}`
           )
           .join('^');
       
-        console.log(tablesString, dataString);
+        console.log(tablesString , dataString);
       
         const response = await DoMultiTransaction(tablesString, dataString);
         console.log(response);

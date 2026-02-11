@@ -30,6 +30,23 @@ const FitrZakat = () => {
         setTotals({});
     };
 
+        const getUserID = () => {
+        try {
+            const userData = localStorage.getItem('UserData');
+            if (!userData) {
+                return null;
+            }
+            const parsedData = JSON.parse(userData);
+            return parsedData?.Id || null;
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            return null;
+        }
+    };
+
+    const userid = getUserID();
+
+
   const handlePersonCountChange = (typeId, count) => {
     const numericCount = parseInt(count) || 0;
     
@@ -199,6 +216,31 @@ const FitrZakat = () => {
       </div>
     );
   }
+  if (!userid && isAllowed) {
+    return (
+        <div className="relative overflow-hidden min-h-screen flex items-center justify-center"
+            style={{
+                backgroundImage: "url('/background pattern.png')",
+                backgroundRepeat: "repeat",
+                backgroundSize: "auto",
+            }}
+        >
+            <div className="z-10 mx-auto px-4 text-center">
+                <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
+                    <div className="text-red-500 text-6xl mb-4">⚠️</div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">بيانات المستخدم غير متوفرة</h2>
+                    <p className="text-gray-600 mb-6">لم يتم العثور على بيانات المستخدم. يرجى تسجيل الدخول مرة أخرى.</p>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className="bg-gradient-to-l from-[#17343B] via-[#18383D] to-[#24645E] text-white px-6 py-3 rounded-lg shadow-md hover:opacity-90 transition-opacity"
+                    >
+                        إعادة تحميل الصفحة
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
 
   return (
     <div
