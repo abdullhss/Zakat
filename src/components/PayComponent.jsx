@@ -1,4 +1,4 @@
-import { ImagePlus, Loader2, CheckCircle, FileText, AlertCircle } from "lucide-react";
+import { ImagePlus, Loader2, CheckCircle, FileText, AlertCircle, Copy } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import PropTypes from 'prop-types';
 import moenyWhite from "../public/SVGs/moneyWhite.svg";
@@ -56,7 +56,9 @@ const PayComponent = ({
   const [donationDate, setDonationDate] = useState("");
   const [donationId, setDonationId] = useState("");
   const [donationAmountInWords, setDonationAmountInWords] = useState("");
-
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  // New state for recurring donation selection (الباقيات الصالحات)
+  const [selectedBakyatId, setSelectedBakyatId] = useState(0);
   const afterSaveElectronicPaymentIdRef = useRef(null);
   const fileRef = useRef(null);
   const iframeRef = useRef(null);
@@ -66,6 +68,9 @@ const PayComponent = ({
   
   const gradientBtn = "bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white";
   const grayBtn = "bg-[#C9C9C9] text-black";
+
+  // Check if user is logged in
+  const isLoggedIn = !!JSON.parse(localStorage.getItem("UserData"))?.Id;
 
   // Message handler for iframe communication
   useEffect(() => {
@@ -231,6 +236,8 @@ const PayComponent = ({
     setDonationDate("");
     setDonationId("");
     setDonationAmountInWords("");
+    setWhatsappNumber("");
+    setSelectedBakyatId(0); // Reset recurring selection
   };
 
   // Open payment gateway in iframe
@@ -348,38 +355,60 @@ const PayComponent = ({
   };
   const downloadWaslPDF = async () => {
     if (!waslRef.current) return;
-    
-    // Wait for next tick to ensure content is rendered
+  
     await new Promise(resolve => setTimeout(resolve, 100));
-    
-    // Ensure element is visible for capture
+  
     const waslElement = waslRef.current;
     const originalStyle = waslElement.getAttribute('style');
-    waslElement.setAttribute('style', 'position: absolute; top: 0; left: 0; width: 800px; background: white; padding: 24px; visibility: visible; opacity: 1;');
-    
+  
+    waslElement.setAttribute(
+      'style',
+      'position: absolute; top: 0; left: 0; width: 800px; background: white; padding: 24px; visibility: visible; opacity: 1;'
+    );
+  
     try {
       const dataUrl = await htmlToImage.toPng(waslElement, {
         quality: 1,
-        pixelRatio: 2,
-        backgroundColor: '#ffffff',
-        style: {
-          transform: 'scale(1)',
-          transformOrigin: 'top left'
-        }
+        pixelRatio: 1,
+        backgroundColor: '#ffffff'
       });
-      
+  
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgProps = pdf.getImageProperties(dataUrl);
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
+  
       pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`zakat-wasl-${Date.now()}.pdf`);
+  
+      const pdfBlob = pdf.output('blob');
+  
+      const pdfFile = new File(
+        [pdfBlob],
+        `zakat-wasl-${Date.now()}.pdf`,
+        { type: "application/pdf" }
+      );
+      console.log(pdfFile);
+      
+  
+      const handelFile = new HandelFile();
+  
+      const uploadResult = await handelFile.UploadFileWebSite({
+        action: "Add",
+        file: pdfFile,
+        fileId: "",
+        SessionID: "",
+        onProgress: () => {}
+      });
+  
+      if (uploadResult.status === 200) {
+        console.log("Uploaded PDF ID:", uploadResult.id);
+        pdf.save(`zakat-wasl-${Date.now()}.pdf`);
+        return (uploadResult.id);
+      }  
     } catch (error) {
       console.error('Error generating PDF:', error);
-      toast.error('فشل في إنشاء PDF');
+      toast.error('فشل في إنشاء أو رفع PDF');
     } finally {
-      // Restore original style
       if (originalStyle) {
         waslElement.setAttribute('style', originalStyle);
       } else {
@@ -429,7 +458,11 @@ const PayComponent = ({
         const selectedAccount = JSON.parse(selectedLocalAccount);
         bankId = selectedAccount.Bank_Id || "0";
       }
-  
+      let uploadedWaslID = 0 ;
+      if(paymentMethodIdValue != 1){
+        uploadedWaslID = await downloadWaslPDF();
+      }
+      console.log("uploadedWaslID",uploadedWaslID);
       const params = [
         "0",
         formattedDate,
@@ -450,12 +483,38 @@ const PayComponent = ({
         paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.Terminal_Id : "",
         paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.MerchantReference : "",
         "",
-        ""
+        "",
+        whatsappNumber || "", 
+        uploadedWaslID,
       ].join("#");
-  
+      
+      const secondarams = [
+        "0",
+        formattedDate,
+        PaymentDesc === "" ? electronicPaymentSystemReference : PaymentDesc,
+        paymentMethodIdValue == 1 ? 0 : totalAmount.toString(),
+        actionID,
+        paymentWayId,
+        paymentMethodIdValue,
+        SubventionType_Id,
+        Project_Id,
+        officeId || "0",
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.bankId : bankId,
+        paymentMethodIdValue == 1 ? saveElectronicDataBeforePayment?.accountNum : accountNum,
+        uploadedFileId || "",
+        paymentMethodIdValue == 1 ? "True" : "False",
+        JSON.parse(localStorage.getItem("UserData"))?.Id || 0,
+        selectedBakyatId, // <-- Use the selected recurring donation ID
+      ].join("#");
+      
+
       const response = await DoTransaction("rCSWIwrXh3HGKRYh9gCA8g==", params);
       console.log("Payment procedure response:", response);
-      
+      if(selectedBakyatId != 0){
+        const response1 = await DoTransaction("evz/MM/BXvFvUAREbBE+Rg==",secondarams);
+        console.log("Payment procedure response1:", response1);
+      }
+
       // Save the donation ID to state
       setDonationId(response.id);
       afterSaveElectronicPaymentIdRef.current = response.id;
@@ -465,7 +524,6 @@ const PayComponent = ({
           toast.success("تم الدفع بنجاح");
           
           // Now we can safely download the PDF since we have all the data
-          await downloadWaslPDF();
   
           dispatch(setShowPopup(true));
           resetForm();
@@ -532,13 +590,22 @@ const PayComponent = ({
     if (isUploading || isProcessing || isOpeningGateway || !donationType) return false;
 
     if (donationType === "international") {
-      return selectedInternationalAccount && uploadedFileId;
+      return selectedInternationalAccount && uploadedFileId && whatsappNumber;
     } else if (donationType === "local") {
       if (localMethod === "electronic") return true;
-      if (localMethod === "bank") return selectedLocalAccount && uploadedFileId;
+      if (localMethod === "bank") return selectedLocalAccount && uploadedFileId && whatsappNumber;
     }
     
     return false;
+  };
+
+  // Handle recurring donation selection (only if logged in)
+  const handleBakyatSelect = (id) => {
+    if (!isLoggedIn) {
+      toast.error("يجب تسجيل الدخول أولاً");
+      return;
+    }
+    setSelectedBakyatId(id);
   };
 
   // International Bank Accounts Data
@@ -559,6 +626,18 @@ const PayComponent = ({
 
     fetchData();
   }, [actionID]);
+
+    useEffect(() => {
+    if (internationalBankAccountsData.length > 0) {
+      const firstAccount = internationalBankAccountsData[0];
+      setSelectedInternationalAccount(JSON.stringify(firstAccount));
+      setSelectedInternationalAccountNumber(firstAccount.AccountNum);
+    } else {
+      setSelectedInternationalAccount("");
+      setSelectedInternationalAccountNumber("");
+    }
+  }, [internationalBankAccountsData]);
+
 
   // Local Bank Accounts Data
   useEffect(() => {
@@ -593,7 +672,16 @@ const PayComponent = ({
       fetchZemaAccounts();
     }
   }, [officeId, serviceTypeId, paymentMethodId, actionID]);
-
+  useEffect(() => {
+    if (localBankAccountsData.length > 0) {
+      const firstAccount = localBankAccountsData[0];
+      setSelectedLocalAccount(JSON.stringify(firstAccount));
+      setSelectedLocalAccountNumber(firstAccount.AccountNum);
+    } else {
+      setSelectedLocalAccount("");
+      setSelectedLocalAccountNumber("");
+    }
+  }, [localBankAccountsData]);
 
   return (
     <div className="flex flex-col h-full">
@@ -639,6 +727,8 @@ const PayComponent = ({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Office Name Input */}
       <div className="p-4 flex-1 overflow-y-auto">
         <p className="text-lg font-semibold mb-6">المكاتب</p>
         <input
@@ -648,6 +738,36 @@ const PayComponent = ({
         />
       </div>
 
+      {/* New Section: Recurring Donation Toggle (الباقيات الصالحات) */}
+      <div className="p-4">
+        <p className="text-lg font-semibold mb-4">الباقيات الصالحات</p>
+        <div className="flex gap-2">
+          {[
+            { id: 1, label: 'يومي' },
+            { id: 2, label: 'اسبوعي' },
+            { id: 3, label: 'شهري' },
+            { id: 4, label: 'سنوي' }
+          ].map(item => (
+            <button
+              key={item.id}
+              className={`flex-1 py-2 rounded-md font-medium transition-colors ${
+                selectedBakyatId === item.id
+                  ? 'bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] text-white'
+                  : 'bg-[#C9C9C9] text-black hover:bg-[#b5b5b5]'
+              } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
+              onClick={() => handleBakyatSelect(item.id)}
+              disabled={!isLoggedIn}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+        {!isLoggedIn && (
+          <p className="text-red-500 text-sm mt-2">يجب تسجيل الدخول لاختيار الباقيات الصالحات</p>
+        )}
+      </div>
+
+      {/* Payment Type Selection */}
       <div className="p-4 flex-1 overflow-y-auto space-y-4">
         <p className="text-lg font-semibold mb-6">اختر نوع الدفع السريع</p>
         <div className="flex gap-4">
@@ -691,6 +811,24 @@ const PayComponent = ({
               <p className="text-green-700 font-semibold">
                 يتم الدفع من خارج ليبيا على الحسابات المخصصة للدفع الدولي مع إرفاق صورة ايصال الدفع
               </p>
+            </div>
+
+            <p className="text-lg font-semibold">حساب</p>
+            <span className="">يرجى نسخ رقم الحساب الظاهر في الأسفل</span>
+            <div className="relative">
+              <Copy className="w-5 h-5 text-gray-500 absolute top-3 left-3" />
+              <input
+                type="text"
+                className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 cursor-pointer"
+                value={selectedInternationalAccountNumber}
+                readOnly
+                onClick={() => {
+                  if (selectedInternationalAccountNumber) {
+                    navigator.clipboard.writeText(selectedInternationalAccountNumber);
+                    toast.success("تم نسخ رقم الحساب");
+                  }
+                }}
+              />
             </div>
 
             <div className="flex items-start gap-4">
@@ -744,33 +882,18 @@ const PayComponent = ({
               </div>
             )}
 
-            <p className="text-lg font-semibold">حساب</p>
-            <select 
-              className="w-full p-3 border border-gray-300 rounded-lg"
-              value={selectedInternationalAccount}
-              onChange={(e) => {
-                const selectedValue = e.target.value;
-                if (selectedValue) {
-                  const account = JSON.parse(selectedValue);
-                  setSelectedInternationalAccount(selectedValue);
-                  setSelectedInternationalAccountNumber(account.AccountNum);
-                } else {
-                  setSelectedInternationalAccount("");
-                  setSelectedInternationalAccountNumber("");
-                }
-              }}
-              required
-            >
-              <option value="">اختر الحساب</option>
-              {internationalBankAccountsData.map((account, index) => (
-                <option key={account.Id || index} value={JSON.stringify(account)}>
-                  {account.AccountNum} - {account.BankName}
-                </option>
-              ))}
-              {internationalBankAccountsData.length === 0 && (
-                <option value="" disabled>لا توجد حسابات متاحة</option>
-              )}
-            </select>
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                رقم الواتساب للتواصل
+              </label>
+              <input
+                type="tel"
+                placeholder="أدخل رقم الواتساب"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#17343B]"
+                value={whatsappNumber}
+                onChange={(e) => setWhatsappNumber(e.target.value)}
+              />
+            </div>
           </div>
         )}
 
@@ -824,6 +947,25 @@ const PayComponent = ({
                   يتم التحويل على احدى الحسابات المخصصة مع إرفاق صورة ايصال الدفع
                   </p>
                 </div>
+
+                <p className="text-lg font-semibold">حساب</p>
+                <span className="">يرجى نسخ رقم الحساب الظاهر في الأسفل</span>
+                <div className="relative">
+                  <Copy className="w-5 h-5 text-gray-500 absolute top-3 left-3" />
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 cursor-pointer"
+                    value={selectedLocalAccountNumber}
+                    readOnly
+                    onClick={() => {
+                      if (selectedLocalAccountNumber) {
+                        navigator.clipboard.writeText(selectedLocalAccountNumber);
+                        toast.success("تم نسخ رقم الحساب");
+                      }
+                    }}
+                  />
+                </div>
+
                 {/* Upload UI with Progress */}
                 <div className="flex items-start gap-4">
                   <div
@@ -876,33 +1018,18 @@ const PayComponent = ({
                   </div>
                 )}
 
-                <p className="text-lg font-semibold">حساب</p>
-                <select 
-                  className="w-full p-3 border border-gray-300 rounded-lg"
-                  value={selectedLocalAccount}
-                  onChange={(e) => {
-                    const selectedValue = e.target.value;
-                    if (selectedValue) {
-                      const account = JSON.parse(selectedValue);
-                      setSelectedLocalAccount(selectedValue);
-                      setSelectedLocalAccountNumber(account.AccountNum);
-                    } else {
-                      setSelectedLocalAccount("");
-                      setSelectedLocalAccountNumber("");
-                    }
-                  }}
-                  required
-                >
-                  <option value="">اختر الحساب</option>
-                  {localBankAccountsData.map((account, index) => (
-                    <option key={account.Id || index} value={JSON.stringify(account)}>
-                      {account.AccountNum} - {account.BankName}
-                    </option>
-                  ))}
-                  {localBankAccountsData.length === 0 && (
-                    <option value="" disabled>لا توجد حسابات متاحة</option>
-                  )}
-                </select>
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    رقم الواتساب للتواصل
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="أدخل رقم الواتساب"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#17343B]"
+                    value={whatsappNumber}
+                    onChange={(e) => setWhatsappNumber(e.target.value)}
+                  />
+                </div>
               </div>
             )}
 
