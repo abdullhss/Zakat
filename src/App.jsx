@@ -56,6 +56,7 @@ import Remember from "./pages/Remember.jsx";
 import FitrZakat from "./pages/FitrZakat.jsx";
 import ForgetPassword from "./pages/ForgetPassword.jsx";
 import { useImageContext } from "./Context/imageContext.jsx";
+import Bakyat from "./pages/Bakyat.jsx";
 // Main Pages (with navbar via Layout)
 
 // Protected Routes (you can add these later)
@@ -150,6 +151,7 @@ function App() {
               <Route path="/FAQ/ask" element={<Ask/>} />
               <Route path="/remember" element={<Remember/>} />
               <Route path="/fitrZakat" element={<FitrZakat/>} />
+              <Route path="/bakyat" element={<Bakyat/>} />
             </Route>
             
             <Route path="/ApiTestComponent" element={<ApiTestComponent />} />
