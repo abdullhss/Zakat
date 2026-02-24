@@ -34,21 +34,27 @@ const DonationRequest = () => {
   const [canSendRequest , setCanSendRequest] = useState(false)
   const userData = JSON.parse(localStorage.getItem("UserData"));
   const navigate = useNavigate() ; 
-  // Form state
+
+  // Form state – four new fields as text inputs
   const [formData, setFormData] = useState({
-    name: userData.UserName,
+    name: userData.UserName || '',
     individualsCount: '',
-    phone: userData.MobileNum,
+    phone: userData.MobileNum || '',
     amount: '',
     officeId: '',
     donationTypeId: '',
     description: '',
-    address: ''
+    address: '',
+    totalIncome: '',        // now text
+    jobstatus: '',          // now text
+    socityStatus: '',       // now text
+    nationalID: ''          // text with pattern
   })
 
-    // Map state
+  // Map state
   const [position, setPosition] = useState([32.8872, 13.1913]);
   const [markerPosition, setMarkerPosition] = useState([32.8872, 13.1913]);
+
   const CheckPrevAssistance = async()=>{
     const response = await executeProcedure("ad/2ZM2fs/e3YjR6tghLEILauQgFqTpHsnFNAfPpFcQ=" , userData.Id);
     if(JSON.parse(response.decrypted.CheckData)[0].PrevCount > 0){
@@ -58,44 +64,45 @@ const DonationRequest = () => {
       setCanSendRequest(true)
     }
   }
-    useEffect(() => {
-      CheckPrevAssistance() ;
-      // Try to get user's current location
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const { latitude, longitude } = pos.coords
-            setPosition([latitude, longitude])
-            setMarkerPosition([latitude, longitude])
 
-            // Reverse geocode to get address
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
-              .then((res) => res.json())
-              .then((data) => {
-                if (data && data.display_name) {
-                  setFormData(prev => ({
-                    ...prev,
-                    address: data.display_name
-                  }))
-                }
-              })
-              .catch(() => {
+  useEffect(() => {
+    CheckPrevAssistance() ;
+    // Try to get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords
+          setPosition([latitude, longitude])
+          setMarkerPosition([latitude, longitude])
+
+          // Reverse geocode to get address
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+            .then((res) => res.json())
+            .then((data) => {
+              if (data && data.display_name) {
                 setFormData(prev => ({
                   ...prev,
-                  address: `موقعك الحالي: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+                  address: data.display_name
                 }))
-              })
-          },
-          (err) => {
-            console.warn("Error getting location:", err)
-          }
-        )
-      } else {
-        toast.error("المتصفح لا يدعم تحديد الموقع الجغرافي.")
-      }
-    }, [])
+              }
+            })
+            .catch(() => {
+              setFormData(prev => ({
+                ...prev,
+                address: `موقعك الحالي: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
+              }))
+            })
+        },
+        (err) => {
+          console.warn("Error getting location:", err)
+        }
+      )
+    } else {
+      toast.error("المتصفح لا يدعم تحديد الموقع الجغرافي.")
+    }
+  }, [])
 
-  // Fetch offices from API
+  // Fetch offices
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -134,7 +141,7 @@ const DonationRequest = () => {
     fetchData();
   }, []);
 
-  // Fetch types of donations from API
+  // Fetch donation types
   useEffect(() => {
     const fetchFilters = async () => {
       try {
@@ -162,7 +169,7 @@ const DonationRequest = () => {
     fetchFilters()
   }, [])
 
-  // Map click handler component
+  // Map click handler
   function MapClickHandler() {
     useMapEvents({
       click(e) {
@@ -170,7 +177,6 @@ const DonationRequest = () => {
         setMarkerPosition([lat, lng]);
         setPosition([lat, lng]);
         
-        // Reverse geocoding to get address (simplified version)
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
           .then(response => response.json())
           .then(data => {
@@ -183,7 +189,6 @@ const DonationRequest = () => {
           })
           .catch(error => {
             console.error("Error fetching address:", error);
-            // If reverse geocoding fails, use coordinates as address
             setFormData(prev => ({
               ...prev,
               address: `موقع: ${lat.toFixed(4)}, ${lng.toFixed(4)}`
@@ -193,6 +198,7 @@ const DonationRequest = () => {
     });
     return null;
   }
+
   function FlyToUserLocation({ position }) {
     const map = useMap();
 
@@ -207,6 +213,7 @@ const DonationRequest = () => {
   FlyToUserLocation.propTypes = {
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
   };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -218,7 +225,6 @@ const DonationRequest = () => {
   const handleAddressSearch = () => {
     if (!formData.address.trim()) return;
 
-    // Simple geocoding using Nominatim
     fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(formData.address)}`)
       .then(response => response.json())
       .then(data => {
@@ -237,64 +243,89 @@ const DonationRequest = () => {
       });
   }
 
-  const handleSubmit = async (e) => {
-    if(!canSendRequest){
-      e.preventDefault()
-      toast.info("لا يمكنك تقديم طلب جديد قبل انتهاء الطلب السابق.")
-    }
-    else{
-      e.preventDefault()
-      // Validate required fields including address
-      if (!formData.address.trim()) {
-        toast.error("الرجاء إدخال العنوان أو تحديده على الخريطة");
-        return; 
-      }
+  // National ID validation: exactly 12 digits, first digit 1 or 2
+  const isValidNationalID = (id) => {
+    const regex = /^[12]\d{11}$/; // starts with 1 or 2, then 11 digits = total 12 digits
+    return regex.test(id);
+  };
 
-      const currentDate = new Date();
-      const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
-      const userid = JSON.parse(localStorage.getItem('UserData'))?.Id || 0
-      
-      const response = await DoTransaction(
-        "g+a67fXnSBQre/3SDxT2uA==",
-        `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}#0#${formData.address}#${markerPosition[0]}#${markerPosition[1]}`
-      )
-      
-      if(response.success == 200){
-        setFormData({
-          name: '',
-          individualsCount: '',
-          phone: '',
-          amount: '',
-          officeId: '',
-          donationTypeId: '',
-          description: '',
-          address: ''
-        })
-        setMarkerPosition([30.0444, 31.2357])
-        setPosition([30.0444, 31.2357])
-        toast.success("تم انشاء الطلب بنجاح")
-        navigate(-1)
+  const handleSubmit = async (e) => {
+    if (!canSendRequest) {
+      e.preventDefault();
+      toast.info("لا يمكنك تقديم طلب جديد قبل انتهاء الطلب السابق.");
+      return;
+    }
+    e.preventDefault();
+
+    // Validate all required fields (including new ones)
+    const requiredFields = [
+      'name', 'individualsCount', 'phone', 'amount', 'officeId',
+      'address', 'totalIncome', 'jobstatus', 'socityStatus', 'nationalID'
+    ];
+    for (let field of requiredFields) {
+      if (!formData[field] || formData[field].trim() === '') {
+        toast.error(`الرجاء ملء حقل ${getFieldLabel(field)}`);
+        return;
       }
     }
-  }
+
+    // Validate national ID format
+    if (!isValidNationalID(formData.nationalID)) {
+      toast.error('الرقم الوطني يجب أن يكون 12 رقماً ويبدأ بـ 1 أو 2');
+      return;
+    }
+
+    const currentDate = new Date();
+    const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()}`;
+    const userid = JSON.parse(localStorage.getItem('UserData'))?.Id || 0;
+
+    // Build parameter string – new fields appended at the end
+    const params = `0#${formData.name}#${formData.individualsCount}#${formData.phone}#${formData.amount}#${formData.officeId}#${formData.donationTypeId}#${formattedDate}#False#default#True#${userid}#${formData.description}#0#${formData.address}#${markerPosition[0]}#${markerPosition[1]}#${formData.totalIncome}#${formData.jobstatus}#${formData.socityStatus}#${formData.nationalID}`;
+
+    const response = await DoTransaction("g+a67fXnSBQre/3SDxT2uA==", params);
+
+    if (response.success == 200) {
+      setFormData({
+        name: '',
+        individualsCount: '',
+        phone: '',
+        amount: '',
+        officeId: '',
+        donationTypeId: '',
+        description: '',
+        address: '',
+        totalIncome: '',
+        jobstatus: '',
+        socityStatus: '',
+        nationalID: ''
+      });
+      setMarkerPosition([30.0444, 31.2357]);
+      setPosition([30.0444, 31.2357]);
+      toast.success("تم إنشاء الطلب بنجاح");
+      navigate(-1);
+    }
+  };
+
+  // Helper to get Arabic label for validation messages
+  const getFieldLabel = (field) => {
+    const labels = {
+      name: 'الاسم',
+      individualsCount: 'عدد الأفراد',
+      phone: 'رقم الهاتف',
+      amount: 'المبلغ',
+      officeId: 'المكتب',
+      address: 'العنوان',
+      totalIncome: 'إجمالي الدخل',
+      jobstatus: 'الحالة الوظيفية',
+      socityStatus: 'الحالة الاجتماعية',
+      nationalID: 'الرقم الوطني'
+    };
+    return labels[field] || field;
+  };
 
   return (
-      <div
-    className="overflow-hidden min-h-screen"
-    style={{
-      backgroundImage: "url('/background pattern.png')",
-      backgroundRepeat: "repeat",
-      backgroundSize: "auto",
-      backgroundPosition: "center",
-    }}
-  >
-    <div className='mt-20'>
-      <NewHeader backgroundImage={headerBackground}/>
-    </div>
-     {!canSendRequest ? (
-      <BlockedRequest />
-    ) : (
-      <div className='overflow-hidden min-h-screen'
+    <div
+      className="overflow-hidden min-h-screen"
       style={{
         backgroundImage: "url('/background pattern.png')",
         backgroundRepeat: "repeat",
@@ -302,268 +333,342 @@ const DonationRequest = () => {
         backgroundPosition: "center",
       }}
     >
-      {/* Header Section */}
-      <div className="flex flex-col lg:flex-row justify-between sm:px-6 lg:pr-0 lg:pl-12 mt-24 lg:mt-28 gap-4">
-        <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl lg:text-2xl px-10 sm:px-8 py-2 w-fit text-center">
-          <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4 shadow-xl" />
-          طلبات الإعانة
-        </div>
-        
-        <div className='w-full lg:w-auto flex flex-col sm:flex-row items-center justify-between gap-4'>
-          <div className='font-bold text-base sm:text-lg text-center sm:text-right w-full lg:w-auto'>
-            برجاء ملئ البيانات للنظر ف طلبك
-          </div>
-          <Link
-            to={"/DonationRequester"}
-            className='text-white text-center px-6 py-2 rounded-lg font-normal shadow-lg w-[92%] sm:w-auto text-sm sm:text-base'
-            style={{background: "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)"}}
-          >
-            متابعة طلب سابق
-          </Link>
-        </div>
+      <div className='mt-20'>
+        <NewHeader backgroundImage={headerBackground}/>
       </div>
-
-      {/* Form Section */}
-      <div className="px-4 sm:px-6 lg:px-12 mt-6 lg:mt-8">
-        <form className="space-y-4 lg:space-y-6" onSubmit={handleSubmit}>
-          {/* First Row: الاسم و عدد الافراد */}
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-                الاسم <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="رجاء إدخال الاسم"
-                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
-                  required
-                />
-              </div>
+      {!canSendRequest ? (
+        <BlockedRequest />
+      ) : (
+        <div className='overflow-hidden min-h-screen'
+          style={{
+            backgroundImage: "url('/background pattern.png')",
+            backgroundRepeat: "repeat",
+            backgroundSize: "auto",
+            backgroundPosition: "center",
+          }}
+        >
+          {/* Header Section */}
+          <div className="flex flex-col lg:flex-row justify-between sm:px-6 lg:pr-0 lg:pl-12 mt-24 lg:mt-28 gap-4">
+            <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg sm:text-xl lg:text-2xl px-10 sm:px-8 py-2 w-fit text-center">
+              <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4 shadow-xl" />
+              طلبات الإعانة
             </div>
 
-            <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-                عدد الأفراد <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  name="individualsCount"
-                  value={formData.individualsCount}
-                  onChange={handleInputChange}
-                  placeholder="رجاء إدخال عدد الأفراد"
-                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
-                  required
-                />
+            <div className='w-full lg:w-auto flex flex-col sm:flex-row items-center justify-between gap-4'>
+              <div className='font-bold text-base text-center sm:text-right w-full lg:w-auto'>
+                تسهيلا لاجراءات البحث الاجتماعي والتحقق من الاستحقاق المبدئي قبل تقديم المستندات المطلوبة, يرجى ملئ النموذج أدناه
               </div>
+              <Link
+                to={"/DonationRequester"}
+                className='text-white text-center px-6 py-2 rounded-lg font-normal shadow-lg w-[92%] sm:w-auto text-sm sm:text-base'
+                style={{background: "linear-gradient(90deg, #24645E -6.91%, #18383D 62.58%, #17343B 100%)"}}
+              >
+                متابعة طلب سابق
+              </Link>
             </div>
           </div>
 
-          {/* Second Row: رقم الهاتف و المبلغ */}
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-                رقم الهاتف <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="رجاء إدخال رقم الهاتف"
-                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 pl-12"
-                  required
-                />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <img className='w-6 h-6 sm:w-8 sm:h-8' src={phone} alt="Phone" />
+          {/* Form Section */}
+          <div className="px-4 sm:px-6 lg:px-12 mt-6 lg:mt-8">
+            <form className="space-y-4 lg:space-y-6" onSubmit={handleSubmit}>
+              {/* Row 1: Name & Individuals count */}
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    الاسم <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="رجاء إدخال الاسم"
+                    className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
+                    required
+                  />
+                </div>
+
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    عدد الأفراد <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="individualsCount"
+                    value={formData.individualsCount}
+                    onChange={handleInputChange}
+                    placeholder="رجاء إدخال عدد الأفراد"
+                    className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
+                    required
+                  />
                 </div>
               </div>
-            </div>
 
-            <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-                المبلغ <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  name="amount"
-                  value={formData.amount}
-                  onChange={handleInputChange}
-                  placeholder="رجاء إدخال المبلغ"
-                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 pl-12"
-                  required
-                />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                  <img className='w-6 h-6 sm:w-8 sm:h-8' src={money} alt="Money" />
+              {/* Row 2: Phone & Amount */}
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    رقم الهاتف <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="رجاء إدخال رقم الهاتف"
+                      className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 pl-12"
+                      required
+                    />
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                      <img className='w-6 h-6 sm:w-8 sm:h-8' src={phone} alt="Phone" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    المبلغ <span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      name="amount"
+                      value={formData.amount}
+                      onChange={handleInputChange}
+                      placeholder="رجاء إدخال المبلغ"
+                      className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 pl-12"
+                      required
+                    />
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                      <img className='w-6 h-6 sm:w-8 sm:h-8' src={money} alt="Money" />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Third Row: المكاتب و نوع التبرع */}
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-                المكاتب<span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <select 
-                  name="officeId"
-                  value={formData.officeId}
+              {/* Row 3: Total Income & Job Status (both text inputs) */}
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    إجمالي الدخل <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="totalIncome"
+                    value={formData.totalIncome}
+                    onChange={handleInputChange}
+                    placeholder="رجاء إدخال إجمالي الدخل"
+                    className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
+                    required
+                  />
+                </div>
+
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    الحالة الوظيفية <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="jobstatus"
+                    value={formData.jobstatus}
+                    onChange={handleInputChange}
+                    placeholder="مثال: موظف، غير موظف، متقاعد، ..."
+                    className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Row 4: Social Status & National ID (both text inputs) */}
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    الحالة الاجتماعية <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="socityStatus"
+                    value={formData.socityStatus}
+                    onChange={handleInputChange}
+                    placeholder="مثال: أعزب، متزوج، مطلق، ..."
+                    className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
+                    required
+                  />
+                </div>
+
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    الرقم الوطني <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="nationalID"
+                    value={formData.nationalID}
+                    onChange={handleInputChange}
+                    placeholder="12 رقماً يبدأ بـ 1 أو 2"
+                    className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
+                    required
+                    pattern="[12]\d{11}"
+                    title="يجب أن يكون الرقم الوطني 12 رقماً ويبدأ بـ 1 أو 2"
+                  />
+                </div>
+              </div>
+
+              {/* Row 5: Offices & Donation Type */}
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    المكاتب<span className="text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <select 
+                      name="officeId"
+                      value={formData.officeId}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 bg-white"
+                      disabled={loading.offices}
+                      required
+                    >
+                      <option value="">اختر المكتب</option>
+                      {offices.map(office => (
+                        <option key={office.Id} value={office.Id}>
+                          {office.OfficeName || office.Name}
+                        </option>
+                      ))}
+                    </select>
+                    {loading.offices && (
+                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-800"></div>
+                      </div>
+                    )}
+                  </div>
+                  {errors.offices && (
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.offices}</p>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    نوع التبرع
+                  </label>
+                  <div className="relative">
+                    <select 
+                      name="donationTypeId"
+                      value={formData.donationTypeId}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 bg-white"
+                      disabled={loading.filters}
+                    >
+                      <option value="">اختر النوع</option>
+                      {filters
+                        .filter(filter => filter.Id !== 0)
+                        .map(filter => (
+                          <option key={filter.Id} value={filter.Id}>
+                            {filter.SubventionTypeName}
+                          </option>
+                        ))
+                      }
+                    </select>
+                    {loading.filters && (
+                      <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-800"></div>
+                      </div>
+                    )}
+                  </div>
+                  {errors.filters && (
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.filters}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Address Section with Map */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                    العنوان <span className="text-red-500">*</span>
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input 
+                      name="address" 
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      placeholder="ادخل العنوان أو انقر على الخريطة لتحديد الموقع"
+                      className="flex-1 px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddressSearch}
+                      className="px-4 py-2 sm:py-3 bg-emerald-800 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm sm:text-base"
+                    >
+                      بحث
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1 text-right">
+                    يمكنك إدخال العنوان أو النقر على الخريطة لتحديد الموقع تلقائياً
+                  </p>
+                </div>
+
+                {/* Map */}
+                <div className="h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden border-2 border-gray-300">
+                  <MapContainer
+                    center={position}
+                    zoom={13}
+                    scrollWheelZoom={true}
+                    style={{ height: '100%', width: '100%' }}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+
+                    <Marker position={markerPosition}>
+                      <Popup>
+                        موقع الطلب <br /> {formData.address || 'لم يتم تحديد العنوان بعد'}
+                      </Popup>
+                    </Marker>
+
+                    <MapClickHandler />
+                    <FlyToUserLocation position={position} />
+                  </MapContainer>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
+                  وصف الحالة <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  name="description"
+                  value={formData.description}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 bg-white"
-                  disabled={loading.offices}
+                  placeholder="رجاء إدخال وصف الحالة"
+                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 resize-vertical"
                   required
-                >
-                  <option value="">اختر المكتب</option>
-                  {offices.map(office => (
-                    <option key={office.Id} value={office.Id}>
-                      {office.OfficeName || office.Name}
-                    </option>
-                  ))}
-                </select>
-                {loading.offices && (
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-800"></div>
-                  </div>
-                )}
-              </div>
-              {errors.offices && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.offices}</p>
-              )}
-            </div>
-
-            <div className="flex-1">
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-                نوع التبرع
-              </label>
-              <div className="relative">
-                <select 
-                  name="donationTypeId"
-                  value={formData.donationTypeId}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 bg-white"
-                  disabled={loading.filters}
-                >
-                  <option value="">اختر النوع</option>
-                  {filters
-                    .filter(filter => filter.Id !== 0)
-                    .map(filter => (
-                      <option key={filter.Id} value={filter.Id}>
-                        {filter.SubventionTypeName}
-                      </option>
-                    ))
-                  }
-                </select>
-                {loading.filters && (
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-800"></div>
-                  </div>
-                )}
-              </div>
-              {errors.filters && (
-                <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.filters}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Address Section with Map */}
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-                العنوان <span className="text-red-500">*</span>
-              </label>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input 
-                  name="address" 
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  placeholder="ادخل العنوان أو انقر على الخريطة لتحديد الموقع"
-                  className="flex-1 px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300"
                 />
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-center my-6 lg:my-8">
                 <button
-                  type="button"
-                  onClick={handleAddressSearch}
-                  className="px-4 py-2 sm:py-3 bg-emerald-800 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm sm:text-base"
+                  type="submit"
+                  className="w-full sm:w-2/3 lg:w-1/2 xl:w-1/3 text-white px-6 sm:px-12 py-3 rounded-lg font-bold text-base sm:text-lg shadow-lg transition-all hover:scale-105 mb-6 lg:mb-8"
+                  style={{ background: "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)" }}
                 >
-                  بحث
+                  طلب
                 </button>
               </div>
-              <p className="text-sm text-gray-600 mt-1 text-right">
-                يمكنك إدخال العنوان أو النقر على الخريطة لتحديد الموقع تلقائياً
-              </p>
-            </div>
-
-            {/* Map */}
-            <div className="h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden border-2 border-gray-300">
-              <MapContainer
-                center={position}
-                zoom={13}
-                scrollWheelZoom={true}
-                style={{ height: '100%', width: '100%' }}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-
-                <Marker position={markerPosition}>
-                  <Popup>
-                    موقع الطلب <br /> {formData.address || 'لم يتم تحديد العنوان بعد'}
-                  </Popup>
-                </Marker>
-
-                <MapClickHandler />
-                <FlyToUserLocation position={position} />
-              </MapContainer>
-
-            </div>
+            </form>
           </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm sm:text-base lg:text-lg font-medium text-gray-700 mb-2">
-              وصف الحالة <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <textarea
-                rows={4}
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="رجاء إدخال وصف الحالة"
-                className="w-full px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-emerald-800 focus:border-emerald-500 outline-none transition-all text-right text-sm sm:text-base lg:text-lg border-gray-300 resize-vertical"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-center my-6 lg:my-8">
-            <button
-              type="submit"
-              className="w-full sm:w-2/3 lg:w-1/2 xl:w-1/3 text-white px-6 sm:px-12 py-3 rounded-lg font-bold text-base sm:text-lg shadow-lg transition-all hover:scale-105 mb-6 lg:mb-8"
-              style={{ background: "linear-gradient(90deg, #24645E 41.45%, #18383D 83.11%, #17343B 100%)" }}
-            >
-              طلب
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+      )}
     </div>
-    )}
-  </div>
   )
-  
 }
 
-export default DonationRequest
+export default DonationRequest;
 
 const BlockedRequest = () => (
   <div className="min-h-screen flex items-center justify-center px-4">

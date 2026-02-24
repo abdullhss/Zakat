@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux'
 import { setShowPopup, setPopupComponent, setPopupTitle } from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
 import { useSearchParams } from 'react-router-dom'
+import NewHeader from '../features/home/components/NewHeader'
+import headerBackground from "../../public/header backgrounds/yosr.png"
 
 const Sacrifice = () => {
   const [accordions, setAccordions] = useState([
@@ -53,21 +55,45 @@ const Sacrifice = () => {
         setLoading(true)
         const response = await executeProcedure("0V3HF8ODsBqiZxlZyMzcGPMr+f0FRBb9gGH90HPX0fI=", "1#100")
         console.log(response.decrypted)
-        
+
         if (response.decrypted && response.decrypted.SacrificeTypesData) {
-          // Parse the JSON string from the response
           const sacrificeTypes = JSON.parse(response.decrypted.SacrificeTypesData)
-          
-          // Update all accordions with the fetched data
-          setAccordions(prev => prev.map(accordion => ({
-            ...accordion,
-            items: sacrificeTypes.map(type => ({
+          console.log(sacrificeTypes)
+
+          // Filter items by category
+          const fediaItems = sacrificeTypes
+            .filter(type => type.SacrificeCategory_Id === 1)
+            .map(type => ({
               id: type.Id,
               name: type.SacrificeTypeName,
               price: type.SacrificeTypePrice,
               count: 0
             }))
-          })))
+
+          const sadakaItems = sacrificeTypes
+            .filter(type => type.SacrificeCategory_Id === 2)
+            .map(type => ({
+              id: type.Id,
+              name: type.SacrificeTypeName,
+              price: type.SacrificeTypePrice,
+              count: 0
+            }))
+
+          const akikaItems = sacrificeTypes
+            .filter(type => type.SacrificeCategory_Id === 3)
+            .map(type => ({
+              id: type.Id,
+              name: type.SacrificeTypeName,
+              price: type.SacrificeTypePrice,
+              count: 0
+            }))
+
+          // Update the accordions with the filtered items (preserving titles/descriptions)
+          setAccordions(prev => [
+            { ...prev[0], items: fediaItems },
+            { ...prev[1], items: sadakaItems },
+            { ...prev[2], items: akikaItems }
+          ])
         }
       } catch (error) {
         console.error('Error fetching sacrifice types:', error)
@@ -282,6 +308,9 @@ const Sacrifice = () => {
 
   return (
     <div className="relative overflow-hidden">
+      <div className='mt-20'>
+        <NewHeader backgroundImage={headerBackground}/>
+      </div>
       {/* Receipt Popup */}
       {showReceipt && (
         <div onClick={()=>{    setShowReceipt(false)}} className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
@@ -393,7 +422,7 @@ const Sacrifice = () => {
         <div className="flex items-center justify-between pl-4 md:pl-12 mt-20 md:mt-28">
           <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-lg md:text-2xl px-4 md:px-8 py-2">
             <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4 shadow-xl" />
-            الأضاحي
+            يسر
           </div>
         </div>
 

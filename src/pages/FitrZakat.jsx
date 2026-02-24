@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import { setShowPopup, setPopupComponent , setPopupTitle} from "../features/PaySlice/PaySlice";
 import PayComponent from "../components/PayComponent";
 import { useSearchParams } from 'react-router-dom';
+import NewHeader from '../features/home/components/NewHeader'
+import headerBackground from "../../public/header backgrounds/fitrzakat.png"
 const FitrZakat = () => {
   const [isAllowed, setIsAllowed] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -251,7 +253,9 @@ const FitrZakat = () => {
         }}
         className='min-h-screen'
     >
-      
+      <div className='mt-20'>
+        <NewHeader backgroundImage={headerBackground}/>
+      </div>
         <div className='w-full flex justify-center items-center '>
           <span className="text-2xl w-full text-center mt-8 bg bg-gradient-to-r from-[#24645E] via-[#18383D] to-[#17343B] bg-clip-text text-transparent font-semibold">
           المقدارُ بالصاعِ النبويِّ لجميعِ الأصنافِ هو كيلوجرامان ونصفُ الكيلوجرام (2.5 كجم).
@@ -310,7 +314,7 @@ const FitrZakat = () => {
                     {/* Person Count Input */}
                     <div className="text-center">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        عدد الأشخاص
+                        عدد الأفراد
                       </label>
                       <input
                         type="number"
@@ -330,7 +334,7 @@ const FitrZakat = () => {
 
                     {/* Type Total */}
                     <div className="text-center md:text-left">
-                    <p className="text-sm text-gray-600">المجموع</p>
+                    <p className="text-sm text-gray-600">المبلغ</p>
                     <p className="text-xl font-bold text-green-600">
                         {totals[type.Id] || 0} دينار
                     </p>
@@ -342,7 +346,7 @@ const FitrZakat = () => {
             {/* Grand Total */}
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-6">
                 <div className="flex justify-between items-center">
-                <span className="text-xl font-semibold text-gray-800">المجموع الكلي:</span>
+                <span className="text-xl font-semibold text-gray-800">المبلغ الكلي:</span>
                 <span className="text-2xl font-bold text-emerald-600">
                     {totals.grandTotal || 0} دينار
                 </span>

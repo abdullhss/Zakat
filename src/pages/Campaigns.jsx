@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 import DonationCard from '../components/DonationCard';
 import { executeProcedure } from '../services/apiServices';
 import { useImageContext } from '../Context/imageContext.jsx';
+import NewHeader from '../features/home/components/NewHeader'
+import headerBackground from "../../public/header backgrounds/sofaraa 5er.png"
 const pageSize = 6 ;
 const Campaigns = () => {
     const [activeTab, setActiveTab] = useState('donation');
@@ -277,6 +279,9 @@ useEffect(() => {
 
     return (
         <div className="relative overflow-hidden">
+            <div className='mt-20'>
+        <NewHeader backgroundImage={headerBackground}/>
+      </div>
             <div
             className="z-10 mx-auto px-4 flex flex-col gap-4"
             style={{
@@ -289,7 +294,7 @@ useEffect(() => {
                 <div className="flex items-center justify-between pl-12 mt-28">
                     <div className="relative bg-gradient-to-l from-[rgb(23,52,59)] via-[#18383D] to-[#24645E] rounded-tl-xl rounded-bl-3xl text-white text-2xl px-8 py-2">
                     <Diamond className="absolute -right-4 top-1/2 -translate-y-1/2 translate-x-1/4  shadow-xl" />
-                    الحملات
+                    سفراء الخير
                     </div>
                 </div>
 

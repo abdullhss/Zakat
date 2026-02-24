@@ -19,7 +19,9 @@ const Layout = () => {
   const sallaPage = location.pathname.startsWith("/cart");
   const isDonateForLoverPage = location.pathname.startsWith("/DonateTo");
   const isTaleb23annaPage = location.pathname.startsWith("/services/donation-request");
-  
+  const isSacrificePage = location.pathname.startsWith("/sacrifice");
+  const isCampaignsPage = location.pathname.startsWith("/services/campaigns");
+  const isFitrZakatPage = location.pathname.startsWith("/fitrZakat");
 const [showFloatingBtn, setShowFloatingBtn] = useState(false);
 
   const [mainScreenData, setMainScreenData] = useState(null);
@@ -61,7 +63,7 @@ useEffect(() => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      {(!isOfficePage && !isSadakaPage && !isKaffaraPage && !isProjectsPage && !isZakatPage  && !sallaPage && !isDonateForLoverPage && !isTaleb23annaPage) && (
+      {(!isOfficePage && !isSadakaPage && !isKaffaraPage && !isProjectsPage && !isZakatPage  && !sallaPage && !isDonateForLoverPage && !isTaleb23annaPage && !isSacrificePage && !isCampaignsPage && !isFitrZakatPage) && (
         <div className="mt-20">
           {/* <HeroBanner data={mainScreenData?.heroBanner} /> */}
           <NewHeader data={mainScreenData?.heroBanner} backgroundImage={mainImage}/>
